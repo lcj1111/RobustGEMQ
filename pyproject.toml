@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gemq"
+version = "0.1.0"
+description = "GEMQ for MoE-LLMs quantization"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.8.0",
+    "transformers>=4.57.0",
+    "accelerate>=1.10.1",
+    "datasets>=4.3.0",
+    "hqq>=0.2.8",
+    "gemlite>=0.5.1",
+    "triton>=3.4.0",
+    "numpy>=2.2.6",
+    "scipy>=1.9",
+    "tqdm",
+    "sentencepiece>=0.2.1",
+    "protobuf>=6.32.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+# Optional alternative ILP backend. The default is HiGHS, which ships with SciPy,
+# so no license is needed; Gurobi is what the committed configs/ were solved with.
+gurobi = ["gurobipy>=12.0.3"]
+
+[tool.setuptools.packages.find]
+include = ["gemq*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "cuda: requires a CUDA device",
+    "checkpoint: requires --model-path",
+]
