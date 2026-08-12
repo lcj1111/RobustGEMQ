@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-08-12T11:43:38.720342+00:00",
+  "repo": "/data/RobustGEMQ",
+  "host": {
+    "hostname": "gpu-111",
+    "platform": "Linux-6.8.0-111-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu_count": 192
+  },
+  "python": {
+    "executable": "/data/RobustGEMQ/.venv/bin/python",
+    "version": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]"
+  },
+  "packages": {
+    "torch": "2.13.0",
+    "triton": "3.7.1",
+    "transformers": "4.57.6",
+    "accelerate": "1.14.0",
+    "datasets": "5.0.1",
+    "hqq": "0.2.8.post1",
+    "gemlite": "0.6.0.post1",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0",
+    "pytest": "9.1.1"
+  },
+  "torch_runtime": {
+    "import_ok": true,
+    "version": "2.13.0+cu130",
+    "cuda_build": "13.0",
+    "cuda_available": true,
+    "device_count": 8,
+    "devices": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 1,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 2,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 3,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 4,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 5,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 6,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      },
+      {
+        "index": 7,
+        "name": "NVIDIA GeForce RTX 5090",
+        "total_memory_bytes": 33711521792,
+        "compute_capability": "12.0"
+      }
+    ]
+  },
+  "disk": {
+    "total_bytes": 528046399488,
+    "used_bytes": 381011349504,
+    "free_bytes": 125346062336
+  },
+  "git": {
+    "head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "950e6204f248b5d17eb159de91acf62575f54240",
+      "stderr": ""
+    },
+    "status": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "returncode": 0,
+      "stdout": "?? artifacts/\n?? docs/\n?? scripts/phase0/",
+      "stderr": ""
+    },
+    "remotes": {
+      "command": [
+        "git",
+        "remote",
+        "-v"
+      ],
+      "returncode": 0,
+      "stdout": "upstream\thttps://github.com/jndeng/GEMQ.git (fetch)\nupstream\thttps://github.com/jndeng/GEMQ.git (push)",
+      "stderr": ""
+    }
+  },
+  "nvidia_smi": {
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=index,name,memory.total,driver_version",
+      "--format=csv,noheader,nounits"
+    ],
+    "returncode": 0,
+    "stdout": "0, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n1, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n2, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n3, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n4, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n5, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n6, NVIDIA GeForce RTX 5090, 32607, 610.43.03\n7, NVIDIA GeForce RTX 5090, 32607, 610.43.03",
+    "stderr": ""
+  }
+}

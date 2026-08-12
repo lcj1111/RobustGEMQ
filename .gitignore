@@ -56,3 +56,8 @@ Thumbs.db
 cache/
 results/
 data/c4-train.00000-of-01024.json
+
+# Phase 0 generated logs and test detail (small JSON summaries are committed)
+artifacts/phase0/*.log
+artifacts/phase0/*.xml
+artifacts/phase0/environment-system.json

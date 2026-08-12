@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "finished_at_utc": "2026-08-12T11:46:41.146017+00:00",
+  "status": "pass",
+  "exit_codes": {
+    "source_compile": 0,
+    "import_cuda": 0,
+    "synthetic_cuda_tests": 0
+  }
+}
