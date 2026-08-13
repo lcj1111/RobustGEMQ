@@ -1,0 +1,4 @@
+# Phase 1 adds ModelScope only as a download transport for servers that cannot
+# reach huggingface.co. Runtime inference still uses the Phase 0 environment.
+-r phase0-constraints.txt
+modelscope==1.39.1

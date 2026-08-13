@@ -124,10 +124,18 @@ def get_stats(model, enc, args):
         # compute expert quantization errors
         bit_cfg = list(map(int, args.wbits.split(",")))  # e.g., [1, 2, 3]
         expert_names = get_all_expert_names(model_name)  # NOTE: shared expert always at the end
+        expert_end = len(expert_names) if args.expert_end < 0 else args.expert_end
+        if not 0 <= args.expert_start < expert_end <= len(expert_names):
+            raise ValueError(
+                f"Invalid expert range [{args.expert_start}, {expert_end}) for "
+                f"{len(expert_names)} experts"
+            )
+        selected_experts = range(args.expert_start, expert_end)
 
         # register a quantizer for each expert linear at each bitwidth
         quantizers = {}
-        for e, expert_name in enumerate(expert_names):
+        for e in selected_experts:
+            expert_name = expert_names[e]
             quantizers[e] = {}
             for b in bit_cfg:
                 quantizers[e][b] = {}
@@ -137,7 +145,8 @@ def get_stats(model, enc, args):
 
         # compute reconstruction loss of block output caused by quantization (i.e., perturbation)
         layer_quant_loss = defaultdict(dict)
-        for e, expert_name in enumerate(expert_names):
+        for e in selected_experts:
+            expert_name = expert_names[e]
             # cache unquantized weights
             if "shared" in expert_name:
                 org_sd = get_shared_expert_block(moe_block).state_dict()
@@ -361,10 +370,18 @@ def compute_faster_layer_re(model, dataloader, args):
         # compute expert quantization errors
         bit_cfg = list(map(int, args.wbits.split(",")))  # e.g., [1, 2, 3]
         expert_names = get_all_expert_names(model_name)  # NOTE: shared expert always at the end
+        expert_end = len(expert_names) if args.expert_end < 0 else args.expert_end
+        if not 0 <= args.expert_start < expert_end <= len(expert_names):
+            raise ValueError(
+                f"Invalid expert range [{args.expert_start}, {expert_end}) for "
+                f"{len(expert_names)} experts"
+            )
+        selected_experts = range(args.expert_start, expert_end)
 
         # register a quantizer for each expert linear at each bitwidth
         quantizers = {}
-        for e, expert_name in enumerate(expert_names):
+        for e in selected_experts:
+            expert_name = expert_names[e]
             quantizers[e] = {}
             for b in bit_cfg:
                 quantizers[e][b] = {}
@@ -375,7 +392,8 @@ def compute_faster_layer_re(model, dataloader, args):
         # compute reconstruction errors of block output caused by quantization (perturbation)
         layer_sq_grads = layer_output_grads[i].squeeze(1).double().pow(2).to("cuda")  # (nsamples, seqlen, hidden_size)
         layer_quant_loss = defaultdict(dict)
-        for e, expert_name in enumerate(expert_names):
+        for e in selected_experts:
+            expert_name = expert_names[e]
             # cache unquantized weights
             if "shared" in expert_name:
                 org_sd = get_shared_expert_block(moe_block, model_name).state_dict()
@@ -454,6 +472,11 @@ def parse_args():
         help="Implementation of attention to use",
     )
     parser.add_argument(
+        "--device_map", type=str, default="auto",
+        choices=["auto", "balanced", "balanced_low_0", "sequential"],
+        help="Accelerate device map used by layer_grads; balanced avoids activation OOM on one GPU",
+    )
+    parser.add_argument(
         "--use_fast", action="store_true",
         help="Whether to use the fast tokenizer implementation",
     )
@@ -493,6 +516,14 @@ def parse_args():
         "--blocksize", type=int, default=128,
         help="Blocksize to use for quantization"
     )
+    parser.add_argument(
+        "--expert_start", type=int, default=0,
+        help="First expert index included in layer_re (inclusive)",
+    )
+    parser.add_argument(
+        "--expert_end", type=int, default=-1,
+        help="Last expert index included in layer_re (exclusive); -1 means all experts",
+    )
 
     # misc args
     parser.add_argument(
@@ -519,7 +550,7 @@ if __name__ == "__main__":
     # load pre-trained model
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=args.use_fast)
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, device_map=("auto" if args.mode == "layer_grads" else "cpu"),
+        args.model, device_map=(args.device_map if args.mode == "layer_grads" else "cpu"),
         # NOTE: hardcoded True, unlike quantize.py which exposes it as a flag. Either way
         # align_deepseek_softmax_scale below keeps the two implementations equivalent.
         torch_dtype=args.model_dtype, attn_implementation=args.attn_impl, trust_remote_code=True,

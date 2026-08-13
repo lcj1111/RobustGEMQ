@@ -4,18 +4,17 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from datasets import load_dataset
-
 from gemq.utils.model_utils import get_blocks, move_embed, move_head
+from gemq.utils.data_utils import load_c4_split, load_wikitext2_split
 
 
 def get_testenc(tokenizer, dataset, seqlen):
     if dataset == "wikitext2":
-        testdata = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+        testdata = load_wikitext2_split("test")
         testenc = tokenizer("\n\n".join(testdata["text"]), return_tensors="pt")
 
     elif dataset == "c4":
-        testdata = load_dataset("allenai/c4", data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"}, split="validation")
+        testdata = load_c4_split("validation")
         testenc = tokenizer(" ".join(testdata[:1100]["text"]), return_tensors="pt")
         testenc = testenc.input_ids[:, :(256 * seqlen)]
 

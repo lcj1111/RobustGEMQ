@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "finished_at_utc": "2026-08-13T05:08:22Z",
+  "status": "pass_with_prefill_performance_gap",
+  "model": {
+    "name": "allenai/OLMoE-1B-7B-0924",
+    "layers": 16,
+    "experts_per_layer": 64,
+    "experts_per_token": 8
+  },
+  "statistics": {
+    "calibration_samples": 128,
+    "sequence_length": 2048,
+    "layer_grads_bytes": 17179875613,
+    "layer_re_coefficients": 3072,
+    "layer_re_all_finite_nonnegative": true
+  },
+  "allocation": {
+    "backend": "highs",
+    "objective": 0.0246758,
+    "average_expert_bits": 2.0,
+    "assignment_counts": {"1": 503, "2": 18, "3": 503}
+  },
+  "perplexity": {
+    "bf16": {"wikitext2": 7.4895, "c4": 11.8104},
+    "quantized_before_rft": {"wikitext2": 11.7109, "c4": 17.8478},
+    "quantized_after_rft": {"wikitext2": 10.7986, "c4": 17.2149}
+  },
+  "checkpoint": {
+    "bytes": 2457458973,
+    "packing_max_reconstruction_error": 0.0,
+    "short_equivalence_tests_passed": 6
+  },
+  "generation": {
+    "prompt_tokens": 9,
+    "new_tokens": 64,
+    "timed_rounds": 3,
+    "load_seconds": 9.10,
+    "compile_warmup_seconds": 86.90,
+    "peak_reserved_gib": 2.85,
+    "decode_tokens_per_second_range": [703.52, 703.89]
+  },
+  "regression": {"passed": 76, "skipped": 6, "xfailed": 3},
+  "known_gap": {
+    "component": "patched OLMoE multi-token prefill",
+    "full_validation_exit_code": 143,
+    "first_2048_token_window_seconds": 852.72,
+    "windows_completed_before_abort": 3,
+    "windows_requested": 8
+  }
+}
