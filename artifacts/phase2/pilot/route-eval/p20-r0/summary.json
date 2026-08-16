@@ -1,0 +1,55 @@
+{
+  "config": "/data/models/RobustGEMQ/artifacts/phase2/pilot/perturb-configs/p20-r0.pkl",
+  "name": "p20-r0",
+  "scenarios": {
+    "code:seed-0": {
+      "nll": 1.4500170797109604,
+      "ppl": 4.263187408447266,
+      "predicted_tokens": 16352,
+      "token_sha256": "47e208865548d4b5c690d9120028d861e189de6344d15b3481404d00005c6a6a"
+    },
+    "code:seed-1": {
+      "nll": 1.4421014487743378,
+      "ppl": 4.229574680328369,
+      "predicted_tokens": 16352,
+      "token_sha256": "386d637b2ca54e5e62406b3a4be605d8f6c04f5f54e8bde72ddc99de22186bbb"
+    },
+    "general:seed-0": {
+      "nll": 2.8185689449310303,
+      "ppl": 16.752859115600586,
+      "predicted_tokens": 16352,
+      "token_sha256": "ec56919fe3ac9c2bde2e1ea6b9f2beb5eba7bf1e86b8b951d05b11ae82fa2b9f"
+    },
+    "general:seed-1": {
+      "nll": 2.545445740222931,
+      "ppl": 12.748908996582031,
+      "predicted_tokens": 16352,
+      "token_sha256": "89e681ff493f5a499fda2aab28a580ec2f8c784832cc741f91d707dbfab056e5"
+    },
+    "instruction:seed-0": {
+      "nll": 2.394591063261032,
+      "ppl": 10.963713645935059,
+      "predicted_tokens": 16352,
+      "token_sha256": "8413373e354365add33f3d9ec3e4505c6ee3a523a35e79254aa901053a3c7902"
+    },
+    "instruction:seed-1": {
+      "nll": 2.2973437011241913,
+      "ppl": 9.947723388671875,
+      "predicted_tokens": 16352,
+      "token_sha256": "1dccab343906beac0cf5cb65c4b91a63ed9f97bdd37364eabc9d99578d810592"
+    },
+    "math:seed-0": {
+      "nll": 1.7404251545667648,
+      "ppl": 5.699766159057617,
+      "predicted_tokens": 16352,
+      "token_sha256": "fc3b6fcf866af64f31cdc9c8beccad5d07b8e0d59b42a35d683255c1d7d754aa"
+    },
+    "math:seed-1": {
+      "nll": 1.684564009308815,
+      "ppl": 5.390100479125977,
+      "predicted_tokens": 16352,
+      "token_sha256": "07780844cad2e41115760e79b5b8b4f74eb9493b77f059860c33417f98e1524b"
+    }
+  },
+  "used_bits": 2560
+}

@@ -1,0 +1,10 @@
+profile=pilot
+domain=instruction
+seed=0
+started_utc=2026-08-16T04:26:51Z
+finished_utc=2026-08-16T04:30:54Z
+exit_code=0
+gpu=6
+scenario=/data/models/RobustGEMQ/cache/phase2/pilot/instruction/seed-0/scenario.json
+layer_grads=/data/models/RobustGEMQ/cache/phase2/pilot/instruction/seed-0/LayerGrads.pt
+layer_re=/data/models/RobustGEMQ/cache/phase2/pilot/instruction/seed-0/LayerRE_B1,2,3.pkl

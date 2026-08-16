@@ -1,0 +1,34 @@
+[
+  {
+    "coefficients": 3072,
+    "domain": "code",
+    "max": 0.007459457424727359,
+    "min": 0.0,
+    "seed": 0,
+    "token_sha256": "d3dde2a95565cac4028553d28770cac88627c8d208a4aaae0c5e633ac309d0fc"
+  },
+  {
+    "coefficients": 3072,
+    "domain": "general",
+    "max": 0.010530326560329943,
+    "min": 0.0,
+    "seed": 0,
+    "token_sha256": "c8c5d01983477d830e1879e2294cc5db62fa32edca43d4a573ce43445c96542d"
+  },
+  {
+    "coefficients": 3072,
+    "domain": "instruction",
+    "max": 0.009640984331142449,
+    "min": 8.255864175911682e-08,
+    "seed": 0,
+    "token_sha256": "9db33d93167e0e1606591d7aab22197447dd00582c7edeffb42d4b3546096bc3"
+  },
+  {
+    "coefficients": 3072,
+    "domain": "math",
+    "max": 0.01211985401034771,
+    "min": 0.0,
+    "seed": 0,
+    "token_sha256": "074d7530785ba884076c609ff0a4b0125567eae611a86f00803d3e1f654dbbe5"
+  }
+]

@@ -61,3 +61,6 @@ data/c4-train.00000-of-01024.json
 artifacts/phase0/*.log
 artifacts/phase0/*.xml
 artifacts/phase0/environment-system.json
+
+# Phase 2 route tensors are reproducible but too large for Git; summaries are committed.
+artifacts/phase2/**/route-*.pt

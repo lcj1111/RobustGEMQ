@@ -13,6 +13,7 @@ from transformers.testing_utils import CaptureLogger
 from datasets import load_dataset, Dataset, DatasetDict
 
 from gemq.utils.model_utils import NAME_TO_MODEL, ModelType
+from gemq.utils.domain_data import load_scenario_tokens
 
 
 def _required_env_path(variable):
@@ -220,7 +221,11 @@ def get_calib_loader(tokenizer, args):
     This is a unified interface to get calibration dataloaders for different datasets
     in both model stats collection and quantization.
     """
-    if args.calib_dataset == "wikitext2":
+    scenario_tokens_path = getattr(args, "scenario_tokens_path", "")
+    if scenario_tokens_path:
+        calib_loader = load_scenario_tokens(scenario_tokens_path)
+
+    elif args.calib_dataset == "wikitext2":
         calib_loader, _ = get_loaders(
             args.calib_dataset,
             args.nsamples,
