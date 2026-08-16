@@ -1,0 +1,125 @@
+{
+  "budgets": {
+    "2.0": {
+      "config_hamming_fraction": {
+        "alphaq-style": {
+          "alphaq-style": 0.0,
+          "concat": 0.9638671875,
+          "domain-cvar-0.5": 0.9638671875,
+          "domain-mean": 0.9609375,
+          "domain-worst": 0.96484375,
+          "gemq-c4": 0.9599609375
+        },
+        "concat": {
+          "alphaq-style": 0.9638671875,
+          "concat": 0.0,
+          "domain-cvar-0.5": 0.2392578125,
+          "domain-mean": 0.154296875,
+          "domain-worst": 0.3203125,
+          "gemq-c4": 0.298828125
+        },
+        "domain-cvar-0.5": {
+          "alphaq-style": 0.9638671875,
+          "concat": 0.2392578125,
+          "domain-cvar-0.5": 0.0,
+          "domain-mean": 0.1015625,
+          "domain-worst": 0.126953125,
+          "gemq-c4": 0.3671875
+        },
+        "domain-mean": {
+          "alphaq-style": 0.9609375,
+          "concat": 0.154296875,
+          "domain-cvar-0.5": 0.1015625,
+          "domain-mean": 0.0,
+          "domain-worst": 0.205078125,
+          "gemq-c4": 0.3212890625
+        },
+        "domain-worst": {
+          "alphaq-style": 0.96484375,
+          "concat": 0.3203125,
+          "domain-cvar-0.5": 0.126953125,
+          "domain-mean": 0.205078125,
+          "domain-worst": 0.0,
+          "gemq-c4": 0.41015625
+        },
+        "gemq-c4": {
+          "alphaq-style": 0.9599609375,
+          "concat": 0.298828125,
+          "domain-cvar-0.5": 0.3671875,
+          "domain-mean": 0.3212890625,
+          "domain-worst": 0.41015625,
+          "gemq-c4": 0.0
+        }
+      },
+      "interpretation_boundary": "Post-gate diagnostic only. These correlations cannot be used to change Phase 3 objectives or reselect configs on held-out data.",
+      "proxy_mean_vs_heldout_mean_spearman": 0.942857142857143,
+      "proxy_vs_heldout_spearman_by_domain": {
+        "code": 0.942857142857143,
+        "general": 0.3714285714285715,
+        "instruction": 0.942857142857143,
+        "math": 1.0
+      }
+    },
+    "2.5": {
+      "config_hamming_fraction": {
+        "alphaq-style": {
+          "alphaq-style": 0.0,
+          "concat": 0.6171875,
+          "domain-cvar-0.5": 0.62890625,
+          "domain-mean": 0.6337890625,
+          "domain-worst": 0.669921875,
+          "gemq-c4": 0.6162109375
+        },
+        "concat": {
+          "alphaq-style": 0.6171875,
+          "concat": 0.0,
+          "domain-cvar-0.5": 0.203125,
+          "domain-mean": 0.09765625,
+          "domain-worst": 0.24609375,
+          "gemq-c4": 0.234375
+        },
+        "domain-cvar-0.5": {
+          "alphaq-style": 0.62890625,
+          "concat": 0.203125,
+          "domain-cvar-0.5": 0.0,
+          "domain-mean": 0.1376953125,
+          "domain-worst": 0.1455078125,
+          "gemq-c4": 0.265625
+        },
+        "domain-mean": {
+          "alphaq-style": 0.6337890625,
+          "concat": 0.09765625,
+          "domain-cvar-0.5": 0.1376953125,
+          "domain-mean": 0.0,
+          "domain-worst": 0.189453125,
+          "gemq-c4": 0.2314453125
+        },
+        "domain-worst": {
+          "alphaq-style": 0.669921875,
+          "concat": 0.24609375,
+          "domain-cvar-0.5": 0.1455078125,
+          "domain-mean": 0.189453125,
+          "domain-worst": 0.0,
+          "gemq-c4": 0.2919921875
+        },
+        "gemq-c4": {
+          "alphaq-style": 0.6162109375,
+          "concat": 0.234375,
+          "domain-cvar-0.5": 0.265625,
+          "domain-mean": 0.2314453125,
+          "domain-worst": 0.2919921875,
+          "gemq-c4": 0.0
+        }
+      },
+      "interpretation_boundary": "Post-gate diagnostic only. These correlations cannot be used to change Phase 3 objectives or reselect configs on held-out data.",
+      "proxy_mean_vs_heldout_mean_spearman": 0.8857142857142858,
+      "proxy_vs_heldout_spearman_by_domain": {
+        "code": 1.0,
+        "general": 0.8285714285714287,
+        "instruction": 0.942857142857143,
+        "math": 1.0
+      }
+    }
+  },
+  "schema_version": 1
+}

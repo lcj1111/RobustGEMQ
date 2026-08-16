@@ -1,0 +1,58 @@
+{
+  "config": "/data/models/RobustGEMQ/artifacts/phase3/configs/bpe-2.0/domain-worst.pkl",
+  "name": "domain-worst-bpe-2.0",
+  "quantization": "fake RTN weight-only; screening, not final GPTQ/RFT evidence",
+  "scenarios": {
+    "code:seed-0": {
+      "nll": 1.2214979976415634,
+      "ppl": 3.392265558242798,
+      "predicted_tokens": 16352,
+      "token_sha256": "adefc932a417b549ff18a2565cab14a8e932adc7fdd46a8e75cea925b2e43f4e"
+    },
+    "code:seed-1": {
+      "nll": 1.241617128252983,
+      "ppl": 3.4612059593200684,
+      "predicted_tokens": 16352,
+      "token_sha256": "b812276807c3207ee63fcee1d016473533083b8603804a0e2eca1c45c8feb5e1"
+    },
+    "general:seed-0": {
+      "nll": 3.199156492948532,
+      "ppl": 24.5118465423584,
+      "predicted_tokens": 16352,
+      "token_sha256": "29602ffbead3b21a9710ed303e5a2605043fec41e7f82bcaaa22cb02bf28a5f8"
+    },
+    "general:seed-1": {
+      "nll": 3.292746752500534,
+      "ppl": 26.916696548461914,
+      "predicted_tokens": 16352,
+      "token_sha256": "3a251241a873ea84e3dedcd2c406958ce4005e4b2d0eb0fead6653d78ba13536"
+    },
+    "instruction:seed-0": {
+      "nll": 2.805156946182251,
+      "ppl": 16.52967071533203,
+      "predicted_tokens": 16352,
+      "token_sha256": "6f29e89338f24a7d17422ef8a2268761937b7b0175521a34a93499820bd8b636"
+    },
+    "instruction:seed-1": {
+      "nll": 2.724871963262558,
+      "ppl": 15.254459381103516,
+      "predicted_tokens": 16352,
+      "token_sha256": "08d0d6f91fb01d24055a6f3279383f02c4fd370d3db321b8be4bcb4410523bf8"
+    },
+    "math:seed-0": {
+      "nll": 1.8008007258176804,
+      "ppl": 6.054493427276611,
+      "predicted_tokens": 16352,
+      "token_sha256": "efd532c71ae2fbe04f3f65e8e1ebfc70fa671c410512b8432d554a9e6debb60b"
+    },
+    "math:seed-1": {
+      "nll": 1.7898545563220978,
+      "ppl": 5.98858118057251,
+      "predicted_tokens": 16352,
+      "token_sha256": "9f6a08f28bb4864de40ff3ab22b6939e65ba8c4a583044a76fbb41f31219b0d6"
+    }
+  },
+  "schema_version": 1,
+  "used_bits": 2048,
+  "wall_time_seconds": 26.819685459136963
+}

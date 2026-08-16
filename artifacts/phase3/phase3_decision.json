@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "phase": 3,
+  "status": "PIVOT",
+  "solver_correctness": {
+    "status": "PASS",
+    "random_bruteforce_instances": 24,
+    "random_bruteforce_matches": 24,
+    "dedicated_tests_passed": 37,
+    "full_gpu_regression": "117 passed, 6 skipped, 3 xfailed"
+  },
+  "h3": {
+    "status": "FAIL",
+    "regret_definition": "held-out fake-RTN NLL minus matched FP NLL; two seeds averaged within domain",
+    "primary_bpe": 2.5,
+    "best_baseline": "Concat",
+    "best_baseline_worst_domain_nll_delta": 0.24434991902579006,
+    "domain_mean_worst_domain_nll_delta": 0.28704301680604494,
+    "domain_mean_worst_regret_reduction": -0.1747197966196518,
+    "domain_mean_mean_nll_increment": 0.008687855675816536,
+    "domain_mean_directionally_improved_domains": ["math", "code"],
+    "alphaq_style_worst_domain_nll_delta": 0.4523009261852131,
+    "thresholds": {
+      "minimum_worst_regret_reduction": 0.1,
+      "maximum_mean_nll_increment": 0.02
+    }
+  },
+  "g3": {
+    "status": "PIVOT",
+    "reason": "Solver correctness passed and Domain-Mean has limited directional evidence, but no robust objective improves worst-domain NLL over Concat.",
+    "retained_robust_objectives": ["domain-mean"],
+    "additional_cvar_grid_authorized": false
+  },
+  "frozen_next_scope": {
+    "phase6_methods": ["gemq-c4", "concat", "domain-mean", "alphaq-style"],
+    "quantization": "frozen GPTQ/RFT with real packed checkpoints",
+    "forbidden": [
+      "tuning domain weights, CVaR alpha, or normalization on Phase 3 held-out results",
+      "claiming worst-domain quality improvement from fake RTN",
+      "expanding to a second model before the OLMoE real-checkpoint gate"
+    ]
+  },
+  "known_limits": [
+    "Phase 3 quality uses fake RTN and is selection evidence only.",
+    "BoolQ is measured as templated language-model NLL, not official task accuracy.",
+    "AlphaQ-style uses a deterministic spectral sketch and is not an exact FARMS reproduction.",
+    "Concat pools frozen per-token coefficients rather than rerunning an additional joint calibration backward pass."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "common": {
+    "actual_bpe": 2.5,
+    "budget": 2560.0,
+    "budget_slack": 0.0,
+    "c2c3_violations": 0,
+    "candidate_bits": [
+      1,
+      2,
+      3
+    ],
+    "domain_cvar_0.5": 841.3481577075358,
+    "domain_losses": {
+      "code": 1092.04808698803,
+      "general": 433.1276836561192,
+      "instruction": 372.7006442098045,
+      "math": 590.6482284270417
+    },
+    "domain_mean": 622.1311608202489,
+    "domain_worst": 1092.04808698803,
+    "feasible": true,
+    "invalid_bit_count": 0,
+    "one_hot_valid": true,
+    "used_bits": 2560
+  },
+  "solver": {
+    "alpha": null,
+    "budget_slack": 0.0,
+    "candidate_bits": [
+      1,
+      2,
+      3
+    ],
+    "coefficient_schema_sha256": "b5425c3ef21bad5b042d11ae274aacb9ff001e62630c0b608831ac7a8b56f4e7",
+    "extra_constraint": "c2c3",
+    "fixed_assignment_violations": 0,
+    "fixed_assignments": {},
+    "mip_gap": 0.0,
+    "mip_node_count": 1,
+    "objective": "mean",
+    "objective_abs_error": 1.1368683772161603e-13,
+    "one_hot_violations": 0,
+    "optimization_scale": 500.0873333605084,
+    "recomputed_objective": 365.28863775597586,
+    "scenario_losses": {
+      "concat": 365.28863775597586
+    },
+    "scenario_names": [
+      "concat"
+    ],
+    "scenario_weights": {
+      "concat": 1.0
+    },
+    "schema_version": 1,
+    "scipy_version": "1.18.0",
+    "shape": [
+      1,
+      16,
+      64,
+      3
+    ],
+    "solver": "scipy.optimize.milp/HiGHS",
+    "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "solver_objective": 365.28863775597574,
+    "status": "optimal-audited",
+    "total_bit_budget": 2560.0,
+    "used_bits": 2560
+  }
+}
