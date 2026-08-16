@@ -1,0 +1,22 @@
+{
+  "interpretation": "Raw correlations are confounded by perturbation size. The pre-registered H4 decision remains the Hamming-controlled Top-k flip result in h4-proxy-validation.json.",
+  "near_boundary_proxy_vs_low_margin_flip": {
+    "hamming_controlled_partial_spearman": 0.17744360902255638,
+    "raw_spearman": 0.7308270676691728
+  },
+  "near_boundary_proxy_vs_topk_flip": {
+    "hamming_controlled_partial_spearman": 0.08721804511278194,
+    "raw_spearman": 0.7022556390977444
+  },
+  "near_boundary_proxy_vs_topk_jaccard": {
+    "hamming_controlled_partial_spearman": -0.2541353383458646,
+    "raw_spearman": -0.7353383458646616
+  },
+  "phase": 4,
+  "quality_coefficient_proxy_vs_topk_flip": {
+    "hamming_controlled_partial_spearman": 0.512781954887218,
+    "raw_spearman": 0.8721804511278194
+  },
+  "schema_version": 1,
+  "status": "post-gate diagnosis only; not eligible for proxy or lambda retuning"
+}
