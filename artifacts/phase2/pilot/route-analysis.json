@@ -1,0 +1,1361 @@
+{
+  "configs": [
+    {
+      "actual_hamming_fraction": 0.060546875,
+      "name": "p05-r0",
+      "path": "artifacts/phase2/pilot/perturb-configs/p05-r0.pkl",
+      "proxy_regret_mean": 0.6107380456018445,
+      "proxy_regret_worst": 1.287810575698136,
+      "proxy_regrets": {
+        "code": 1.287810575698136,
+        "general": 0.10879538830655046,
+        "instruction": 0.32804973761384154,
+        "math": 0.7182964807888502
+      },
+      "requested_fraction": 0.05,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8202530741691589,
+          "topk_flip_rate": 0.6950607299804688,
+          "topk_jaccard": 0.7924957275390625
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8202961087226868,
+          "topk_flip_rate": 0.6975746154785156,
+          "topk_jaccard": 0.7920933365821838
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7572590112686157,
+          "topk_flip_rate": 0.5940818786621094,
+          "topk_jaccard": 0.8383662700653076
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7427343130111694,
+          "topk_flip_rate": 0.5684814453125,
+          "topk_jaccard": 0.8485774993896484
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7692456245422363,
+          "topk_flip_rate": 0.6143836975097656,
+          "topk_jaccard": 0.8303391337394714
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7712156176567078,
+          "topk_flip_rate": 0.6195487976074219,
+          "topk_jaccard": 0.8286404013633728
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7783165574073792,
+          "topk_flip_rate": 0.641510009765625,
+          "topk_jaccard": 0.822471559047699
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7785895466804504,
+          "topk_flip_rate": 0.6436271667480469,
+          "topk_jaccard": 0.8218134045600891
+        }
+      },
+      "route_flip_mean": 0.6342835426330566,
+      "seed": 50,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.0625,
+      "name": "p05-r1",
+      "path": "artifacts/phase2/pilot/perturb-configs/p05-r1.pkl",
+      "proxy_regret_mean": 0.6664719611011449,
+      "proxy_regret_worst": 1.4890759583484776,
+      "proxy_regrets": {
+        "code": 1.4890759583484776,
+        "general": 0.0944692811554454,
+        "instruction": 0.29264666264484585,
+        "math": 0.7896959422558106
+      },
+      "requested_fraction": 0.05,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8377156257629395,
+          "topk_flip_rate": 0.7267341613769531,
+          "topk_jaccard": 0.7758215665817261
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8361927270889282,
+          "topk_flip_rate": 0.7284736633300781,
+          "topk_jaccard": 0.7755969166755676
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7586556673049927,
+          "topk_flip_rate": 0.5966911315917969,
+          "topk_jaccard": 0.8366252183914185
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7407718300819397,
+          "topk_flip_rate": 0.5670356750488281,
+          "topk_jaccard": 0.8486389517784119
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7680571675300598,
+          "topk_flip_rate": 0.6125755310058594,
+          "topk_jaccard": 0.8304587602615356
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7719727754592896,
+          "topk_flip_rate": 0.6230087280273438,
+          "topk_jaccard": 0.8268677592277527
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7855532169342041,
+          "topk_flip_rate": 0.6517486572265625,
+          "topk_jaccard": 0.8183588981628418
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.783962607383728,
+          "topk_flip_rate": 0.6534538269042969,
+          "topk_jaccard": 0.8173845410346985
+        }
+      },
+      "route_flip_mean": 0.6449651718139648,
+      "seed": 51,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.056640625,
+      "name": "p05-r2",
+      "path": "artifacts/phase2/pilot/perturb-configs/p05-r2.pkl",
+      "proxy_regret_mean": 0.6052836978248737,
+      "proxy_regret_worst": 1.2920790404987252,
+      "proxy_regrets": {
+        "code": 1.2920790404987252,
+        "general": 0.1001630758507866,
+        "instruction": 0.31988229861902284,
+        "math": 0.7090103763309602
+      },
+      "requested_fraction": 0.05,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8133336901664734,
+          "topk_flip_rate": 0.6788749694824219,
+          "topk_jaccard": 0.7997589111328125
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8105571866035461,
+          "topk_flip_rate": 0.6794662475585938,
+          "topk_jaccard": 0.8001874685287476
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7552889585494995,
+          "topk_flip_rate": 0.5908927917480469,
+          "topk_jaccard": 0.8393375873565674
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.742854118347168,
+          "topk_flip_rate": 0.5726165771484375,
+          "topk_jaccard": 0.8468719720840454
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7693644762039185,
+          "topk_flip_rate": 0.6185073852539062,
+          "topk_jaccard": 0.8287986516952515
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7739176750183105,
+          "topk_flip_rate": 0.6241683959960938,
+          "topk_jaccard": 0.8265525698661804
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7770048379898071,
+          "topk_flip_rate": 0.6398506164550781,
+          "topk_jaccard": 0.8234448432922363
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7786334156990051,
+          "topk_flip_rate": 0.641326904296875,
+          "topk_jaccard": 0.8225928544998169
+        }
+      },
+      "route_flip_mean": 0.6307129859924316,
+      "seed": 52,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.0625,
+      "name": "p05-r3",
+      "path": "artifacts/phase2/pilot/perturb-configs/p05-r3.pkl",
+      "proxy_regret_mean": 0.6453144076576663,
+      "proxy_regret_worst": 1.3604013784395257,
+      "proxy_regrets": {
+        "code": 1.3604013784395257,
+        "general": 0.11308956006926277,
+        "instruction": 0.3764999526779539,
+        "math": 0.7312667394439232
+      },
+      "requested_fraction": 0.05,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8210663199424744,
+          "topk_flip_rate": 0.6969184875488281,
+          "topk_jaccard": 0.7930222153663635
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8215984106063843,
+          "topk_flip_rate": 0.6990737915039062,
+          "topk_jaccard": 0.7926690578460693
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7539070248603821,
+          "topk_flip_rate": 0.5864219665527344,
+          "topk_jaccard": 0.841607928276062
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7375059723854065,
+          "topk_flip_rate": 0.561248779296875,
+          "topk_jaccard": 0.8516013622283936
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7662744522094727,
+          "topk_flip_rate": 0.6110496520996094,
+          "topk_jaccard": 0.8322713971138
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.766865611076355,
+          "topk_flip_rate": 0.6140556335449219,
+          "topk_jaccard": 0.8312478065490723
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7750887870788574,
+          "topk_flip_rate": 0.6364669799804688,
+          "topk_jaccard": 0.8250550031661987
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7754417657852173,
+          "topk_flip_rate": 0.6389007568359375,
+          "topk_jaccard": 0.8241176605224609
+        }
+      },
+      "route_flip_mean": 0.6305170059204102,
+      "seed": 53,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.0888671875,
+      "name": "p10-r0",
+      "path": "artifacts/phase2/pilot/perturb-configs/p10-r0.pkl",
+      "proxy_regret_mean": 0.7076563105732869,
+      "proxy_regret_worst": 1.3650987383348163,
+      "proxy_regrets": {
+        "code": 1.3650987383348163,
+        "general": 0.22264288826548295,
+        "instruction": 0.4632648086982218,
+        "math": 0.7796188069946268
+      },
+      "requested_fraction": 0.1,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8130341172218323,
+          "topk_flip_rate": 0.6813201904296875,
+          "topk_jaccard": 0.8004884719848633
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8129777312278748,
+          "topk_flip_rate": 0.6834564208984375,
+          "topk_jaccard": 0.8000608682632446
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7586262822151184,
+          "topk_flip_rate": 0.5947265625,
+          "topk_jaccard": 0.8373400568962097
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.744472086429596,
+          "topk_flip_rate": 0.5771713256835938,
+          "topk_jaccard": 0.8443426489830017
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7703746557235718,
+          "topk_flip_rate": 0.6199150085449219,
+          "topk_jaccard": 0.8273847103118896
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7713937759399414,
+          "topk_flip_rate": 0.6215095520019531,
+          "topk_jaccard": 0.8269250392913818
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7774617075920105,
+          "topk_flip_rate": 0.6382179260253906,
+          "topk_jaccard": 0.824036180973053
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7785162925720215,
+          "topk_flip_rate": 0.6438331604003906,
+          "topk_jaccard": 0.8209977746009827
+        }
+      },
+      "route_flip_mean": 0.6325187683105469,
+      "seed": 100,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.087890625,
+      "name": "p10-r1",
+      "path": "artifacts/phase2/pilot/perturb-configs/p10-r1.pkl",
+      "proxy_regret_mean": 0.743892024750295,
+      "proxy_regret_worst": 1.577102401976834,
+      "proxy_regrets": {
+        "code": 1.577102401976834,
+        "general": 0.2092329051705512,
+        "instruction": 0.3642229369985766,
+        "math": 0.8250098548552179
+      },
+      "requested_fraction": 0.1,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8288987278938293,
+          "topk_flip_rate": 0.7091178894042969,
+          "topk_jaccard": 0.7847442626953125
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8282656669616699,
+          "topk_flip_rate": 0.7115974426269531,
+          "topk_jaccard": 0.7840633392333984
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7592584490776062,
+          "topk_flip_rate": 0.5968132019042969,
+          "topk_jaccard": 0.8377215266227722
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7453559637069702,
+          "topk_flip_rate": 0.5752029418945312,
+          "topk_jaccard": 0.8461593985557556
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7687107920646667,
+          "topk_flip_rate": 0.6140327453613281,
+          "topk_jaccard": 0.8300911784172058
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7728042006492615,
+          "topk_flip_rate": 0.6221199035644531,
+          "topk_jaccard": 0.8272891640663147
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7829886674880981,
+          "topk_flip_rate": 0.6529502868652344,
+          "topk_jaccard": 0.8177364468574524
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7885012626647949,
+          "topk_flip_rate": 0.6601829528808594,
+          "topk_jaccard": 0.8145133256912231
+        }
+      },
+      "route_flip_mean": 0.6427521705627441,
+      "seed": 101,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.08984375,
+      "name": "p10-r2",
+      "path": "artifacts/phase2/pilot/perturb-configs/p10-r2.pkl",
+      "proxy_regret_mean": 0.6921043351991946,
+      "proxy_regret_worst": 1.5216197139367706,
+      "proxy_regrets": {
+        "code": 1.5216197139367706,
+        "general": 0.1575725302483927,
+        "instruction": 0.3287081067344261,
+        "math": 0.760516989877189
+      },
+      "requested_fraction": 0.1,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8212945461273193,
+          "topk_flip_rate": 0.6951713562011719,
+          "topk_jaccard": 0.7926838994026184
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8205509185791016,
+          "topk_flip_rate": 0.69598388671875,
+          "topk_jaccard": 0.7927163243293762
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.758420467376709,
+          "topk_flip_rate": 0.5970573425292969,
+          "topk_jaccard": 0.8367773294448853
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7458802461624146,
+          "topk_flip_rate": 0.5752143859863281,
+          "topk_jaccard": 0.845822274684906
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7684582471847534,
+          "topk_flip_rate": 0.6175613403320312,
+          "topk_jaccard": 0.8286486268043518
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7693004608154297,
+          "topk_flip_rate": 0.6196136474609375,
+          "topk_jaccard": 0.8285466432571411
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7794219255447388,
+          "topk_flip_rate": 0.6430244445800781,
+          "topk_jaccard": 0.8215941190719604
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7809320092201233,
+          "topk_flip_rate": 0.6470680236816406,
+          "topk_jaccard": 0.8196540474891663
+        }
+      },
+      "route_flip_mean": 0.6363368034362793,
+      "seed": 102,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.0869140625,
+      "name": "p10-r3",
+      "path": "artifacts/phase2/pilot/perturb-configs/p10-r3.pkl",
+      "proxy_regret_mean": 0.7279381762278017,
+      "proxy_regret_worst": 1.4744170034983772,
+      "proxy_regrets": {
+        "code": 1.4744170034983772,
+        "general": 0.26545613019926173,
+        "instruction": 0.4120646002707414,
+        "math": 0.759814970942826
+      },
+      "requested_fraction": 0.1,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8277003169059753,
+          "topk_flip_rate": 0.7077369689941406,
+          "topk_jaccard": 0.7874203324317932
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8266094923019409,
+          "topk_flip_rate": 0.7089385986328125,
+          "topk_jaccard": 0.7871922850608826
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7571560740470886,
+          "topk_flip_rate": 0.59442138671875,
+          "topk_jaccard": 0.8383280038833618
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7456855177879333,
+          "topk_flip_rate": 0.5763664245605469,
+          "topk_jaccard": 0.8458467721939087
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7706866264343262,
+          "topk_flip_rate": 0.6141319274902344,
+          "topk_jaccard": 0.8300428986549377
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7747045755386353,
+          "topk_flip_rate": 0.6236724853515625,
+          "topk_jaccard": 0.8268338441848755
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7774617075920105,
+          "topk_flip_rate": 0.637054443359375,
+          "topk_jaccard": 0.8246894478797913
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7775500416755676,
+          "topk_flip_rate": 0.6416015625,
+          "topk_jaccard": 0.8224129676818848
+        }
+      },
+      "route_flip_mean": 0.6379904747009277,
+      "seed": 103,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.1748046875,
+      "name": "p20-r0",
+      "path": "artifacts/phase2/pilot/perturb-configs/p20-r0.pkl",
+      "proxy_regret_mean": 0.688134189964074,
+      "proxy_regret_worst": 1.300539288457187,
+      "proxy_regrets": {
+        "code": 1.300539288457187,
+        "general": 0.2940642258878039,
+        "instruction": 0.4497344904114059,
+        "math": 0.7081987550998994
+      },
+      "requested_fraction": 0.2,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8279857039451599,
+          "topk_flip_rate": 0.7099113464355469,
+          "topk_jaccard": 0.7855293154716492
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8253071904182434,
+          "topk_flip_rate": 0.7102127075195312,
+          "topk_jaccard": 0.7859125137329102
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7733868360519409,
+          "topk_flip_rate": 0.6226310729980469,
+          "topk_jaccard": 0.8278889656066895
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7616700530052185,
+          "topk_flip_rate": 0.6049613952636719,
+          "topk_jaccard": 0.835207462310791
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7776985764503479,
+          "topk_flip_rate": 0.6316032409667969,
+          "topk_jaccard": 0.8243635892868042
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7831076383590698,
+          "topk_flip_rate": 0.6414680480957031,
+          "topk_jaccard": 0.8201864361763
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7742781639099121,
+          "topk_flip_rate": 0.6291618347167969,
+          "topk_jaccard": 0.8281375765800476
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.771679162979126,
+          "topk_flip_rate": 0.6307258605957031,
+          "topk_jaccard": 0.8273571729660034
+        }
+      },
+      "route_flip_mean": 0.6475844383239746,
+      "seed": 200,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.16015625,
+      "name": "p20-r1",
+      "path": "artifacts/phase2/pilot/perturb-configs/p20-r1.pkl",
+      "proxy_regret_mean": 0.9146532815919444,
+      "proxy_regret_worst": 1.9181432561469827,
+      "proxy_regrets": {
+        "code": 1.9181432561469827,
+        "general": 0.30446874177529965,
+        "instruction": 0.41783937443643315,
+        "math": 1.018161754009062
+      },
+      "requested_fraction": 0.2,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8354186415672302,
+          "topk_flip_rate": 0.7207908630371094,
+          "topk_jaccard": 0.7786234021186829
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8333758115768433,
+          "topk_flip_rate": 0.7215652465820312,
+          "topk_jaccard": 0.7795129418373108
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7789441347122192,
+          "topk_flip_rate": 0.6305274963378906,
+          "topk_jaccard": 0.8231248259544373
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7705836296081543,
+          "topk_flip_rate": 0.6222076416015625,
+          "topk_jaccard": 0.8276106715202332
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7861217856407166,
+          "topk_flip_rate": 0.64520263671875,
+          "topk_jaccard": 0.8171058893203735
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7866114377975464,
+          "topk_flip_rate": 0.6464614868164062,
+          "topk_jaccard": 0.8168408274650574
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7959291934967041,
+          "topk_flip_rate": 0.6722183227539062,
+          "topk_jaccard": 0.8083083629608154
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7945331931114197,
+          "topk_flip_rate": 0.6704826354980469,
+          "topk_jaccard": 0.8090827465057373
+        }
+      },
+      "route_flip_mean": 0.6661820411682129,
+      "seed": 201,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.158203125,
+      "name": "p20-r2",
+      "path": "artifacts/phase2/pilot/perturb-configs/p20-r2.pkl",
+      "proxy_regret_mean": 0.7675802241091213,
+      "proxy_regret_worst": 1.3977725587466532,
+      "proxy_regrets": {
+        "code": 1.3977725587466532,
+        "general": 0.3669927553072793,
+        "instruction": 0.5467022415919058,
+        "math": 0.7588533407906466
+      },
+      "requested_fraction": 0.2,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8339920043945312,
+          "topk_flip_rate": 0.7147674560546875,
+          "topk_jaccard": 0.7804965972900391
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8320451974868774,
+          "topk_flip_rate": 0.7166175842285156,
+          "topk_jaccard": 0.7801246047019958
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7741072177886963,
+          "topk_flip_rate": 0.6220474243164062,
+          "topk_jaccard": 0.8269909024238586
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7702840566635132,
+          "topk_flip_rate": 0.6189346313476562,
+          "topk_jaccard": 0.8283796906471252
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.78236323595047,
+          "topk_flip_rate": 0.638092041015625,
+          "topk_jaccard": 0.8199061155319214
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7857503294944763,
+          "topk_flip_rate": 0.6427574157714844,
+          "topk_jaccard": 0.8184154629707336
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7769606113433838,
+          "topk_flip_rate": 0.6346664428710938,
+          "topk_jaccard": 0.8251181244850159
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7773157954216003,
+          "topk_flip_rate": 0.6366386413574219,
+          "topk_jaccard": 0.8241074085235596
+        }
+      },
+      "route_flip_mean": 0.6530652046203613,
+      "seed": 202,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.158203125,
+      "name": "p20-r3",
+      "path": "artifacts/phase2/pilot/perturb-configs/p20-r3.pkl",
+      "proxy_regret_mean": 0.7498276891945974,
+      "proxy_regret_worst": 1.3946397050377453,
+      "proxy_regrets": {
+        "code": 1.3946397050377453,
+        "general": 0.2788346769226128,
+        "instruction": 0.4619106353291381,
+        "math": 0.8639257394888933
+      },
+      "requested_fraction": 0.2,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8329505324363708,
+          "topk_flip_rate": 0.7183876037597656,
+          "topk_jaccard": 0.7809041142463684
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8327246308326721,
+          "topk_flip_rate": 0.7205619812011719,
+          "topk_jaccard": 0.7802635431289673
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7602728605270386,
+          "topk_flip_rate": 0.6020889282226562,
+          "topk_jaccard": 0.836046576499939
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7500749230384827,
+          "topk_flip_rate": 0.5871315002441406,
+          "topk_jaccard": 0.8424880504608154
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7718304991722107,
+          "topk_flip_rate": 0.62176513671875,
+          "topk_jaccard": 0.8278230428695679
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7747639417648315,
+          "topk_flip_rate": 0.6251411437988281,
+          "topk_jaccard": 0.8264226913452148
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7844477891921997,
+          "topk_flip_rate": 0.6523666381835938,
+          "topk_jaccard": 0.8184830546379089
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7872128486633301,
+          "topk_flip_rate": 0.6565780639648438,
+          "topk_jaccard": 0.8159352540969849
+        }
+      },
+      "route_flip_mean": 0.6480026245117188,
+      "seed": 203,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.1962890625,
+      "name": "p30-r0",
+      "path": "artifacts/phase2/pilot/perturb-configs/p30-r0.pkl",
+      "proxy_regret_mean": 0.9384487487155591,
+      "proxy_regret_worst": 1.501386895918783,
+      "proxy_regrets": {
+        "code": 1.501386895918783,
+        "general": 0.5598867433041127,
+        "instruction": 0.7163651245314451,
+        "math": 0.9761562311078951
+      },
+      "requested_fraction": 0.3,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8285849094390869,
+          "topk_flip_rate": 0.710174560546875,
+          "topk_jaccard": 0.784725546836853
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8275296092033386,
+          "topk_flip_rate": 0.7112274169921875,
+          "topk_jaccard": 0.784410834312439
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7918669581413269,
+          "topk_flip_rate": 0.6524505615234375,
+          "topk_jaccard": 0.8095841407775879
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7877216935157776,
+          "topk_flip_rate": 0.6514244079589844,
+          "topk_jaccard": 0.810406506061554
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.802997887134552,
+          "topk_flip_rate": 0.6737823486328125,
+          "topk_jaccard": 0.7998622059822083
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.804456889629364,
+          "topk_flip_rate": 0.6760940551757812,
+          "topk_jaccard": 0.7998194098472595
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7999086380004883,
+          "topk_flip_rate": 0.6743888854980469,
+          "topk_jaccard": 0.8051637411117554
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7984568476676941,
+          "topk_flip_rate": 0.6780242919921875,
+          "topk_jaccard": 0.8035833835601807
+        }
+      },
+      "route_flip_mean": 0.6784458160400391,
+      "seed": 300,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.21484375,
+      "name": "p30-r1",
+      "path": "artifacts/phase2/pilot/perturb-configs/p30-r1.pkl",
+      "proxy_regret_mean": 0.6860535056381605,
+      "proxy_regret_worst": 0.983805055847707,
+      "proxy_regrets": {
+        "code": 0.983805055847707,
+        "general": 0.36841091831753736,
+        "instruction": 0.4991560202106873,
+        "math": 0.8928420281767102
+      },
+      "requested_fraction": 0.3,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.7945586442947388,
+          "topk_flip_rate": 0.6441383361816406,
+          "topk_jaccard": 0.8180670738220215
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.7898052334785461,
+          "topk_flip_rate": 0.6464118957519531,
+          "topk_jaccard": 0.8174911737442017
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7675355672836304,
+          "topk_flip_rate": 0.6171302795410156,
+          "topk_jaccard": 0.8306000232696533
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7688608765602112,
+          "topk_flip_rate": 0.6153945922851562,
+          "topk_jaccard": 0.8312728404998779
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7811302542686462,
+          "topk_flip_rate": 0.640045166015625,
+          "topk_jaccard": 0.8210101127624512
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7845032215118408,
+          "topk_flip_rate": 0.6422805786132812,
+          "topk_jaccard": 0.8197957277297974
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.788884162902832,
+          "topk_flip_rate": 0.6554298400878906,
+          "topk_jaccard": 0.817048966884613
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7878863215446472,
+          "topk_flip_rate": 0.6568107604980469,
+          "topk_jaccard": 0.8165706992149353
+        }
+      },
+      "route_flip_mean": 0.6397051811218262,
+      "seed": 301,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.2021484375,
+      "name": "p30-r2",
+      "path": "artifacts/phase2/pilot/perturb-configs/p30-r2.pkl",
+      "proxy_regret_mean": 0.9214141682866743,
+      "proxy_regret_worst": 1.5537023773270984,
+      "proxy_regrets": {
+        "code": 1.5537023773270984,
+        "general": 0.4963946324488014,
+        "instruction": 0.6064267734954142,
+        "math": 1.0291328898753833
+      },
+      "requested_fraction": 0.3,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8241907358169556,
+          "topk_flip_rate": 0.7032508850097656,
+          "topk_jaccard": 0.7886525988578796
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8271615505218506,
+          "topk_flip_rate": 0.7054214477539062,
+          "topk_jaccard": 0.788500189781189
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.8057895302772522,
+          "topk_flip_rate": 0.6758499145507812,
+          "topk_jaccard": 0.7958831787109375
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7933395504951477,
+          "topk_flip_rate": 0.6600685119628906,
+          "topk_jaccard": 0.8042628169059753
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.8104703426361084,
+          "topk_flip_rate": 0.6888465881347656,
+          "topk_jaccard": 0.7899054288864136
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.8094750046730042,
+          "topk_flip_rate": 0.6866874694824219,
+          "topk_jaccard": 0.7925027012825012
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.8074989914894104,
+          "topk_flip_rate": 0.6873245239257812,
+          "topk_jaccard": 0.7974308729171753
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.8070509433746338,
+          "topk_flip_rate": 0.6944808959960938,
+          "topk_jaccard": 0.7933914661407471
+        }
+      },
+      "route_flip_mean": 0.6877412796020508,
+      "seed": 302,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.2080078125,
+      "name": "p30-r3",
+      "path": "artifacts/phase2/pilot/perturb-configs/p30-r3.pkl",
+      "proxy_regret_mean": 0.8890700834164573,
+      "proxy_regret_worst": 1.396636523959895,
+      "proxy_regrets": {
+        "code": 1.396636523959895,
+        "general": 0.5094008697429802,
+        "instruction": 0.563312276304897,
+        "math": 1.0869306636580571
+      },
+      "requested_fraction": 0.3,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8287275433540344,
+          "topk_flip_rate": 0.7096481323242188,
+          "topk_jaccard": 0.7849346995353699
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8279259204864502,
+          "topk_flip_rate": 0.7101478576660156,
+          "topk_jaccard": 0.7853543758392334
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7802672982215881,
+          "topk_flip_rate": 0.6346817016601562,
+          "topk_jaccard": 0.8230431079864502
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7733101844787598,
+          "topk_flip_rate": 0.6255722045898438,
+          "topk_jaccard": 0.8261126279830933
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7871319651603699,
+          "topk_flip_rate": 0.6450538635253906,
+          "topk_jaccard": 0.8173075914382935
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7889126539230347,
+          "topk_flip_rate": 0.65380859375,
+          "topk_jaccard": 0.8138748407363892
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7991422414779663,
+          "topk_flip_rate": 0.6757583618164062,
+          "topk_jaccard": 0.8083312511444092
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7980762124061584,
+          "topk_flip_rate": 0.6759872436523438,
+          "topk_jaccard": 0.8084311485290527
+        }
+      },
+      "route_flip_mean": 0.6663322448730469,
+      "seed": 303,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.2236328125,
+      "name": "p40-r0",
+      "path": "artifacts/phase2/pilot/perturb-configs/p40-r0.pkl",
+      "proxy_regret_mean": 0.7636006075980503,
+      "proxy_regret_worst": 1.1530263376285228,
+      "proxy_regrets": {
+        "code": 1.1530263376285228,
+        "general": 0.3741869574529551,
+        "instruction": 0.5192838688159972,
+        "math": 1.0079052664947261
+      },
+      "requested_fraction": 0.4,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8147033452987671,
+          "topk_flip_rate": 0.682220458984375,
+          "topk_jaccard": 0.8003559112548828
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.813586413860321,
+          "topk_flip_rate": 0.6852607727050781,
+          "topk_jaccard": 0.8000679016113281
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.779252827167511,
+          "topk_flip_rate": 0.6325492858886719,
+          "topk_jaccard": 0.8234236240386963
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7658047676086426,
+          "topk_flip_rate": 0.6119918823242188,
+          "topk_jaccard": 0.8322839140892029
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7930890917778015,
+          "topk_flip_rate": 0.6546592712402344,
+          "topk_jaccard": 0.8143110275268555
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7937971353530884,
+          "topk_flip_rate": 0.659271240234375,
+          "topk_jaccard": 0.8120492696762085
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.8041828274726868,
+          "topk_flip_rate": 0.682647705078125,
+          "topk_jaccard": 0.8049538731575012
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.8022927045822144,
+          "topk_flip_rate": 0.6864471435546875,
+          "topk_jaccard": 0.8032681345939636
+        }
+      },
+      "route_flip_mean": 0.6618809700012207,
+      "seed": 400,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.234375,
+      "name": "p40-r1",
+      "path": "artifacts/phase2/pilot/perturb-configs/p40-r1.pkl",
+      "proxy_regret_mean": 1.405383297203552,
+      "proxy_regret_worst": 2.510304356504963,
+      "proxy_regrets": {
+        "code": 2.510304356504963,
+        "general": 0.7417822990087138,
+        "instruction": 0.7776099484664594,
+        "math": 1.5918365848340719
+      },
+      "requested_fraction": 0.4,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8507554531097412,
+          "topk_flip_rate": 0.7473297119140625,
+          "topk_jaccard": 0.7607334852218628
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8466112017631531,
+          "topk_flip_rate": 0.7444839477539062,
+          "topk_jaccard": 0.7636936902999878
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.8106705546379089,
+          "topk_flip_rate": 0.6870880126953125,
+          "topk_jaccard": 0.7908140420913696
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.8036163449287415,
+          "topk_flip_rate": 0.6762466430664062,
+          "topk_jaccard": 0.7974619269371033
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.8186261653900146,
+          "topk_flip_rate": 0.7028274536132812,
+          "topk_jaccard": 0.7828819751739502
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.8209810853004456,
+          "topk_flip_rate": 0.7037582397460938,
+          "topk_jaccard": 0.7826193571090698
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.8317145705223083,
+          "topk_flip_rate": 0.7342147827148438,
+          "topk_jaccard": 0.7725805044174194
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.8297731876373291,
+          "topk_flip_rate": 0.7282638549804688,
+          "topk_jaccard": 0.775836706161499
+        }
+      },
+      "route_flip_mean": 0.7155265808105469,
+      "seed": 401,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.2353515625,
+      "name": "p40-r2",
+      "path": "artifacts/phase2/pilot/perturb-configs/p40-r2.pkl",
+      "proxy_regret_mean": 1.1212898036673202,
+      "proxy_regret_worst": 1.6600193230859202,
+      "proxy_regrets": {
+        "code": 1.6600193230859202,
+        "general": 0.6937085408245918,
+        "instruction": 0.8058517302316803,
+        "math": 1.3255796205270889
+      },
+      "requested_fraction": 0.4,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8110510110855103,
+          "topk_flip_rate": 0.6764183044433594,
+          "topk_jaccard": 0.8015112280845642
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8133174777030945,
+          "topk_flip_rate": 0.677825927734375,
+          "topk_jaccard": 0.8019818067550659
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7790911197662354,
+          "topk_flip_rate": 0.6371688842773438,
+          "topk_jaccard": 0.820906400680542
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7835720181465149,
+          "topk_flip_rate": 0.6397743225097656,
+          "topk_jaccard": 0.8206067085266113
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.7933416366577148,
+          "topk_flip_rate": 0.6588630676269531,
+          "topk_jaccard": 0.8115456700325012
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.7937971353530884,
+          "topk_flip_rate": 0.6613883972167969,
+          "topk_jaccard": 0.8103625774383545
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.7893999814987183,
+          "topk_flip_rate": 0.6611976623535156,
+          "topk_jaccard": 0.8142673373222351
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.7909901738166809,
+          "topk_flip_rate": 0.6641464233398438,
+          "topk_jaccard": 0.8128734230995178
+        }
+      },
+      "route_flip_mean": 0.6595978736877441,
+      "seed": 402,
+      "used_bits": 2560
+    },
+    {
+      "actual_hamming_fraction": 0.2607421875,
+      "name": "p40-r3",
+      "path": "artifacts/phase2/pilot/perturb-configs/p40-r3.pkl",
+      "proxy_regret_mean": 0.928373414832814,
+      "proxy_regret_worst": 1.3575309650732639,
+      "proxy_regrets": {
+        "code": 1.3575309650732639,
+        "general": 0.5422979114599571,
+        "instruction": 0.7271784078046191,
+        "math": 1.0864863749934157
+      },
+      "requested_fraction": 0.4,
+      "route": {
+        "code:seed-0": {
+          "fp_margin_mean": 0.09103918075561523,
+          "low_margin_flip_rate": 0.8059007525444031,
+          "topk_flip_rate": 0.6688308715820312,
+          "topk_jaccard": 0.8045032620429993
+        },
+        "code:seed-1": {
+          "fp_margin_mean": 0.0911586582660675,
+          "low_margin_flip_rate": 0.8069899678230286,
+          "topk_flip_rate": 0.6741828918457031,
+          "topk_jaccard": 0.8012101054191589
+        },
+        "general:seed-0": {
+          "fp_margin_mean": 0.09627418220043182,
+          "low_margin_flip_rate": 0.7884120345115662,
+          "topk_flip_rate": 0.6508102416992188,
+          "topk_jaccard": 0.8145318031311035
+        },
+        "general:seed-1": {
+          "fp_margin_mean": 0.09684789925813675,
+          "low_margin_flip_rate": 0.7856993079185486,
+          "topk_flip_rate": 0.6481246948242188,
+          "topk_jaccard": 0.815265417098999
+        },
+        "instruction:seed-0": {
+          "fp_margin_mean": 0.09559664875268936,
+          "low_margin_flip_rate": 0.8052262663841248,
+          "topk_flip_rate": 0.6778755187988281,
+          "topk_jaccard": 0.8022209405899048
+        },
+        "instruction:seed-1": {
+          "fp_margin_mean": 0.09491649270057678,
+          "low_margin_flip_rate": 0.8032395243644714,
+          "topk_flip_rate": 0.6779251098632812,
+          "topk_jaccard": 0.8023355603218079
+        },
+        "math:seed-0": {
+          "fp_margin_mean": 0.08464310318231583,
+          "low_margin_flip_rate": 0.8019867539405823,
+          "topk_flip_rate": 0.6818656921386719,
+          "topk_jaccard": 0.804345428943634
+        },
+        "math:seed-1": {
+          "fp_margin_mean": 0.08459759503602982,
+          "low_margin_flip_rate": 0.797417402267456,
+          "topk_flip_rate": 0.6726417541503906,
+          "topk_jaccard": 0.80887770652771
+        }
+      },
+      "route_flip_mean": 0.669032096862793,
+      "seed": 403,
+      "used_bits": 2560
+    }
+  ],
+  "control": "config Hamming fraction",
+  "proxy": "mean domain-normalized GEMQ coefficient regret",
+  "schema_version": 1,
+  "summary": {
+    "bootstrap_95_ci": [
+      0.21207620767285335,
+      0.9244506022277796
+    ],
+    "h4_pilot_gate_pass": true,
+    "interpretation": "GO only authorizes Phase 4 near-boundary proxy work; it is not itself a route-aware method claim",
+    "partial_spearman": 0.6661654135338345,
+    "partial_spearman_by_scenario_seed": {
+      "0": 0.6706766917293233,
+      "1": 0.6857142857142857
+    },
+    "raw_spearman": 0.8872180451127819
+  }
+}

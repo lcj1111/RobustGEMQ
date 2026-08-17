@@ -1,0 +1,252 @@
+{
+  "budgets": {
+    "2.0": {
+      "matrix": [
+        {
+          "source": "general",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.603224903345108,
+              "nll": 1.807370312511921,
+              "ppl": 6.094400405883789,
+              "transfer_regret_vs_target_config": 0.521992489695549
+            },
+            "general": {
+              "delta_vs_fp": 0.3768499493598938,
+              "nll": 2.8646681159734726,
+              "ppl": 17.792940616607666,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "instruction": {
+              "delta_vs_fp": 0.5044170320034027,
+              "nll": 2.6061355024576187,
+              "ppl": 13.581447124481201,
+              "transfer_regret_vs_target_config": 0.04205256700515747
+            },
+            "math": {
+              "delta_vs_fp": 0.31817319244146347,
+              "nll": 1.8841811791062355,
+              "ppl": 6.582803964614868,
+              "transfer_regret_vs_target_config": 0.19737427681684494
+            }
+          }
+        },
+        {
+          "source": "math",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.26168983429670334,
+              "nll": 1.4658352434635162,
+              "ppl": 4.331161737442017,
+              "transfer_regret_vs_target_config": 0.18045742064714432
+            },
+            "general": {
+              "delta_vs_fp": 0.5784012079238892,
+              "nll": 3.066219374537468,
+              "ppl": 21.516478538513184,
+              "transfer_regret_vs_target_config": 0.20155125856399536
+            },
+            "instruction": {
+              "delta_vs_fp": 0.6666805297136307,
+              "nll": 2.7683990001678467,
+              "ppl": 15.94558048248291,
+              "transfer_regret_vs_target_config": 0.20431606471538544
+            },
+            "math": {
+              "delta_vs_fp": 0.12079891562461853,
+              "nll": 1.6868069022893906,
+              "ppl": 5.40388035774231,
+              "transfer_regret_vs_target_config": 0.0
+            }
+          }
+        },
+        {
+          "source": "code",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.08123241364955902,
+              "nll": 1.285377822816372,
+              "ppl": 3.616043448448181,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "general": {
+              "delta_vs_fp": 0.5793624073266983,
+              "nll": 3.067180573940277,
+              "ppl": 21.70395851135254,
+              "transfer_regret_vs_target_config": 0.2025124579668045
+            },
+            "instruction": {
+              "delta_vs_fp": 0.6614339351654053,
+              "nll": 2.7631524056196213,
+              "ppl": 15.896633625030518,
+              "transfer_regret_vs_target_config": 0.19906947016716003
+            },
+            "math": {
+              "delta_vs_fp": 0.24891480058431625,
+              "nll": 1.8149227872490883,
+              "ppl": 6.143293142318726,
+              "transfer_regret_vs_target_config": 0.12811588495969772
+            }
+          }
+        },
+        {
+          "source": "instruction",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.842386931180954,
+              "nll": 2.046532340347767,
+              "ppl": 7.7410430908203125,
+              "transfer_regret_vs_target_config": 0.761154517531395
+            },
+            "general": {
+              "delta_vs_fp": 0.48063182830810547,
+              "nll": 2.9684499949216843,
+              "ppl": 19.711318969726562,
+              "transfer_regret_vs_target_config": 0.10378187894821167
+            },
+            "instruction": {
+              "delta_vs_fp": 0.46236446499824524,
+              "nll": 2.5640829354524612,
+              "ppl": 13.037703514099121,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "math": {
+              "delta_vs_fp": 0.38512322306632996,
+              "nll": 1.951131209731102,
+              "ppl": 7.037687301635742,
+              "transfer_regret_vs_target_config": 0.2643243074417114
+            }
+          }
+        }
+      ]
+    },
+    "2.5": {
+      "matrix": [
+        {
+          "source": "general",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.2919265478849411,
+              "nll": 1.496071957051754,
+              "ppl": 4.46415376663208,
+              "transfer_regret_vs_target_config": 0.22520608454942703
+            },
+            "general": {
+              "delta_vs_fp": 0.1451123058795929,
+              "nll": 2.6329304724931717,
+              "ppl": 14.051989555358887,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "instruction": {
+              "delta_vs_fp": 0.2143629491329193,
+              "nll": 2.3160814195871353,
+              "ppl": 10.150942325592041,
+              "transfer_regret_vs_target_config": 0.03909978270530701
+            },
+            "math": {
+              "delta_vs_fp": 0.1434001624584198,
+              "nll": 1.7094081491231918,
+              "ppl": 5.52748441696167,
+              "transfer_regret_vs_target_config": 0.07190705090761185
+            }
+          }
+        },
+        {
+          "source": "math",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.11067063361406326,
+              "nll": 1.3148160427808762,
+              "ppl": 3.7240954637527466,
+              "transfer_regret_vs_target_config": 0.043950170278549194
+            },
+            "general": {
+              "delta_vs_fp": 0.24339549243450165,
+              "nll": 2.7312136590480804,
+              "ppl": 15.434527397155762,
+              "transfer_regret_vs_target_config": 0.09828318655490875
+            },
+            "instruction": {
+              "delta_vs_fp": 0.3031807094812393,
+              "nll": 2.4048991799354553,
+              "ppl": 11.093302726745605,
+              "transfer_regret_vs_target_config": 0.12791754305362701
+            },
+            "math": {
+              "delta_vs_fp": 0.07149311155080795,
+              "nll": 1.63750109821558,
+              "ppl": 5.144278287887573,
+              "transfer_regret_vs_target_config": 0.0
+            }
+          }
+        },
+        {
+          "source": "code",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.06672046333551407,
+              "nll": 1.270865872502327,
+              "ppl": 3.5639498233795166,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "general": {
+              "delta_vs_fp": 0.28869594633579254,
+              "nll": 2.7765141129493713,
+              "ppl": 16.166878700256348,
+              "transfer_regret_vs_target_config": 0.14358364045619965
+            },
+            "instruction": {
+              "delta_vs_fp": 0.3292155861854553,
+              "nll": 2.4309340566396713,
+              "ppl": 11.39659833908081,
+              "transfer_regret_vs_target_config": 0.15395241975784302
+            },
+            "math": {
+              "delta_vs_fp": 0.11873601377010345,
+              "nll": 1.6847440004348755,
+              "ppl": 5.39319920539856,
+              "transfer_regret_vs_target_config": 0.0472429022192955
+            }
+          }
+        },
+        {
+          "source": "instruction",
+          "targets": {
+            "code": {
+              "delta_vs_fp": 0.5047571882605553,
+              "nll": 1.7089025974273682,
+              "ppl": 5.522925138473511,
+              "transfer_regret_vs_target_config": 0.4380367249250412
+            },
+            "general": {
+              "delta_vs_fp": 0.17791743576526642,
+              "nll": 2.665735602378845,
+              "ppl": 14.499557495117188,
+              "transfer_regret_vs_target_config": 0.03280512988567352
+            },
+            "instruction": {
+              "delta_vs_fp": 0.1752631664276123,
+              "nll": 2.2769816368818283,
+              "ppl": 9.771849155426025,
+              "transfer_regret_vs_target_config": 0.0
+            },
+            "math": {
+              "delta_vs_fp": 0.14579475671052933,
+              "nll": 1.7118027433753014,
+              "ppl": 5.540577173233032,
+              "transfer_regret_vs_target_config": 0.07430164515972137
+            }
+          }
+        }
+      ]
+    }
+  },
+  "quantizer": "fake RTN blocksize=128",
+  "schema_version": 1,
+  "summary": {
+    "h2_fake_rtn_gate_pass": true,
+    "h2_threshold": 0.1,
+    "max_transfer_nll_regret": 0.761154517531395,
+    "scope": "pilot screening only; Phase 3/6 must repeat selected methods with the frozen GPTQ/RFT protocol"
+  }
+}

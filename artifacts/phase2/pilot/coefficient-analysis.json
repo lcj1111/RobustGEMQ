@@ -1,0 +1,299 @@
+{
+  "configs_dir": "/data/models/RobustGEMQ/artifacts/phase2/pilot/configs",
+  "cross_domain": [
+    {
+      "left": "general",
+      "right": "math",
+      "spearman": 0.40220912533080605,
+      "top10_overlap": 0.37254901960784315
+    },
+    {
+      "left": "general",
+      "right": "code",
+      "spearman": 0.29085582665760673,
+      "top10_overlap": 0.2549019607843137
+    },
+    {
+      "left": "general",
+      "right": "instruction",
+      "spearman": 0.6302893323975395,
+      "top10_overlap": 0.5
+    },
+    {
+      "left": "math",
+      "right": "code",
+      "spearman": 0.541440191152278,
+      "top10_overlap": 0.47058823529411764
+    },
+    {
+      "left": "math",
+      "right": "instruction",
+      "spearman": 0.30238310027895,
+      "top10_overlap": 0.30392156862745096
+    },
+    {
+      "left": "code",
+      "right": "instruction",
+      "spearman": 0.163558680083685,
+      "top10_overlap": 0.20588235294117646
+    }
+  ],
+  "normalization": "per-token then divide by scenario median bit-2 coefficient",
+  "risk_hierarchy": "domain is the primary scenario; seed is within-domain uncertainty",
+  "scenario_token_hashes": {
+    "code:seed-0": "47e208865548d4b5c690d9120028d861e189de6344d15b3481404d00005c6a6a",
+    "code:seed-1": "386d637b2ca54e5e62406b3a4be605d8f6c04f5f54e8bde72ddc99de22186bbb",
+    "general:seed-0": "ec56919fe3ac9c2bde2e1ea6b9f2beb5eba7bf1e86b8b951d05b11ae82fa2b9f",
+    "general:seed-1": "89e681ff493f5a499fda2aab28a580ec2f8c784832cc741f91d707dbfab056e5",
+    "instruction:seed-0": "8413373e354365add33f3d9ec3e4505c6ee3a523a35e79254aa901053a3c7902",
+    "instruction:seed-1": "1dccab343906beac0cf5cb65c4b91a63ed9f97bdd37364eabc9d99578d810592",
+    "math:seed-0": "fc3b6fcf866af64f31cdc9c8beccad5d07b8e0d59b42a35d683255c1d7d754aa",
+    "math:seed-1": "07780844cad2e41115760e79b5b8b4f74eb9493b77f059860c33417f98e1524b"
+  },
+  "schema_version": 1,
+  "seed_config_stability": {
+    "2.0": {
+      "code": {
+        "exact_match": false,
+        "hamming_fraction": 0.0576171875
+      },
+      "general": {
+        "exact_match": false,
+        "hamming_fraction": 0.2470703125
+      },
+      "instruction": {
+        "exact_match": false,
+        "hamming_fraction": 0.234375
+      },
+      "math": {
+        "exact_match": false,
+        "hamming_fraction": 0.0751953125
+      }
+    },
+    "2.5": {
+      "code": {
+        "exact_match": false,
+        "hamming_fraction": 0.0537109375
+      },
+      "general": {
+        "exact_match": false,
+        "hamming_fraction": 0.1787109375
+      },
+      "instruction": {
+        "exact_match": false,
+        "hamming_fraction": 0.1416015625
+      },
+      "math": {
+        "exact_match": false,
+        "hamming_fraction": 0.0654296875
+      }
+    }
+  },
+  "single_domain_transfer": {
+    "2.0": [
+      {
+        "source": "general",
+        "targets": {
+          "code": {
+            "cost": 3195.910150374964,
+            "relative_regret": 1.8143201819947385
+          },
+          "general": {
+            "cost": 615.3993814777598,
+            "relative_regret": 0.0
+          },
+          "instruction": {
+            "cost": 682.818371838667,
+            "relative_regret": 0.25597549311773565
+          },
+          "math": {
+            "cost": 1261.1710877099008,
+            "relative_regret": 0.8637166914543531
+          }
+        }
+      },
+      {
+        "source": "math",
+        "targets": {
+          "code": {
+            "cost": 2156.2678086967185,
+            "relative_regret": 0.8988105817332693
+          },
+          "general": {
+            "cost": 872.3686991043751,
+            "relative_regret": 0.4175651217093432
+          },
+          "instruction": {
+            "cost": 797.1037749998626,
+            "relative_regret": 0.4661919599140578
+          },
+          "math": {
+            "cost": 676.6967820231007,
+            "relative_regret": 0.0
+          }
+        }
+      },
+      {
+        "source": "code",
+        "targets": {
+          "code": {
+            "cost": 1135.5886834843934,
+            "relative_regret": 0.0
+          },
+          "general": {
+            "cost": 920.8265777896479,
+            "relative_regret": 0.49630728516246664
+          },
+          "instruction": {
+            "cost": 841.4999482887682,
+            "relative_regret": 0.547854240747135
+          },
+          "math": {
+            "cost": 937.326697563062,
+            "relative_regret": 0.385150221581908
+          }
+        }
+      },
+      {
+        "source": "instruction",
+        "targets": {
+          "code": {
+            "cost": 3533.896267347436,
+            "relative_regret": 2.111950936763631
+          },
+          "general": {
+            "cost": 745.6661772536753,
+            "relative_regret": 0.21167846393200068
+          },
+          "instruction": {
+            "cost": 543.6558082384967,
+            "relative_regret": 0.0
+          },
+          "math": {
+            "cost": 1346.688314474247,
+            "relative_regret": 0.9900912051747786
+          }
+        }
+      }
+    ],
+    "2.5": [
+      {
+        "source": "general",
+        "targets": {
+          "code": {
+            "cost": 2366.838330570001,
+            "relative_regret": 1.4436557755670698
+          },
+          "general": {
+            "cost": 390.6479724549927,
+            "relative_regret": 0.0
+          },
+          "instruction": {
+            "cost": 417.0687025952254,
+            "relative_regret": 0.25605482283243675
+          },
+          "math": {
+            "cost": 809.7501829293491,
+            "relative_regret": 0.6471580210833533
+          }
+        }
+      },
+      {
+        "source": "math",
+        "targets": {
+          "code": {
+            "cost": 1329.7465606888604,
+            "relative_regret": 0.37290444433744835
+          },
+          "general": {
+            "cost": 567.807735379513,
+            "relative_regret": 0.45350232284881803
+          },
+          "instruction": {
+            "cost": 515.475879088653,
+            "relative_regret": 0.5524204044902237
+          },
+          "math": {
+            "cost": 491.6044317331301,
+            "relative_regret": 0.0
+          }
+        }
+      },
+      {
+        "source": "code",
+        "targets": {
+          "code": {
+            "cost": 968.5645393409623,
+            "relative_regret": 0.0
+          },
+          "general": {
+            "cost": 597.0904524628792,
+            "relative_regret": 0.5284616702616345
+          },
+          "instruction": {
+            "cost": 536.3546718634454,
+            "relative_regret": 0.6152995133672784
+          },
+          "math": {
+            "cost": 634.747350548145,
+            "relative_regret": 0.29117499675576713
+          }
+        }
+      },
+      {
+        "source": "instruction",
+        "targets": {
+          "code": {
+            "cost": 2642.8668229209907,
+            "relative_regret": 1.7286429717107643
+          },
+          "general": {
+            "cost": 467.5390156278493,
+            "relative_regret": 0.1968294950813174
+          },
+          "instruction": {
+            "cost": 332.0465755266354,
+            "relative_regret": 0.0
+          },
+          "math": {
+            "cost": 808.1822212578352,
+            "relative_regret": 0.6439685427745714
+          }
+        }
+      }
+    ]
+  },
+  "summary": {
+    "cross_median_spearman": 0.35229611280487805,
+    "cross_median_top10_overlap": 0.3382352941176471,
+    "h1_coefficient_gate_pass": true,
+    "h2_status": "pending actual fake-quant NLL; coefficient regret is diagnostic only",
+    "max_single_domain_proxy_regret": 2.111950936763631,
+    "spearman_gap": 0.4929475549406337,
+    "top10_overlap_gap": 0.3970588235294118,
+    "within_median_spearman": 0.8452436677455117,
+    "within_median_top10_overlap": 0.7352941176470589
+  },
+  "within_domain_seed": [
+    {
+      "domain": "general",
+      "spearman": 0.7044314158500822,
+      "top10_overlap": 0.5588235294117647
+    },
+    {
+      "domain": "math",
+      "spearman": 0.9736968698590944,
+      "top10_overlap": 0.9117647058823529
+    },
+    {
+      "domain": "code",
+      "spearman": 0.9874531533232204,
+      "top10_overlap": 0.9411764705882353
+    },
+    {
+      "domain": "instruction",
+      "spearman": 0.7167904656319289,
+      "top10_overlap": 0.45098039215686275
+    }
+  ]
+}

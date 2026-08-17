@@ -503,6 +503,10 @@ def parse_args():
         help="Seed for sampling the calibration data"
     )
     parser.add_argument(
+        "--scenario_tokens_path", type=str, default="",
+        help="Optional immutable [samples, seqlen] token tensor produced by the Phase 2 domain registry",
+    )
+    parser.add_argument(
         "--forward_batch_size", type=int, default=1,
         help="Batch size for model forward pass (used in computing layer reconstruction errors)"
     )

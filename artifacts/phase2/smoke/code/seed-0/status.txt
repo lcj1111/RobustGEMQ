@@ -1,0 +1,10 @@
+profile=smoke
+domain=code
+seed=0
+started_utc=2026-08-16T04:22:57Z
+finished_utc=2026-08-16T04:24:47Z
+exit_code=0
+gpu=2
+scenario=/data/models/RobustGEMQ/cache/phase2/smoke/code/seed-0/scenario.json
+layer_grads=/data/models/RobustGEMQ/cache/phase2/smoke/code/seed-0/LayerGrads.pt
+layer_re=/data/models/RobustGEMQ/cache/phase2/smoke/code/seed-0/LayerRE_B1,2,3.pkl

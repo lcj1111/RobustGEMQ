@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "phase": 2,
+  "status": "GO",
+  "primary_next_phase": "Phase 3: robust solver and audit",
+  "enhancement_authorization": "Phase 4 Router proxy is authorized after the Phase 3 core path",
+  "risk_hierarchy": {
+    "primary_scenario": "domain",
+    "within_domain_uncertainty": "seed",
+    "forbidden_interpretation": "domain x seed observations are not eight independent semantic environments"
+  },
+  "frozen_design": {
+    "domains": ["general", "math", "code", "instruction"],
+    "normalization": "per-token then divide each scenario tensor by its median bit-2 coefficient",
+    "primary_bpe": 2.5,
+    "stress_bpe": 2.0,
+    "cvar_alpha": 0.5,
+    "candidate_bits": [1, 2, 3],
+    "solver_backend": "HiGHS",
+    "phase3_methods": ["GEMQ-C4", "Concat", "Domain-Mean", "Domain-Worst", "Domain-CVaR-0.5", "AlphaQ-style"],
+    "router_pilot_proxy": "mean domain-normalized GEMQ coefficient regret",
+    "router_phase4_candidate": "near-boundary vulnerability proxy; select lambda once only if the validation gate passes"
+  },
+  "gates": {
+    "H1": {
+      "passed": true,
+      "within_domain_median_spearman": 0.8452436677455117,
+      "cross_domain_median_spearman": 0.35229611280487805,
+      "spearman_gap": 0.4929475549406337,
+      "top10_overlap_gap": 0.3970588235294118
+    },
+    "H2": {
+      "passed_for_pilot": true,
+      "primary_2_5_bpe_max_fake_rtn_nll_regret": 0.4380367249250412,
+      "all_budgets_max_fake_rtn_nll_regret": 0.761154517531395,
+      "threshold": 0.1,
+      "restriction": "screening result only; repeat selected methods with frozen GPTQ/RFT in Phase 3 and Phase 6"
+    },
+    "H4_pilot": {
+      "passed": true,
+      "hamming_controlled_partial_spearman": 0.6661654135338345,
+      "bootstrap_95_ci": [0.21207620767285335, 0.9244506022277796],
+      "seed_0_partial_spearman": 0.6706766917293233,
+      "seed_1_partial_spearman": 0.6857142857142857,
+      "restriction": "authorizes Phase 4 work; does not establish a route-aware method contribution"
+    }
+  },
+  "known_limits": [
+    "Phase 2 quality uses fake RTN rather than the final GPTQ/RFT protocol.",
+    "MBPP uses the official sanitized subset; the allocation split contains 120 records.",
+    "Instruction statistics use a fixed Dolly template and require a template ablation before final claims.",
+    "Route correlation is not causal evidence and is controlled for config Hamming distance only."
+  ]
+}

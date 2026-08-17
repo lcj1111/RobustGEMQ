@@ -20,6 +20,7 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 
 ## Updates
 
+- [2026/08] RobustGEMQ Phase 2 verified calibration-domain shift on OLMoE with four audited domains and two seeds. Both the coefficient-stability gate and fake-RTN NLL transfer gate passed; a Hamming-controlled route pilot also authorizes the optional Router-proxy phase. See the [Phase 2 report](docs/phase2/REPORT.md).
 - [2026/08] RobustGEMQ Phase 1 completed an auditable OLMoE 2-bit baseline from pinned inputs through real-quant generation. See the [Phase 1 report](docs/phase1/REPORT.md) for quality, numerical-equivalence and prefill-performance results.
 - [2026/08] Bit allocation now runs on **HiGHS**, the ILP solver bundled with SciPy, so regenerating the bit configs no longer needs a Gurobi license. Gurobi stays available as an optional backend.
 - [2026/08] Real quantized inference now covers **OLMoE-1B-7B-0924** and **Qwen3-30B-A3B**, alongside Mixtral-8x7B and DeepSeek-V2-Lite. Run it with `scripts/bench_generate_<model>.sh`.
