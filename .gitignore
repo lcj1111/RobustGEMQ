@@ -64,3 +64,6 @@ artifacts/phase0/environment-system.json
 
 # Phase 2 route tensors are reproducible but too large for Git; summaries are committed.
 artifacts/phase2/**/route-*.pt
+
+# Phase 4 route tensors are reproducible but roughly 720 MiB; validated JSON summaries are committed.
+artifacts/phase4/**/route-*.pt

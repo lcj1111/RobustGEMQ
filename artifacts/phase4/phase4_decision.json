@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "phase": 4,
+  "status": "NEGATIVE",
+  "h4": {
+    "status": "FAIL",
+    "proxy": "next-layer clipped reciprocal-margin-weighted expert output perturbation energy",
+    "validation_configs": 20,
+    "raw_spearman": 0.7022556390977444,
+    "hamming_controlled_partial_spearman": 0.08721804511278194,
+    "bootstrap_95_ci": [
+      -0.41990966333786606,
+      0.6139681587357833
+    ],
+    "partial_spearman_by_scenario_seed": {
+      "0": 0.21804511278195485,
+      "1": 0.12030075187969923
+    },
+    "thresholds": {
+      "minimum_configs": 20,
+      "minimum_partial_spearman": 0.4,
+      "bootstrap_lower_bound_must_exceed": 0.0,
+      "both_seeds_must_be_positive": true
+    },
+    "reason": "The apparent raw association is explained primarily by config Hamming distance; the proxy does not independently rank actual Top-k changes."
+  },
+  "g4": {
+    "status": "FAIL",
+    "lambda_route": 0.0,
+    "lambda_selection_run": false,
+    "heldout_nll_gate_run": false,
+    "reason": "H4 is a prerequisite. The pre-registered protocol forbids selecting a nonzero lambda or consulting held-out NLL after H4 fails."
+  },
+  "retained_scope": {
+    "method": "Phase 3 Domain-Mean without a route-aware objective",
+    "route_outputs": "diagnostic traces, validated negative result, and reusable margin-proxy tests only",
+    "forbidden_claims": [
+      "the near-boundary proxy predicts route shift independently of perturbation size",
+      "a nonzero route-aware lambda improves quality or routing stability",
+      "Phase 4 held-out quality improvement"
+    ]
+  },
+  "post_gate_diagnostics": {
+    "near_boundary_vs_low_margin_flip_partial_spearman": 0.17744360902255638,
+    "near_boundary_vs_topk_jaccard_partial_spearman": -0.2541353383458646,
+    "quality_coefficient_vs_topk_flip_partial_spearman": 0.512781954887218,
+    "interpretation": "These are failure diagnostics only and were not used to alter H4, the proxy, or lambda."
+  },
+  "testing": {
+    "route_proxy_unit_tests": "6 passed",
+    "full_gpu_regression": "123 passed, 6 skipped, 3 xfailed"
+  },
+  "next_phase": "Proceed without route-aware coefficients; Phase 5/6 must use the frozen Phase 3 method set and lambda_route=0."
+}

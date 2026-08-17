@@ -268,8 +268,10 @@ def compute_layer_grads(model, dataloader, args):
 def compute_faster_layer_re(model, dataloader, args):
     """
     Compute layer reconstruction errors (perturbations) caused by quantization of
-    each expert from that layer, weighted by the squared gradients of the layer
-    outputs wrt the task loss.
+    each expert from that layer. By default errors are weighted by the squared
+    gradients of the layer outputs wrt the task loss. When ``route_margin_path``
+    is set, they are instead weighted by the reciprocal FP Top-k margin at the
+    next MoE layer.
     """
     model.config.use_cache = False
 
@@ -281,17 +283,24 @@ def compute_faster_layer_re(model, dataloader, args):
     enc = torch.stack(enc, dim=0)  # (num_samples, 1, seqlen) NOTE: assuming batchsize=1
     num_samples, _, _ = enc.shape
 
-    # load layer output gradients from disk if available
-    assert osp.exists(args.layer_grads_path), \
-        f"Layer output gradients not found at: {args.layer_grads_path}. Please compute them first using `compute_layer_grads`."
-    print(f"Loading layer output gradients from: {args.layer_grads_path} ... ", end="", flush=True)
-    start = time.time()
-    # NOTE: this might take a while for large models like Mixtral-8x7B
-    layer_output_grads = torch.load(args.layer_grads_path, weights_only=False, map_location="cpu")
-    print(f"Done in {(time.time() - start)/60:.2f} minutes")
-    # {0: (nsamples, 1, seqlen, hidden_size), 1: ...}
-    assert num_samples == layer_output_grads[0].shape[0], \
-        "Mismatch between dataloader and layer output gradients. Check if the gradients are computed on the same dataset and under the same batch size."
+    route_trace = None
+    layer_output_grads = None
+    if args.route_margin_path:
+        if not osp.exists(args.route_margin_path):
+            raise FileNotFoundError(f"FP route trace not found: {args.route_margin_path}")
+        route_trace = torch.load(args.route_margin_path, weights_only=True, map_location="cpu")
+        print(f"Using next-layer FP route margins from: {args.route_margin_path}")
+    else:
+        assert osp.exists(args.layer_grads_path), \
+            f"Layer output gradients not found at: {args.layer_grads_path}. Please compute them first using `compute_layer_grads`."
+        print(f"Loading layer output gradients from: {args.layer_grads_path} ... ", end="", flush=True)
+        start = time.time()
+        # NOTE: this might take a while for large models like Mixtral-8x7B
+        layer_output_grads = torch.load(args.layer_grads_path, weights_only=False, map_location="cpu")
+        print(f"Done in {(time.time() - start)/60:.2f} minutes")
+        # {0: (nsamples, 1, seqlen, hidden_size), 1: ...}
+        assert num_samples == layer_output_grads[0].shape[0], \
+            "Mismatch between dataloader and layer output gradients. Check if the gradients are computed on the same dataset and under the same batch size."
 
 
     # get model-specific info
@@ -389,8 +398,25 @@ def compute_faster_layer_re(model, dataloader, args):
                     m = named_linears[f"{expert_name}.{lname}"]
                     quantizers[e][b][l] = MCMoeRTNWeightQuantizer(m.weight.data, nbits=b)
 
-        # compute reconstruction errors of block output caused by quantization (perturbation)
-        layer_sq_grads = layer_output_grads[i].squeeze(1).double().pow(2).to("cuda")  # (nsamples, seqlen, hidden_size)
+        # The final MoE layer has no downstream router, so its route contribution
+        # is zero instead of reusing the current layer's margin.
+        if route_trace is not None:
+            if i + 1 < len(layers):
+                margin = route_trace[i + 1]["margin"].float().reshape(num_samples, -1)
+                if margin.shape[1] != block_outs.shape[1]:
+                    raise ValueError(
+                        f"Route margin shape {tuple(margin.shape)} does not match "
+                        f"block output shape {tuple(block_outs.shape)} at layer {i}"
+                    )
+                vulnerability = torch.reciprocal(margin.clamp_min(args.route_margin_eps))
+                vulnerability.clamp_(max=args.route_vmax)
+                layer_weights = vulnerability.unsqueeze(-1).double().to("cuda")
+            else:
+                layer_weights = torch.zeros(
+                    (num_samples, block_outs.shape[1], 1), dtype=torch.float64, device="cuda"
+                )
+        else:
+            layer_weights = layer_output_grads[i].squeeze(1).double().pow(2).to("cuda")
         layer_quant_loss = defaultdict(dict)
         for e in selected_experts:
             expert_name = expert_names[e]
@@ -410,7 +436,7 @@ def compute_faster_layer_re(model, dataloader, args):
                 # compute output changes (weighted sum squared errors)
                 loss = 0
                 for j in range(num_samples // fwd_bsz):
-                    weights = layer_sq_grads[j * fwd_bsz:(j + 1) * fwd_bsz]
+                    weights = layer_weights[j * fwd_bsz:(j + 1) * fwd_bsz]
                     quant_block_outs = moe_block(block_inps[j * fwd_bsz:(j + 1) * fwd_bsz])  # (bsz, seqlen, hidden_size)
                     # NOTE: for model that outputs a tuple
                     if isinstance(quant_block_outs, (list, tuple)):
@@ -440,7 +466,8 @@ def compute_faster_layer_re(model, dataloader, args):
     os.makedirs(osp.dirname(args.layer_re_path), exist_ok=True)
     with open(args.layer_re_path, "wb") as f:
         pickle.dump(quant_loss, f)
-    print("Weighted reconstruction errors saved to:", args.layer_re_path)
+    weight_name = "route-margin" if route_trace is not None else "gradient"
+    print(f"{weight_name}-weighted reconstruction errors saved to:", args.layer_re_path)
 
 
 
@@ -542,6 +569,18 @@ def parse_args():
         "--layer_re_path",  type=str, default="",
         help="Path to the weighted reconstruction errors"
     )
+    parser.add_argument(
+        "--route_margin_path", type=str, default="",
+        help="Optional FP route trace; use clipped reciprocal next-layer Top-k margins instead of gradients",
+    )
+    parser.add_argument(
+        "--route_margin_eps", type=float, default=1e-6,
+        help="Positive floor applied before reciprocal route-margin weighting",
+    )
+    parser.add_argument(
+        "--route_vmax", type=float, default=100.0,
+        help="Fixed upper clip for reciprocal route-margin vulnerability",
+    )
 
     return parser.parse_args()
 
@@ -549,6 +588,10 @@ def parse_args():
 if __name__ == "__main__":
     # Parse args
     args = parse_args()
+    if args.route_margin_eps <= 0:
+        raise ValueError("--route_margin_eps must be positive")
+    if args.route_vmax <= 0:
+        raise ValueError("--route_vmax must be positive")
     print(json.dumps(vars(args), indent=4))
 
     # load pre-trained model
