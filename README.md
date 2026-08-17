@@ -34,8 +34,8 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 ```bash
 conda create -n gemq python=3.10 -y
 conda activate gemq
-git clone https://github.com/jndeng/GEMQ
-cd GEMQ
+git clone https://github.com/lcj1111/RobustGEMQ
+cd RobustGEMQ
 pip install -e .
 
 # (Optional) only needed if you want to solve the bit allocation with Gurobi
