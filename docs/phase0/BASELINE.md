@@ -34,7 +34,8 @@ Phase 0 is complete when all of the following are true:
 - The upstream source and exact revision are recorded and reproducible.
 - The Python environment can be recreated from a single command.
 - Source compilation and package imports succeed.
-- Synthetic CUDA tests run on the target server and produce machine-readable JUnit output.
+- Synthetic CUDA tests pass three consecutive runs on the target server (apart from explicitly
+  documented xfails) and produce machine-readable JUnit output.
 - GPU, driver, package and Git information is captured in a machine-readable environment report.
 - Any external dependency blocker, especially model/network access, is explicitly recorded rather
   than silently treated as a test pass.
