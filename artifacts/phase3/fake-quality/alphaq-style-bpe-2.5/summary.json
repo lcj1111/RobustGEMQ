@@ -1,0 +1,58 @@
+{
+  "config": "/data/models/RobustGEMQ/artifacts/phase3/configs/bpe-2.5/alphaq-style.pkl",
+  "name": "alphaq-style-bpe-2.5",
+  "quantization": "fake RTN weight-only; screening, not final GPTQ/RFT evidence",
+  "scenarios": {
+    "code:seed-0": {
+      "nll": 1.3734380900859833,
+      "ppl": 3.948904275894165,
+      "predicted_tokens": 16352,
+      "token_sha256": "adefc932a417b549ff18a2565cab14a8e932adc7fdd46a8e75cea925b2e43f4e"
+    },
+    "code:seed-1": {
+      "nll": 1.3848076313734055,
+      "ppl": 3.9940574169158936,
+      "predicted_tokens": 16352,
+      "token_sha256": "b812276807c3207ee63fcee1d016473533083b8603804a0e2eca1c45c8feb5e1"
+    },
+    "general:seed-0": {
+      "nll": 2.890945792198181,
+      "ppl": 18.010337829589844,
+      "predicted_tokens": 16352,
+      "token_sha256": "29602ffbead3b21a9710ed303e5a2605043fec41e7f82bcaaa22cb02bf28a5f8"
+    },
+    "general:seed-1": {
+      "nll": 2.9338272511959076,
+      "ppl": 18.799442291259766,
+      "predicted_tokens": 16352,
+      "token_sha256": "3a251241a873ea84e3dedcd2c406958ce4005e4b2d0eb0fead6653d78ba13536"
+    },
+    "instruction:seed-0": {
+      "nll": 2.4003982543945312,
+      "ppl": 11.027566909790039,
+      "predicted_tokens": 16352,
+      "token_sha256": "6f29e89338f24a7d17422ef8a2268761937b7b0175521a34a93499820bd8b636"
+    },
+    "instruction:seed-1": {
+      "nll": 2.338170498609543,
+      "ppl": 10.362261772155762,
+      "predicted_tokens": 16352,
+      "token_sha256": "08d0d6f91fb01d24055a6f3279383f02c4fd370d3db321b8be4bcb4410523bf8"
+    },
+    "math:seed-0": {
+      "nll": 1.7738313376903534,
+      "ppl": 5.893389701843262,
+      "predicted_tokens": 16352,
+      "token_sha256": "efd532c71ae2fbe04f3f65e8e1ebfc70fa671c410512b8432d554a9e6debb60b"
+    },
+    "math:seed-1": {
+      "nll": 1.7395664602518082,
+      "ppl": 5.694873809814453,
+      "predicted_tokens": 16352,
+      "token_sha256": "9f6a08f28bb4864de40ff3ab22b6939e65ba8c4a583044a76fbb41f31219b0d6"
+    }
+  },
+  "schema_version": 1,
+  "used_bits": 2560,
+  "wall_time_seconds": 28.527398586273193
+}

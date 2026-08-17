@@ -1,0 +1,366 @@
+{
+  "budgets": {
+    "2.0": {
+      "best_baseline_mean": 0.3908294113352895,
+      "best_baseline_worst": 0.6281293854117393,
+      "candidate_gates": {
+        "domain-cvar-0.5": {
+          "directionally_improved_domains": [
+            "math",
+            "code"
+          ],
+          "limited_directional_evidence": true,
+          "mean_nll_increment": 0.00843469426035881,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.23141272376984257
+        },
+        "domain-mean": {
+          "directionally_improved_domains": [
+            "math",
+            "code"
+          ],
+          "limited_directional_evidence": true,
+          "mean_nll_increment": -0.007185247726738453,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.09298587045286012
+        },
+        "domain-worst": {
+          "directionally_improved_domains": [
+            "code"
+          ],
+          "limited_directional_evidence": false,
+          "mean_nll_increment": 0.051268042996525764,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.35009025859445825
+        }
+      },
+      "metrics": {
+        "alphaq-style": {
+          "domain_nll_delta": {
+            "code": 0.47836241498589516,
+            "general": 0.6409869939088821,
+            "instruction": 0.9250090643763542,
+            "math": 0.5275736674666405
+          },
+          "mean_domain_nll_delta": 0.642983035184443,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.48762812465429306,
+            "code:seed-1": 0.46909670531749725,
+            "general:seed-0": 0.6665688455104828,
+            "general:seed-1": 0.6154051423072815,
+            "instruction:seed-0": 0.9456376135349274,
+            "instruction:seed-1": 0.9043805152177811,
+            "math:seed-0": 0.5345882326364517,
+            "math:seed-1": 0.5205591022968292
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.9250090643763542
+        },
+        "concat": {
+          "domain_nll_delta": {
+            "code": 0.1220300979912281,
+            "general": 0.6175322383642197,
+            "instruction": 0.6281293854117393,
+            "math": 0.1956259235739708
+          },
+          "mean_domain_nll_delta": 0.3908294113352895,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.11369841545820236,
+            "code:seed-1": 0.13036178052425385,
+            "general:seed-0": 0.7002447545528412,
+            "general:seed-1": 0.5348197221755981,
+            "instruction:seed-0": 0.6613967716693878,
+            "instruction:seed-1": 0.5948619991540909,
+            "math:seed-0": 0.1983405351638794,
+            "math:seed-1": 0.1929113119840622
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.6281293854117393
+        },
+        "domain-cvar-0.5": {
+          "domain_nll_delta": {
+            "code": 0.07773897424340248,
+            "general": 0.576342985033989,
+            "instruction": 0.7734865173697472,
+            "math": 0.16948794573545456
+          },
+          "mean_domain_nll_delta": 0.3992641055956483,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.0767274871468544,
+            "code:seed-1": 0.07875046133995056,
+            "general:seed-0": 0.6135494709014893,
+            "general:seed-1": 0.5391364991664886,
+            "instruction:seed-0": 0.794330358505249,
+            "instruction:seed-1": 0.7526426762342453,
+            "math:seed-0": 0.1656600683927536,
+            "math:seed-1": 0.17331582307815552
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.7734865173697472
+        },
+        "domain-mean": {
+          "domain_nll_delta": {
+            "code": 0.08672820776700974,
+            "general": 0.5848691165447235,
+            "instruction": 0.68653654307127,
+            "math": 0.17644278705120087
+          },
+          "mean_domain_nll_delta": 0.383644163608551,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.0845830887556076,
+            "code:seed-1": 0.08887332677841187,
+            "general:seed-0": 0.6466273367404938,
+            "general:seed-1": 0.5231108963489532,
+            "instruction:seed-0": 0.708180159330368,
+            "instruction:seed-1": 0.6648929268121719,
+            "math:seed-0": 0.16814689338207245,
+            "math:seed-1": 0.18473868072032928
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.68653654307127
+        },
+        "domain-worst": {
+          "domain_nll_delta": {
+            "code": 0.07408525422215462,
+            "general": 0.6065014749765396,
+            "instruction": 0.8480313643813133,
+            "math": 0.23977172374725342
+          },
+          "mean_domain_nll_delta": 0.44209745433181524,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.07535355538129807,
+            "code:seed-1": 0.07281695306301117,
+            "general:seed-0": 0.5992158651351929,
+            "general:seed-1": 0.6137870848178864,
+            "instruction:seed-0": 0.863990992307663,
+            "instruction:seed-1": 0.8320717364549637,
+            "math:seed-0": 0.23205098509788513,
+            "math:seed-1": 0.2474924623966217
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.8480313643813133
+        },
+        "gemq-c4": {
+          "domain_nll_delta": {
+            "code": 0.8748845420777798,
+            "general": 0.42705243825912476,
+            "instruction": 0.5467706695199013,
+            "math": 0.36066848039627075
+          },
+          "mean_domain_nll_delta": 0.5523440325632691,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.872311495244503,
+            "code:seed-1": 0.8774575889110565,
+            "general:seed-0": 0.46822819113731384,
+            "general:seed-1": 0.38587668538093567,
+            "instruction:seed-0": 0.5619345903396606,
+            "instruction:seed-1": 0.5316067487001419,
+            "math:seed-0": 0.3617439419031143,
+            "math:seed-1": 0.3595930188894272
+          },
+          "worst_domain": "code",
+          "worst_domain_nll_delta": 0.8748845420777798
+        }
+      },
+      "passing_robust_methods": [],
+      "selected_robust_methods": []
+    },
+    "2.5": {
+      "best_baseline_mean": 0.15294503048062325,
+      "best_baseline_worst": 0.244349904358387,
+      "candidate_gates": {
+        "domain-cvar-0.5": {
+          "directionally_improved_domains": [
+            "math",
+            "code"
+          ],
+          "limited_directional_evidence": false,
+          "mean_nll_increment": 0.03424877766519785,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.5623736415643951
+        },
+        "domain-mean": {
+          "directionally_improved_domains": [
+            "math",
+            "code"
+          ],
+          "limited_directional_evidence": true,
+          "mean_nll_increment": 0.008687855675816536,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.1747197966196518
+        },
+        "domain-worst": {
+          "directionally_improved_domains": [
+            "code"
+          ],
+          "limited_directional_evidence": false,
+          "mean_nll_increment": 0.0677382592111826,
+          "no_worse_than_alphaq_worst": true,
+          "passed": false,
+          "worst_regret_reduction": -0.7826312460610776
+        }
+      },
+      "metrics": {
+        "alphaq-style": {
+          "domain_nll_delta": {
+            "code": 0.22165055200457573,
+            "general": 0.2729363739490509,
+            "instruction": 0.4523012861609459,
+            "math": 0.20114298164844513
+          },
+          "mean_domain_nll_delta": 0.2870077984407544,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.22729364782571793,
+            "code:seed-1": 0.21600745618343353,
+            "general:seed-0": 0.2910051643848419,
+            "general:seed-1": 0.2548675835132599,
+            "instruction:seed-0": 0.45923230051994324,
+            "instruction:seed-1": 0.44537027180194855,
+            "math:seed-0": 0.20508159697055817,
+            "math:seed-1": 0.1972043663263321
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.4523012861609459
+        },
+        "concat": {
+          "domain_nll_delta": {
+            "code": 0.0699457898736,
+            "general": 0.20440714061260223,
+            "instruction": 0.244349904358387,
+            "math": 0.09307728707790375
+          },
+          "mean_domain_nll_delta": 0.15294503048062325,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.0684247612953186,
+            "code:seed-1": 0.07146681845188141,
+            "general:seed-0": 0.2073281705379486,
+            "general:seed-1": 0.20148611068725586,
+            "instruction:seed-0": 0.2507222592830658,
+            "instruction:seed-1": 0.2379775494337082,
+            "math:seed-0": 0.09528493881225586,
+            "math:seed-1": 0.09086963534355164
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.244349904358387
+        },
+        "domain-cvar-0.5": {
+          "domain_nll_delta": {
+            "code": 0.061881985515356064,
+            "general": 0.2310677021741867,
+            "instruction": 0.38176584988832474,
+            "math": 0.07405969500541687
+          },
+          "mean_domain_nll_delta": 0.1871938081458211,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.06188323348760605,
+            "code:seed-1": 0.06188073754310608,
+            "general:seed-0": 0.2285836935043335,
+            "general:seed-1": 0.23355171084403992,
+            "instruction:seed-0": 0.38083314895629883,
+            "instruction:seed-1": 0.38269855082035065,
+            "math:seed-0": 0.07716710865497589,
+            "math:seed-1": 0.07095228135585785
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.38176584988832474
+        },
+        "domain-mean": {
+          "domain_nll_delta": {
+            "code": 0.06424890458583832,
+            "general": 0.2068643867969513,
+            "instruction": 0.28704266995191574,
+            "math": 0.08837558329105377
+          },
+          "mean_domain_nll_delta": 0.16163288615643978,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.06348507106304169,
+            "code:seed-1": 0.06501273810863495,
+            "general:seed-0": 0.20983189344406128,
+            "general:seed-1": 0.2038968801498413,
+            "instruction:seed-0": 0.2935485243797302,
+            "instruction:seed-1": 0.28053681552410126,
+            "math:seed-0": 0.09137971699237823,
+            "math:seed-1": 0.08537144958972931
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.28704266995191574
+        },
+        "domain-worst": {
+          "domain_nll_delta": {
+            "code": 0.06146610528230667,
+            "general": 0.26622696220874786,
+            "instruction": 0.43558577448129654,
+            "math": 0.11945431679487228
+          },
+          "mean_domain_nll_delta": 0.22068328969180584,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.060852453112602234,
+            "code:seed-1": 0.06207975745201111,
+            "general:seed-0": 0.24928387999534607,
+            "general:seed-1": 0.28317004442214966,
+            "instruction:seed-0": 0.43782901763916016,
+            "instruction:seed-1": 0.4333425313234329,
+            "math:seed-0": 0.1230124980211258,
+            "math:seed-1": 0.11589613556861877
+          },
+          "worst_domain": "instruction",
+          "worst_domain_nll_delta": 0.43558577448129654
+        },
+        "gemq-c4": {
+          "domain_nll_delta": {
+            "code": 0.5997866280376911,
+            "general": 0.16690924763679504,
+            "instruction": 0.25547897070646286,
+            "math": 0.1937333345413208
+          },
+          "mean_domain_nll_delta": 0.30397704523056746,
+          "scenario_nll_delta": {
+            "code:seed-0": 0.6030611172318459,
+            "code:seed-1": 0.5965121388435364,
+            "general:seed-0": 0.1819782853126526,
+            "general:seed-1": 0.1518402099609375,
+            "instruction:seed-0": 0.2561187446117401,
+            "instruction:seed-1": 0.2548391968011856,
+            "math:seed-0": 0.19759202003479004,
+            "math:seed-1": 0.18987464904785156
+          },
+          "worst_domain": "code",
+          "worst_domain_nll_delta": 0.5997866280376911
+        }
+      },
+      "passing_robust_methods": [],
+      "selected_robust_methods": []
+    }
+  },
+  "decision": {
+    "additional_cvar_grid_authorized": false,
+    "g3_status": "PIVOT",
+    "h3_full_pass": false,
+    "max_methods_respected": true,
+    "primary_budget": 2.5,
+    "restriction": "Must be re-tested with frozen GPTQ/RFT and real checkpoints before final claims.",
+    "retained_robust_objectives": [
+      "domain-mean"
+    ],
+    "selected_for_phase6": [
+      "gemq-c4",
+      "concat",
+      "domain-mean",
+      "alphaq-style"
+    ]
+  },
+  "gate": "H3",
+  "protocol": "fake RTN on frozen held-out tokens; selection evidence only",
+  "regret_definition": "held-out quantized NLL minus matched full-precision NLL, averaged within domain over two seeds",
+  "schema_version": 1,
+  "thresholds": {
+    "max_mean_nll_increment_vs_best_baseline": 0.02,
+    "must_not_exceed_alphaq_worst_domain": true,
+    "worst_regret_reduction_vs_best_gemq_or_concat": 0.1
+  }
+}

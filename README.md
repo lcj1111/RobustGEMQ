@@ -20,6 +20,7 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 
 ## Updates
 
+- [2026/08] RobustGEMQ Phase 3 added audited Mean/Worst/CVaR allocation, exact small-problem verification and a four-domain held-out fake-RTN gate. Solver correctness passed, but the preregistered worst-domain quality target did not; G3 therefore pivots to one retained objective (`Domain-Mean`) instead of expanding CVaR. See the [Phase 3 report](docs/phase3/REPORT.md).
 - [2026/08] RobustGEMQ Phase 2 verified calibration-domain shift on OLMoE with four audited domains and two seeds. Both the coefficient-stability gate and fake-RTN NLL transfer gate passed; a Hamming-controlled route pilot also authorizes the optional Router-proxy phase. See the [Phase 2 report](docs/phase2/REPORT.md).
 - [2026/08] RobustGEMQ Phase 1 completed an auditable OLMoE 2-bit baseline from pinned inputs through real-quant generation. See the [Phase 1 report](docs/phase1/REPORT.md) for quality, numerical-equivalence and prefill-performance results.
 - [2026/08] Bit allocation now runs on **HiGHS**, the ILP solver bundled with SciPy, so regenerating the bit configs no longer needs a Gurobi license. Gurobi stays available as an optional backend.

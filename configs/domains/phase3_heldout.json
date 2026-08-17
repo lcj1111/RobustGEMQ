@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "registry_id": "robustgemq-phase3-heldout-v1",
+  "domains": {
+    "general": {
+      "label": "General held-out",
+      "source": "allenai/c4",
+      "revision": "1588ec454efa1a09f29cd18ddd04fe05fc8653a2",
+      "license": "ODC-BY-1.0; Common Crawl terms also apply",
+      "allocation": {
+        "path": "c4/en/c4-validation.00000-of-00008.json.gz",
+        "format": "jsonl",
+        "id_field": "url",
+        "template": "{text}"
+      },
+      "held_out": ["evaluation-only; never used to construct Phase 2 coefficients"]
+    },
+    "math": {
+      "label": "Math held-out",
+      "source": "openai/grade-school-math",
+      "revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+      "license": "MIT",
+      "allocation": {
+        "path": "gsm8k/test.jsonl",
+        "format": "jsonl",
+        "template": "Question: {question}\nAnswer: {answer}"
+      },
+      "held_out": ["evaluation-only; allocation coefficients used gsm8k/train.jsonl"]
+    },
+    "code": {
+      "label": "Code held-out",
+      "source": "google-research/google-research/mbpp",
+      "revision": "589e977488f21a336a3d3da9b96da91ddbcf935e",
+      "license": "CC-BY-4.0",
+      "allocation": {
+        "path": "mbpp/test.jsonl",
+        "format": "jsonl",
+        "id_field": "task_id",
+        "template": "Problem: {prompt}\nTests: {test_list}\nSolution:\n{code}"
+      },
+      "held_out": ["evaluation-only; allocation coefficients used mbpp/train.jsonl"]
+    },
+    "instruction": {
+      "label": "Instruction held-out",
+      "source": "SuperGLUE v2 BoolQ validation",
+      "revision": "853fbe7922f70c59629f06a39e8d9ca440c3d740e760fd3b87a5ddf3dcba2436",
+      "license": "CC-BY-SA-3.0",
+      "allocation": {
+        "path": "boolq/BoolQ/val.jsonl",
+        "format": "jsonl",
+        "id_field": "idx",
+        "template": "Passage: {passage}\nQuestion: {question}\nAnswer: {label}"
+      },
+      "held_out": ["evaluation-only; allocation coefficients used Dolly-15k"]
+    }
+  }
+}

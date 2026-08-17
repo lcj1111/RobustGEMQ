@@ -1,0 +1,144 @@
+{
+  "alphaq_scores_sha256": "7b3991d71ce3210f48390ded7667feec81903624ce58f31b3771ed2c4986bbe4",
+  "budgets": {
+    "2.0": {
+      "budget": 2048.0,
+      "methods": {
+        "alphaq-style": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/alphaq-style.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/alphaq-style.pkl",
+          "config_sha256": "a004b1f4d52c4286d449c3a3201b5ecf1606dfe1738f6641eb2aa9f058f56198",
+          "used_bits": 2048
+        },
+        "concat": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/concat.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/concat.pkl",
+          "config_sha256": "e5641aa233150eb77e6123ac4b3393fea6c290b38fd0d6e69320d08c8eebf78e",
+          "used_bits": 2048
+        },
+        "domain-cvar-0.5": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/domain-cvar-0.5.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/domain-cvar-0.5.pkl",
+          "config_sha256": "61a03d15accc0924801422a4912c62fe2c190dfbf2657bede18e18acc45cb11d",
+          "used_bits": 2048
+        },
+        "domain-mean": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/domain-mean.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/domain-mean.pkl",
+          "config_sha256": "7e37ba67b7f6a65fd121c1f0d3a48a8ba6a551b4ad6b9b825e2427ae8783dd4d",
+          "used_bits": 2048
+        },
+        "domain-worst": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/domain-worst.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/domain-worst.pkl",
+          "config_sha256": "eff11c04066b7e7f8eb1a499599586c4a8d6c0feb111b3edb870570cf2136fe2",
+          "used_bits": 2048
+        },
+        "gemq-c4": {
+          "audit": "artifacts/phase3/configs/bpe-2.0/gemq-c4.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.0/gemq-c4.pkl",
+          "config_sha256": "e6dc8a87d5cd5963bce1f991efad52846f11804af2b7eed5f53cbc6bb5b67743",
+          "used_bits": 2048
+        }
+      },
+      "target_bpe": 2.0
+    },
+    "2.5": {
+      "budget": 2560.0,
+      "methods": {
+        "alphaq-style": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/alphaq-style.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/alphaq-style.pkl",
+          "config_sha256": "699c001d5afb8db82cae1cf4c6779574defa39343b5a8dd603d41b93f530a2f6",
+          "used_bits": 2560
+        },
+        "concat": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/concat.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/concat.pkl",
+          "config_sha256": "93b052c68710015739f72a91219716b5f6c167b2f2e3fbb99a21e8672e179ea3",
+          "used_bits": 2560
+        },
+        "domain-cvar-0.5": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/domain-cvar-0.5.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/domain-cvar-0.5.pkl",
+          "config_sha256": "4db5ba1fbac08840e5091441e7571f5a9a6f6cd9aeb2534ddb485d159f1639b7",
+          "used_bits": 2560
+        },
+        "domain-mean": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/domain-mean.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/domain-mean.pkl",
+          "config_sha256": "909a489e8064392b390ba07753f735e8d846445e984fc70277cd6d735eeb95d2",
+          "used_bits": 2560
+        },
+        "domain-worst": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/domain-worst.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/domain-worst.pkl",
+          "config_sha256": "d8201f7516b15aa180ced2fe615c501c3383435cdd3b9d068828150894fbd9ea",
+          "used_bits": 2560
+        },
+        "gemq-c4": {
+          "audit": "artifacts/phase3/configs/bpe-2.5/gemq-c4.audit.json",
+          "config": "artifacts/phase3/configs/bpe-2.5/gemq-c4.pkl",
+          "config_sha256": "e7fe68d41c23390722dbef5793ce17633651a984f5347d0297d0b1ecce533180",
+          "used_bits": 2560
+        }
+      },
+      "target_bpe": 2.5
+    }
+  },
+  "concat_definition": "equal-token pool of all eight per-token coefficient tensors, followed by one pooled bit-2 median scale",
+  "normalization": "per-token then each seed tensor divided by its own median bit-2 coefficient",
+  "phase": 3,
+  "risk_hierarchy": "domain is the scenario; seed is averaged within domain",
+  "schema_version": 1,
+  "source_scenarios": {
+    "code:seed-0": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "6f620632f62425b3d2e660c9fcc233416bcf4e96e45a3cbb62349b31a8266930",
+      "median_bit2_per_token": 4.079099194142027e-10,
+      "token_sha256": "47e208865548d4b5c690d9120028d861e189de6344d15b3481404d00005c6a6a"
+    },
+    "code:seed-1": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "e112fa90d6b1ad48a53425a1a223f97271d9a09bcded32a317b0e7cb58be1f26",
+      "median_bit2_per_token": 4.284731166231307e-10,
+      "token_sha256": "386d637b2ca54e5e62406b3a4be605d8f6c04f5f54e8bde72ddc99de22186bbb"
+    },
+    "general:seed-0": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "93656b9a8fe5ebea1ddc08859d0f26547e0cf15f9c06b6ac3e2adee3d50c2682",
+      "median_bit2_per_token": 2.090311540793816e-09,
+      "token_sha256": "ec56919fe3ac9c2bde2e1ea6b9f2beb5eba7bf1e86b8b951d05b11ae82fa2b9f"
+    },
+    "general:seed-1": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "edd1380082b872fcb60a3063e37e8bd2e337ffb27cc489c550eb1b7d72bf620f",
+      "median_bit2_per_token": 2.0095215680323868e-09,
+      "token_sha256": "89e681ff493f5a499fda2aab28a580ec2f8c784832cc741f91d707dbfab056e5"
+    },
+    "instruction:seed-0": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "8bdd6582ae9a1026e5d86a0afe4e053d1ef6f2977f8e222c05604c80b7f068cb",
+      "median_bit2_per_token": 3.069540868325688e-09,
+      "token_sha256": "8413373e354365add33f3d9ec3e4505c6ee3a523a35e79254aa901053a3c7902"
+    },
+    "instruction:seed-1": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "1eb5e5daafba0a542eb72a58ec4e8513f7c5628df52bf2e624dc84f5256a6e2d",
+      "median_bit2_per_token": 4.149154257956915e-09,
+      "token_sha256": "1dccab343906beac0cf5cb65c4b91a63ed9f97bdd37364eabc9d99578d810592"
+    },
+    "math:seed-0": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "78b0874021a26c24c204afccb511466a94bf4a549296b5802e361bc3cc01f4a4",
+      "median_bit2_per_token": 9.584315420784344e-10,
+      "token_sha256": "fc3b6fcf866af64f31cdc9c8beccad5d07b8e0d59b42a35d683255c1d7d754aa"
+    },
+    "math:seed-1": {
+      "effective_tokens": 16384,
+      "layer_re_sha256": "6ce3152fa4098de9f4b6118e7c9c84c4d42ef3da153ac02e4aaddfa898ad28c0",
+      "median_bit2_per_token": 9.533852757851384e-10,
+      "token_sha256": "07780844cad2e41115760e79b5b8b4f74eb9493b77f059860c33417f98e1524b"
+    }
+  }
+}

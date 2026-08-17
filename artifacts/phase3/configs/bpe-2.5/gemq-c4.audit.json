@@ -1,0 +1,27 @@
+{
+  "common": {
+    "actual_bpe": 2.5,
+    "budget": 2560.0,
+    "budget_slack": 0.0,
+    "c2c3_violations": 0,
+    "candidate_bits": [
+      1,
+      2,
+      3
+    ],
+    "domain_cvar_0.5": 1945.9804769869188,
+    "domain_losses": {
+      "code": 2957.3036518368503,
+      "general": 439.4269663928233,
+      "instruction": 437.3998381285058,
+      "math": 934.6573021369875
+    },
+    "domain_mean": 1192.1969396237916,
+    "domain_worst": 2957.3036518368503,
+    "feasible": true,
+    "invalid_bit_count": 0,
+    "one_hot_valid": true,
+    "used_bits": 2560
+  },
+  "source_config_sha256": "e7fe68d41c23390722dbef5793ce17633651a984f5347d0297d0b1ecce533180"
+}

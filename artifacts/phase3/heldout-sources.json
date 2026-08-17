@@ -1,0 +1,32 @@
+{
+  "boolq_url": "https://dl.fbaipublicfiles.com/glue/superglue/data/v2/BoolQ.zip",
+  "schema_version": 1,
+  "sources": {
+    "boolq_archive": {
+      "bytes": 4118001,
+      "path": "/data/models/datasets/robustgemq-phase2/boolq/BoolQ.zip",
+      "sha256": "853fbe7922f70c59629f06a39e8d9ca440c3d740e760fd3b87a5ddf3dcba2436"
+    },
+    "code": {
+      "bytes": 154022,
+      "path": "/data/models/datasets/robustgemq-phase2/mbpp/test.jsonl",
+      "sha256": "697e1a467936c2275e002949e7c1f898b41b2314f1139857eed5a2829d896cc0"
+    },
+    "general": {
+      "bytes": 40471190,
+      "path": "/data/models/datasets/gemq-phase1/c4/en/c4-validation.00000-of-00008.json.gz",
+      "sha256": "1f25b6af12da84115301d4ee93ea5246c8fea5bb4a2008472794d95b917cc97f"
+    },
+    "instruction": {
+      "bytes": 2254565,
+      "path": "/data/models/datasets/robustgemq-phase2/boolq/BoolQ/val.jsonl",
+      "sha256": "0c86a5045886e5795fe9052003873f7d94b88ed3028a33007c51d99e44fd66d9"
+    },
+    "math": {
+      "bytes": 749738,
+      "path": "/data/models/datasets/robustgemq-phase2/gsm8k/test.jsonl",
+      "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14"
+    }
+  },
+  "split_role": "held-out evaluation only"
+}
