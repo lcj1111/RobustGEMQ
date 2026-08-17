@@ -1,0 +1,6 @@
+type: dict
+path: configs/allenai/OLMoE-1B-7B-0924/GEMQ/C4-Seed0_E2.0_B1,2,3_c2c3.pkl
+bytes: 4208
+assignments: 1024
+counts: {1: 503, 2: 18, 3: 503}
+average_bits: 2.0

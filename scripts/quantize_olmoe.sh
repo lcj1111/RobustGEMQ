@@ -5,42 +5,50 @@ set -euo pipefail
 #  Model settings
 # ===============================
 model_name="allenai/OLMoE-1B-7B-0924"
-model="allenai/OLMoE-1B-7B-0924"
+model="${MODEL_PATH:-allenai/OLMoE-1B-7B-0924}"
+cuda_device="${CUDA_DEVICE:-0}"
+python_bin="${PYTHON_BIN:-python}"
 
 # ===============================
 #  Dataset settings
 # ===============================
-calib_dataset="wikitext2"
-nsamples=128
-seqlen=2048
+calib_dataset="${CALIB_DATASET:-wikitext2}"
+nsamples="${NSAMPLES:-128}"
+seqlen="${SEQLEN:-2048}"
+
+if [[ -n "${DATA_ROOT:-}" ]]; then
+    export GEMQ_C4_TRAIN_FILE="${GEMQ_C4_TRAIN_FILE:-${DATA_ROOT}/c4/en/c4-train.00000-of-01024.json}"
+    export GEMQ_C4_VALIDATION_FILE="${GEMQ_C4_VALIDATION_FILE:-${DATA_ROOT}/c4/en/c4-validation.00000-of-00008.json.gz}"
+    export GEMQ_WIKITEXT_DIR="${GEMQ_WIKITEXT_DIR:-${DATA_ROOT}/wikitext2}"
+fi
 
 # ===============================
 #  Quantization settings
 # ===============================
 quantizer="gptq"
-bpe=2.0                    # bits per expert
-mixed_prec=true            # enable expert-level mixed-precision quantization (set false for uniform quantization)
-bit_cfg="configs/${model_name}/GEMQ/C4-Seed0_E${bpe}_B1,2,3_c2c3.pkl"
-reproduce_mcmoe=true
+bpe="${BPE:-2.0}"                    # bits per expert
+mixed_prec="${MIXED_PREC:-true}"     # expert-level mixed precision
+bit_cfg="${BIT_CFG:-configs/${model_name}/GEMQ/C4-Seed0_E${bpe}_B1,2,3_c2c3.pkl}"
+reproduce_mcmoe="${REPRODUCE_MCMOE:-true}"
 
 # ===============================
 #  Router fine-tuning
 # ===============================
-finetune_routers=true      # whether to finetune the routers after quantization
-rft_epochs=1
-rft_lr=1e-4
+finetune_routers="${FINETUNE_ROUTERS:-true}"
+rft_epochs="${RFT_EPOCHS:-1}"
+rft_lr="${RFT_LR:-1e-4}"
 
 # ===============================
 #  Evaluation settings
 # ===============================
-eval_downstream=false      # whether to run downstream eval after quantization
+eval_downstream="${EVAL_DOWNSTREAM:-false}"
 downstream_tasks="piqa,arc_easy,arc_challenge,boolq,hellaswag,winogrande,mathqa,mmlu"
 
 # ===============================
 #  I/O settings
 # ===============================
-real_quant=true           # whether to pack + save INT weights (set false for pseudo quantization)
-save_model=true           # whether to save the quantized model
+real_quant="${REAL_QUANT:-true}"
+save_model="${SAVE_MODEL:-true}"
 
 
 
@@ -111,7 +119,7 @@ echo "----------------------------------------------"
 echo ">>> Running quantization ..."
 echo "=============================================="
 
-python -m gemq.quantize \
+CUDA_VISIBLE_DEVICES="$cuda_device" "$python_bin" -m gemq.quantize \
     "${model_args[@]}" \
     "${data_args[@]}" \
     "${quant_args[@]}" \

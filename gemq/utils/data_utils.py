@@ -1,5 +1,7 @@
 import itertools
 import json
+import os
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -13,14 +15,64 @@ from datasets import load_dataset, Dataset, DatasetDict
 from gemq.utils.model_utils import NAME_TO_MODEL, ModelType
 
 
+def _required_env_path(variable):
+    """Return an optional configured path, failing early when it is invalid."""
+    value = os.environ.get(variable)
+    if not value:
+        return None
+    path = Path(value).expanduser().resolve()
+    if not path.exists():
+        raise FileNotFoundError(f"{variable} points to a missing path: {path}")
+    return path
+
+
+def load_wikitext2_split(split):
+    """Load WikiText-2 from a pinned local parquet snapshot or the HF Hub."""
+    local_dir = _required_env_path("GEMQ_WIKITEXT_DIR")
+    if local_dir is not None:
+        files = sorted(local_dir.glob(f"{split}-*.parquet"))
+        if not files:
+            raise FileNotFoundError(
+                f"GEMQ_WIKITEXT_DIR has no parquet files for split {split!r}: {local_dir}"
+            )
+        return load_dataset(
+            "parquet", data_files={split: [str(path) for path in files]}, split=split
+        )
+    return load_dataset("wikitext", "wikitext-2-raw-v1", split=split)
+
+
+def load_c4_split(split):
+    """Load the pinned C4 shard selected by environment variables or the HF Hub."""
+    variables = {
+        "train": "GEMQ_C4_TRAIN_FILE",
+        "validation": "GEMQ_C4_VALIDATION_FILE",
+    }
+    if split not in variables:
+        raise ValueError(f"Unsupported C4 split: {split}")
+
+    local_file = _required_env_path(variables[split])
+    if local_file is not None:
+        return load_dataset(
+            "json", data_files={split: str(local_file)}, split=split
+        )
+
+    hub_files = {
+        "train": "en/c4-train.00000-of-01024.json.gz",
+        "validation": "en/c4-validation.00000-of-00008.json.gz",
+    }
+    return load_dataset(
+        "allenai/c4", data_files={split: hub_files[split]}, split=split
+    )
+
+
 def set_seed(seed):
     np.random.seed(seed)
     torch.random.manual_seed(seed)
 
 
 def get_wikitext2(nsamples, seed, seqlen, model, use_fast=False):
-    traindata = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
-    testdata = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+    traindata = load_wikitext2_split("train")
+    testdata = load_wikitext2_split("test")
 
     tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast)
     trainenc = tokenizer(" ".join(traindata["text"]), return_tensors="pt")
@@ -40,12 +92,8 @@ def get_wikitext2(nsamples, seed, seqlen, model, use_fast=False):
 
 
 def get_c4_new(nsamples, seed, seqlen, model, use_fast=False):
-    traindata = load_dataset(
-        "allenai/c4", data_files={"train": "en/c4-train.00000-of-01024.json.gz"}, split="train"
-    )
-    valdata = load_dataset(
-        "allenai/c4", data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"}, split="validation"
-    )
+    traindata = load_c4_split("train")
+    valdata = load_c4_split("validation")
 
     tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast)
 
@@ -85,7 +133,7 @@ def get_loaders(name, nsamples=128, seed=0, seqlen=2048, model="", use_fast=Fals
 
 def build_calib_loader(dataset: str, tokenizer, max_block_size: int, n_blocks_for_stat: int, batch_size: int, num_workers: int, seed: int = 41):
     DATASETS = {
-        "c4": lambda: load_dataset("json", data_files={"train": "data/c4-train.00000-of-01024.json"}),
+        "c4": lambda: DatasetDict({"train": load_c4_split("train")}),
         "math": lambda: load_dataset("json", data_files={"train": "data/math_pretrain_style.json"}),
     }
     

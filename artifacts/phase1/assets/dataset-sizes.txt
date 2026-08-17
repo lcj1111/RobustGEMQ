@@ -1,0 +1,10 @@
+648K	/data/models/datasets/gemq-phase1/wikitext2/validation-00000-of-00001.parquet
+720K	/data/models/datasets/gemq-phase1/wikitext2/test-00000-of-00001.parquet
+6.1M	/data/models/datasets/gemq-phase1/wikitext2/train-00000-of-00001.parquet
+7.5M	/data/models/datasets/gemq-phase1/wikitext2
+39M	/data/models/datasets/gemq-phase1/c4/en/c4-validation.00000-of-00008.json.gz
+308M	/data/models/datasets/gemq-phase1/c4/en/c4-train.00000-of-01024.json.gz
+784M	/data/models/datasets/gemq-phase1/c4/en/c4-train.00000-of-01024.json
+1.2G	/data/models/datasets/gemq-phase1
+1.2G	/data/models/datasets/gemq-phase1/c4
+1.2G	/data/models/datasets/gemq-phase1/c4/en
