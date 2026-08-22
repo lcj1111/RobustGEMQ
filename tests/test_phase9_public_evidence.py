@@ -14,7 +14,7 @@ def test_committed_phase9_evidence_verifies_offline():
             sys.executable,
             "scripts/phase9/verify_public_evidence.py",
             "--evidence",
-            "docs/phase9/evidence.json",
+            "docs/07-release/evidence.json",
         ],
         cwd=ROOT,
         capture_output=True,
