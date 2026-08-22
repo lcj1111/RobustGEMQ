@@ -1,42 +1,42 @@
-# RobustGEMQ Phase 9: Final Release and Evidence Boundary
+# RobustGEMQ Phase 9：最终发布与证据边界
 
-## Release decision
+## 发布决策
 
-**Release as an auditable MoE-quantization reliability harness and negative-result study.**
+**将项目作为可审计的 MoE 量化可靠性 Harness 与负结果研究发布。**
 
-RobustGEMQ does not claim a new domain-aware allocation that improves quantization quality. Its final real-checkpoint experiment shows that `Domain-Mean` fails to enter the matched-budget mean/worst-domain Pareto frontier on OLMoE. This conclusion is deliberate and reproducible: the experimental matrix, allocation budget, candidate set, real packing checks and bootstrap rule were frozen before the final decision.
+RobustGEMQ 不声称提出了可提升量化质量的新领域感知 allocation。最终真实检查点实验显示，`Domain-Mean` 未进入 OLMoE 上同预算 mean/worst-domain Pareto 前沿。该结论是有意设计且可复现的：实验矩阵、allocation 预算、候选集、真实打包检查和 Bootstrap 规则均在最终决策前冻结。
 
-## What the release establishes
+## 本发布确立的能力
 
-- An end-to-end path from pinned calibration inputs to real HQQ-packed MoE checkpoints, with artifact validation at each handoff.
-- A four-domain, three-seed calibration matrix with immutable token scenarios and explicit source/split isolation.
-- Exact 2.5-bpe mixed-precision allocations under a common feasible set, solved and audited independently of the real-checkpoint evaluation.
-- A fair packed-checkpoint comparison: identical balanced GPTQ/RFT calibration, fixed evaluation items, fake/real equivalence checks, and a 10,000-draw stratified paired bootstrap.
-- A gate that stops invalid scale-up: `G6=STOP_NO_LARGE_MODEL_EXPANSION` after `Domain-Mean` is not Pareto competitive and the earlier H3 prerequisite is absent.
+- 从固定校准输入到真实 HQQ 打包 MoE 检查点的端到端路径，每次交接都进行产物验证。
+- 四领域、三随机种子的校准矩阵，使用不可变 token 场景并明确数据来源与 split 隔离。
+- 在共同可行集下精确求解 2.5-bpe 混合精度 allocation，并与真实检查点评测相互独立地完成审计。
+- 公平的打包检查点比较：相同均衡 GPTQ/RFT 校准、固定评测样本、fake/real 等价性检查及 10,000 次分层配对 Bootstrap。
+- 阻止无效扩张的 Gate：`Domain-Mean` 不具 Pareto 竞争力且此前 H3 前置条件缺失后，`G6=STOP_NO_LARGE_MODEL_EXPANSION`。
 
-## Final evidence map
+## 最终证据地图
 
-| Stage | Result | Release implication |
+| 阶段 | 结果 | 对发布的含义 |
 | --- | --- | --- |
-| Phase 0 | Upstream reproduction and baseline completed | Establishes the executable starting point. |
-| Phase 1 | Real OLMoE quantization and packing baseline completed | Confirms the project can evaluate real quantized inference. |
-| Phase 2 | Cross-domain calibration sensitivity confirmed | Justifies testing domain-aware allocation, not claiming it wins. |
-| Phase 3 | Solver audit passed; H3 failed; G3=PIVOT | Retains only `Domain-Mean` for a confirmatory real-checkpoint test. |
-| Phase 4 | Route proxy H4/G4 failed | No router-aware quality or runtime claim is allowed. |
-| Phase 6 | H6 passed; `Domain-Mean` not Pareto competitive; G6=STOP | Blocks second-model expansion and post-hoc rescue experiments. |
-| Phase 7 | Not run | Ineligible because G6 is STOP. |
-| Phase 8 | Not run | Ineligible because its structural gate was never passed before Phase 6. |
-| Phase 9 | Complete | Ships the harness, evidence boundary and re-run instructions. |
+| Phase 0 | 完成上游复现与基线 | 建立可执行起点。 |
+| Phase 1 | 完成真实 OLMoE 量化与打包基线 | 证明项目能够评测真实量化推理。 |
+| Phase 2 | 确认跨域校准敏感度 | 支持检验领域感知 allocation，但不代表其必然胜出。 |
+| Phase 3 | 求解器审计通过；H3 失败；G3=PIVOT | 仅保留 `Domain-Mean` 进入确认性真实检查点测试。 |
+| Phase 4 | route proxy 的 H4/G4 失败 | 不允许声称 Router-aware 质量或运行时收益。 |
+| Phase 6 | H6 通过；`Domain-Mean` 不具 Pareto 竞争力；G6=STOP | 阻止第二模型扩展与事后补救实验。 |
+| Phase 7 | 未执行 | 因 G6 为 STOP 而无资格。 |
+| Phase 8 | 未执行 | 因其结构 Gate 未在 Phase 6 前通过而无资格。 |
+| Phase 9 | 完成 | 发布 Harness、证据边界与复现说明。 |
 
-## Quantitative conclusion
+## 定量结论
 
-On the fixed 1,536-item real-checkpoint evaluation, `Domain-Mean` has mean-domain NLL `1.811779` and worst-domain NLL `2.645955`; `Concat` has `1.806814` and `2.645950`, respectively. The paired bootstrap estimates Domain-Mean minus Concat mean-domain NLL at `[+0.004214, +0.005727]` (95% CI), while its worst-domain difference is `[-0.002007, +0.002047]`. Thus it is reliably worse on the mean metric and has no supported worst-domain advantage.
+在固定的 1,536 条真实检查点评测样本上，`Domain-Mean` 的领域平均 NLL 为 `1.811779`、最坏领域 NLL 为 `2.645955`；`Concat` 分别为 `1.806814` 和 `2.645950`。配对 Bootstrap 估计 Domain-Mean 减 Concat 的领域平均 NLL 为 `[+0.004214, +0.005727]`（95% CI），最坏领域差值为 `[-0.002007, +0.002047]`。因此它在平均指标上稳定更差，且没有最坏领域优势的支持证据。
 
-The real packing path itself is sound: all three selected checkpoints passed H6, including fake/real PPL agreement within 1% and 95%/95%/100% decode argmax agreement for Concat/Domain-Mean/GEMQ-C4. The negative quality finding is therefore not attributable to an unverified fake-quant surrogate.
+真实打包路径本身是可信的：三个选中检查点均通过 H6，包括 1% 以内的 fake/real PPL 一致性，以及 Concat/Domain-Mean/GEMQ-C4 分别为 95%/95%/100% 的 decode argmax 一致率。因此，负面的质量结论不能归因于未经验证的 fake-quant surrogate。
 
-## Reproduction contract
+## 复现契约
 
-The completed artifact bundle can be checked without rerunning GPUs:
+无需重跑 GPU 即可验证已完成的产物包：
 
 ```bash
 cd /data/models/RobustGEMQ
@@ -45,23 +45,23 @@ cd /data/models/RobustGEMQ
   --output artifacts/phase6/release-verification.json
 ```
 
-This validator requires: the four frozen allocation methods at the exact 2.5-bpe budget, 1,536 finite per-item NLLs for every packed method, at least 10,000 bootstrap draws, passing H6 records, and the frozen G6 stop decision. The complete execution chain and individual runners are in the [Phase 6 harness](../phase6/HARNESS.md); the detailed result is in the [Phase 6 report](../phase6/REPORT.md).
+该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算、每个打包方法均有 1,536 条有限 NLL、至少 10,000 次 Bootstrap、H6 记录通过，以及冻结的 G6 STOP 决策。完整执行链路和各 runner 见 [Phase 6 Harness](../phase6/HARNESS.md)，详细结果见 [Phase 6 报告](../phase6/REPORT.md)。
 
-For public review, [evidence.json](evidence.json) is a compact derivative of the completed private artifact set. It exposes no model weights, prompts, raw per-item scores or checkpoint paths; it does expose the fixed protocol, allocation and scenario hashes, aggregate metrics, bootstrap confidence intervals and the source-file hashes from which it was derived. Its release contract runs without a GPU:
+供公开审阅的 [evidence.json](evidence.json) 是从已完成的私有产物集派生的轻量版本。它不暴露模型权重、prompt、原始逐样本得分或检查点路径；但公开固定协议、allocation 与场景哈希、聚合指标、Bootstrap 置信区间以及派生所依据源文件的哈希。其发布契约无需 GPU：
 
 ```bash
 python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
 pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 ```
 
-The same checks run automatically for relevant pull requests through `.github/workflows/phase9-release.yml`.
+相关 Pull Request 的相同检查会通过 `.github/workflows/phase9-release.yml` 自动运行。
 
-## Permitted and prohibited follow-up
+## 允许与禁止的后续工作
 
-Permitted follow-up is engineering work that strengthens reproducibility or makes the harness easier to operate: artifact manifests, offline verification, regression tests, profiling of an already-fixed checkpoint, and documentation.
+允许的后续工作是加强可复现性或提升 Harness 可操作性的工程工作：产物 manifest、离线验证、回归测试、固定检查点的 profiling 与文档。
 
-The following are not supported by this release and must not be presented as results: a second-model quality sweep, a post-hoc structural H5 experiment intended to rescue G6, a router-aware benefit, or a general quality-improvement claim for `Domain-Mean`.
+本发布不支持、也不得作为结果表述的事项包括：第二模型质量扫参、用于挽救 G6 的事后结构性 H5 实验、Router-aware 收益，或 Domain-Mean 的一般性质量提升主张。
 
-## Project positioning
+## 项目定位
 
-The strongest honest positioning is **reliability infrastructure for MoE quantization experiments**: it turns calibration, allocation, packing and inference validation into an auditable release pipeline, and it uses precommitted gates to distinguish a genuine improvement from a negative result. That is an infrastructure contribution with a concrete model-quantization workload, rather than a benchmark-only optimization claim.
+最有力且诚实的定位是**面向 MoE 量化实验的可靠性基础设施**：它将校准、allocation、打包与推理验证组织为可审计的发布流水线，并利用预先承诺的 Gate 区分真正的提升与负结果。这是一项具有具体模型量化工作负载的 Infra 贡献，而非只追逐 benchmark 分数的优化主张。
