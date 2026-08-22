@@ -1,61 +1,59 @@
 <div align="center">
 
-<h1>GEMQ: Global Expert-Level Mixed-Precision Quantization for MoE LLMs</h1>
+# RobustGEMQ：面向 MoE 混合精度量化的可审计评测与可靠性验证平台
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.23078-b31b1b?logo=arxiv&logoColor=red)](https://arxiv.org/abs/2605.23078)
 
 </div>
 
-GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs that enables extreme low-bit quantization (down to 1.5 bits per expert) with minimal accuracy degradation. It works by:
-1. automatically assigning different bit-widths to experts based on their importance;
-2. fine-tuning the routers so they can better work with quantized experts;
-3. optionally using progressive quantization to refine the bit allocation.
+RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，面向 Mixture-of-Experts（MoE）大语言模型的低比特混合精度量化。项目重点不是事后寻找一个更好的 benchmark 数字，而是提供一套可审计的评测与可靠性验证机制：只有当候选分配在真实检查点、跨域评测和预先冻结的统计 Gate 下都成立时，才允许扩大实验规模。
 
-## RobustGEMQ release: five-minute overview
+GEMQ 的基础能力包括：根据专家重要性分配不同 bit-width、微调 Router 以适应量化专家，以及可选的渐进式量化。RobustGEMQ 在此基础上补足可复现输入、跨域评测、真实打包验证和失败边界。
 
-RobustGEMQ is an auditable reliability layer built on GEMQ's MoE quantization pipeline. It answers a narrower and operationally important question: **does a proposed allocation remain credible after real checkpoint packing, cross-domain evaluation and a precommitted statistical gate?**
+## 五分钟了解项目
+
+RobustGEMQ 回答一个更窄、但对工程交付更关键的问题：**某个候选 bit 分配在真实检查点打包、跨域评测和预先承诺的统计 Gate 之后，是否仍然可信？**
 
 ```text
-pinned domain data → immutable token scenarios → LayerGrads / LayerRE
-                 → exact-budget allocation → GPTQ + router fine-tuning
-                 → HQQ packed checkpoint → fake/real H6 validation
-                 → paired bootstrap → frozen G6 scale-up decision
+固定来源的领域数据 → 不可变 token 场景 → LayerGrads / LayerRE
+                       → 精确预算分配 → GPTQ + Router 微调
+                       → HQQ 实际打包检查点 → H6 fake/real 验证
+                       → 配对 Bootstrap → 冻结的 G6 扩展决策
 ```
 
-The completed OLMoE study did **not** establish a quality improvement for `Domain-Mean`; the matched-budget gate stopped second-model expansion. This is a documented reliability result, not an unfinished benchmark. Start here:
+已完成的 OLMoE 实验**没有**证明 `Domain-Mean` 带来量化质量提升；同预算 Gate 因此停止了第二模型扩展。这是有明确证据支持的可靠性结论，不是尚未完成的 benchmark。
 
-- [Final release boundary](docs/phase9/REPORT.md): what is established, what is ruled out, and how to position the project.
-- [Public evidence bundle](docs/phase9/evidence.json): compact metrics, allocation hashes and scenario provenance; no checkpoint weights or raw data.
-- [Phase 6 harness](docs/phase6/HARNESS.md): the full re-run and artifact chain.
+- [最终发布边界](docs/phase9/REPORT.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
+- [公开证据包](docs/phase9/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
+- [Phase 6 可靠性手册](docs/phase6/HARNESS.md)：完整的复现实验链路与产物约定。
 
-Run the GPU-free contract checks locally:
+可在本地运行无需 GPU 的发布契约检查：
 
 ```bash
 python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
 pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 ```
 
+## 仓库包含的内容
 
-### What's in this repo
-* An ILP solver for global expert-level bit allocation
-* GPTQ-based quantization and router fine-tuning pipelines
-* Efficient low-bit MoE triton kernels for **real** quantized inference
+* 面向全局专家级 bit 分配的 ILP 求解器
+* 基于 GPTQ 的量化与 Router 微调流水线
+* 支持**真实量化推理**的低 bit MoE Triton 内核
+* 跨域校准、真实检查点验证、配对 Bootstrap 与 Gate 化发布资产
 
+## 阶段更新
 
-## Updates
+- [2026/08] RobustGEMQ Phase 9 已作为可审计的 MoE 量化可靠性 Harness 完成发布。冻结的真实检查点证据不支持 `Domain-Mean` 的质量提升主张，因此 Phase 7/8 的扩展不具备资格。详见[最终发布报告](docs/phase9/REPORT.md)。
+- [2026/08] RobustGEMQ Phase 6 完成四领域 × 三随机种子的 OLMoE 主实验、真实 GPTQ/RFT 打包、H6 fake/real 等价性验证与逐样本 Bootstrap。`Domain-Mean` 未超过同预算基线，G6 阻止第二模型扩展；可靠性 Harness 与负结果边界见 [Phase 6 报告](docs/phase6/REPORT.md)。
+- [2026/08] RobustGEMQ Phase 3 增加 Mean/Worst/CVaR 的可审计分配、精确小问题验证和四领域 held-out fake-RTN Gate。求解器正确性通过，但预先注册的最坏领域质量假设未通过；G3 因此 PIVOT，只保留一个待验证目标而不扩展 CVaR。详见 [Phase 3 报告](docs/phase3/REPORT.md)。
+- [2026/08] RobustGEMQ Phase 2 验证 OLMoE 的跨校准域敏感度。系数稳定性 Gate 与 fake-RTN NLL 迁移 Gate 均通过；经过 Hamming 控制的 route pilot 还授权了可选的 Router-proxy 阶段。详见 [Phase 2 报告](docs/phase2/REPORT.md)。
+- [2026/08] RobustGEMQ Phase 1 完成从固定输入到真实量化生成的可审计 OLMoE 2-bit 基线。量化质量、数值等价性和 prefill 性能结果见 [Phase 1 报告](docs/phase1/REPORT.md)。
+- [2026/08] bit 分配默认通过 SciPy 内置的 **HiGHS** ILP 求解器完成，因此重新生成 bit 配置不再依赖 Gurobi 许可证；Gurobi 仍保留为可选后端。
+- [2026/08] 真实量化推理现已覆盖 **OLMoE-1B-7B-0924**、**Qwen3-30B-A3B**、Mixtral-8x7B 与 DeepSeek-V2-Lite；使用 `scripts/bench_generate_<model>.sh` 运行。
+- [2026/08] 已验证实际量化端到端匹配 fake quant：DeepSeek-V2-Lite 的 perplexity 差异为 0.06%，OLMoE-1B-7B-0924 为 0.03%。使用 `scripts/test_real_quant.sh` 复核。
+- [2026/08] 修复了 HF 内置实现遗漏 YaRN `mscale` 所造成的 DeepSeek-V2 约 15% perplexity 回归（[transformers#47435](https://github.com/huggingface/transformers/pull/47435)）。
 
-- [2026/08] RobustGEMQ Phase 9 finalized the release as an auditable MoE-quantization reliability harness. The frozen real-checkpoint evidence rules out a quality-improvement claim for `Domain-Mean`; Phase 7/8 scale-up is consequently ineligible. See the [final release report](docs/phase9/REPORT.md).
-- [2026/08] RobustGEMQ Phase 6 completed an audited four-domain × three-seed OLMoE main study, real GPTQ/RFT packing, H6 fake/real equivalence and item-level bootstrap. `Domain-Mean` did not beat the matched-budget baselines, so G6 stops second-model expansion; the resulting reliability harness and negative-result boundary are documented in the [Phase 6 report](docs/phase6/REPORT.md).
-- [2026/08] RobustGEMQ Phase 3 added audited Mean/Worst/CVaR allocation, exact small-problem verification and a four-domain held-out fake-RTN gate. Solver correctness passed, but the preregistered worst-domain quality target did not; G3 therefore pivots to one retained objective (`Domain-Mean`) instead of expanding CVaR. See the [Phase 3 report](docs/phase3/REPORT.md).
-- [2026/08] RobustGEMQ Phase 2 verified calibration-domain shift on OLMoE with four audited domains and two seeds. Both the coefficient-stability gate and fake-RTN NLL transfer gate passed; a Hamming-controlled route pilot also authorizes the optional Router-proxy phase. See the [Phase 2 report](docs/phase2/REPORT.md).
-- [2026/08] RobustGEMQ Phase 1 completed an auditable OLMoE 2-bit baseline from pinned inputs through real-quant generation. See the [Phase 1 report](docs/phase1/REPORT.md) for quality, numerical-equivalence and prefill-performance results.
-- [2026/08] Bit allocation now runs on **HiGHS**, the ILP solver bundled with SciPy, so regenerating the bit configs no longer needs a Gurobi license. Gurobi stays available as an optional backend.
-- [2026/08] Real quantized inference now covers **OLMoE-1B-7B-0924** and **Qwen3-30B-A3B**, alongside Mixtral-8x7B and DeepSeek-V2-Lite. Run it with `scripts/bench_generate_<model>.sh`.
-- [2026/08] Real quantization is verified to match fake quantization end to end -- a 0.06% perplexity gap on DeepSeek-V2-Lite and 0.03% on OLMoE-1B-7B-0924. Run the checks with `scripts/test_real_quant.sh`.
-- [2026/08] Fixed a ~15% perplexity regression on DeepSeek-V2 caused by a missing YaRN `mscale` in HF's built-in implementation ([transformers#47435](https://github.com/huggingface/transformers/pull/47435)).
-
-
-## Installation
+## 安装
 
 ```bash
 conda create -n gemq python=3.10 -y
@@ -64,71 +62,58 @@ git clone https://github.com/lcj1111/RobustGEMQ
 cd RobustGEMQ
 pip install -e .
 
-# (Optional) only needed if you want to solve the bit allocation with Gurobi
-# instead of the default HiGHS solver (and thus requires a Gurobi license):
-# pip install -e ".[gurobi]"
+# 可选：仅在需要使用 Gurobi 而非默认 HiGHS 求解器时安装；此项需要 Gurobi 许可证
+pip install -e ".[gurobi]"
 ```
 
 > [!NOTE]
 >
-> By default, bit allocation is solved with **HiGHS**, which does not require a commercial license.
-> In our experiments, however, we used **Gurobi** to produce the configs under `configs/`.
-> Gurobi remains available as an optional backend -- install it as shown above, then set `ilp_backend="gurobi"` in `scripts/allocate_<model>.sh`.
+> 默认使用无需商业许可证的 **HiGHS** 完成 bit 分配。项目中已有的 `configs/` 与原 GEMQ 论文报告的结果由 Gurobi 后端产生。两个后端求解相同 ILP，但当最优解不唯一时，HiGHS 可能返回不同分配；如需精确复现原论文，请使用提供的配置或在 allocation 脚本中设置 `ilp_backend="gurobi"`。
 
+## 使用方式
 
-## Usage
+`scripts` 提供 Mixtral-8×7B、DeepSeek-V2-Lite、OLMoE-1B-7B-0924 与 Qwen3-30B-A3B 的完整基础流水线：bit 分配、量化和真实量化推理。RobustGEMQ 的正式跨域与可靠性流程请优先参阅 [Phase 6 手册](docs/phase6/HARNESS.md)。
 
-> `scripts` provides the full pipeline -- bit allocation, quantization and real quantized inference -- for **Mixtral-8×7B**, **DeepSeek-V2-Lite**, **OLMoE-1B-7B-0924** and **Qwen3-30B-A3B**.
-
-
-### 1. Bit Allocation
+### 1. bit 分配
 
 > [!NOTE]
 >
-> We provide pre-generated bit allocation configs under `configs`, which can be used directly for quantization. You may skip this section if you do not want to regenerate them.
+> `configs` 下提供预生成的 bit 分配配置，可直接用于量化。如果不需要重新生成配置，可跳过本节。
 
 > [!IMPORTANT]
 >
-> **All provided configs and results reported in the paper were produced with the Gurobi backend.** HiGHS was added later solely to remove the Gurobi license requirement. Both backends solve the same ILP, but because the optimum may not be unique, HiGHS can return a different allocation. To reproduce the paper exactly, use the provided configs or set `ilp_backend="gurobi"` in the allocation script.
+> 原论文提供的配置和报告结果均由 Gurobi 后端产生。HiGHS 后续加入仅为移除 Gurobi 许可证依赖；二者求解相同 ILP，但最优解可能不唯一。如需精确复现原论文，请使用提供的配置，或在 allocation 脚本中设置 `ilp_backend="gurobi"`。
 
-To generate the configs from scratch, follow the steps below.
+从零开始生成配置：
 
+1. 从 [allenai/c4](https://huggingface.co/datasets/allenai/c4/blob/main/en/c4-train.00000-of-01024.json.gz) 下载 C4 训练数据第一分片（`c4-train.00000-of-01024.json`），存放至 `./data`。
+2. 运行 `scripts/compute_stats_<model>.sh`，计算校准数据上的模型统计量；梯度和 perturbation error 会保存至 `cache`。
+3. 运行 `scripts/allocate_<model>.sh`，利用统计量求解 ILP bit 分配；结果配置保存至 `configs`。
 
-1. Download the first shard of the C4 training dataset (c4-train.00000-of-01024.json) from [allenai/c4](https://huggingface.co/datasets/allenai/c4/blob/main/en/c4-train.00000-of-01024.json.gz) and save it under `./data`.
+### 2. 混合精度量化
 
-2. Run `scripts/compute_stats_<model>.sh` to compute model statistics on the calibration dataset. The resulting statistics (gradients and perturbation errors) will be saved under `cache`.
+运行 `scripts/quantize_<model>.sh` 即可量化模型，详细参数请查看对应脚本。量化后会自动执行评测；如需下游任务评测，请安装 [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness)。量化检查点保存至 `results`。
 
+### 3. 推理
 
-3. Run `scripts/allocate_<model>.sh` to solve the ILP for bit allocation using the generated model statistics. The allocation results (bit configs) will be saved under `configs`. 
-
-
-### 2. Mixed-Precision Quantization
-
-Simply run `scripts/quantize_<model>.sh` for model quantization. Please refer to the script for the detailed available options.
-
-The evaluation code runs automatically after quantization. If you want to evaluate the model on downstream tasks, please ensure that [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness) is installed.
-
-Quantized models will be saved under `results`.
-
-
-### 3. Inference
-
-Use `scripts/bench_generate_<model>.sh` to run inference demos and benchmark the real quantized models. Set `bpe` and `finetune_routers` there to match the quantization run, since the checkpoint path is derived from them.
+运行 `scripts/bench_generate_<model>.sh` 可进行推理演示和实际量化模型基准测试。请设置与量化任务一致的 `bpe` 和 `finetune_routers`，因为检查点路径依赖这两个参数。
 
 > [!NOTE]
 >
-> Decoding is fully fused; prefill still loops over hit experts in Python, so its throughput is dominated by kernel launch overhead and scales with depth and expert count rather than with prompt length.
+> decode 已完全融合；prefill 仍在 Python 中遍历命中的专家，因此其吞吐主要受 kernel launch 开销影响，并随层数、专家数增长，而非单纯随 prompt 长度增长。
 
+## 许可证
 
-## License
+基于 [MIT License](LICENSE) 发布。
 
-Released under the [MIT License](LICENSE).
+## 致谢
 
-## Acknowledgements
-This repository builds upon several excellent open-source projects, including [MC-MoE](https://github.com/Aaronhuang-778/Mixture-Compressor-MoE), [GPTQ](https://github.com/IST-DASLab/gptq), [HQQ](https://github.com/dropbox/hqq), [GemLite](https://github.com/dropbox/gemlite), and [gpt-fast](https://github.com/meta-pytorch/gpt-fast). We sincerely thank the authors and contributors for making their code publicly available.
+本仓库建立在多个优秀开源项目之上，包括 [MC-MoE](https://github.com/Aaronhuang-778/Mixture-Compressor-MoE)、[GPTQ](https://github.com/IST-DASLab/gptq)、[HQQ](https://github.com/dropbox/hqq)、[GemLite](https://github.com/dropbox/gemlite) 和 [gpt-fast](https://github.com/meta-pytorch/gpt-fast)。感谢这些项目的作者与贡献者。
 
-## Citation
-If you find GEMQ useful for your research or project, please consider citing:
+## 引用
+
+如果 GEMQ 对你的研究或项目有帮助，欢迎引用：
+
 ```bibtex
 @article{deng2026gemq,
   title={GEMQ: Global Expert-Level Mixed-Precision Quantization for MoE LLMs},
