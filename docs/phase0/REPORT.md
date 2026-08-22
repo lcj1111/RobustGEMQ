@@ -1,59 +1,39 @@
-# Phase 0 Reproduction Report
+# Phase 0 复现报告
 
-Initial run: 2026-08-12
-Closure run: 2026-08-13
-Target: `gpu-111`  
-Repository path: `/data/models/RobustGEMQ`
-Baseline upstream revision: `5eb2240cb46d9811bc9f79026100b46f62a7b642`
+首次运行：2026-08-12；关闭运行：2026-08-13；目标服务器：`gpu-111`；仓库路径：`/data/models/RobustGEMQ`；基线上游版本：`5eb2240cb46d9811bc9f79026100b46f62a7b642`
 
-## Result
+## 结果
 
-Phase 0 passed for the local, synthetic CUDA validation scope. After moving the repository from
-local storage to `/data/models`, the environment was rebuilt from the committed constraints and
-the acceptance suite passed three consecutive times.
+Phase 0 在本地合成 CUDA 验证范围内通过。仓库从本地存储迁移至 `/data/models` 后，环境根据已提交约束重新构建，验收套件连续三次通过。
 
-| Check | Result | Evidence |
+| 检查项 | 结果 | 证据 |
 | --- | --- | --- |
-| Source compilation | Pass | `compileall` exit code 0 |
-| Core imports and CUDA visibility | Pass | PyTorch sees 8 CUDA devices |
-| Synthetic quantized linear tests | Pass with expected xfails | Included in the 56 collected tests |
-| Synthetic MoE block tests | Pass | DeepSeek, Mixtral, OLMoE and Qwen3MoE paths covered |
-| Overall pytest result | Pass | 3 consecutive runs: 53 passed, 3 expected failures per run |
-| Full checkpoint/model validation | Blocked for Phase 0 | `huggingface.co:443` timed out from the server |
+| 源码编译 | 通过 | `compileall` 返回码 0 |
+| 核心导入与 CUDA 可见性 | 通过 | PyTorch 识别到 8 张 CUDA 设备 |
+| 合成量化 linear 测试 | 通过，含预期 xfail | 纳入 56 项收集测试 |
+| 合成 MoE block 测试 | 通过 | 覆盖 DeepSeek、Mixtral、OLMoE 与 Qwen3MoE 路径 |
+| 整体 pytest 结果 | 通过 | 连续 3 次均为 53 passed、3 expected failures |
+| 完整检查点/模型验证 | Phase 0 阻塞 | 服务器访问 `huggingface.co:443` 超时 |
 
-The three expected failures are the upstream tests explicitly marked for GemLite's unsupported
-3-bit execution path. They are not regressions introduced by RobustGEMQ.
+三项预期失败是上游对 GemLite 不支持 3-bit 执行路径所作的明确标记，不是 RobustGEMQ 引入的回归。
 
-## Split-K stability defect and fix
+## Split-K 稳定性缺陷与修复
 
-The post-move validation exposed an intermittent failure in the 4-bit decode-shape GEMV test.
-`dequant_splitk_gemv_triton` divided K across programs and atomically accumulated every partial
-sum directly into an FP16 output tensor. Atomic arrival order is unspecified; rounding after each
-FP16 atomic addition therefore made the result order-dependent. Identical seeded inputs could
-land just above or below the test's relative-error budget.
+迁移后的验证暴露出 4-bit decode-shape GEMV 测试的间歇性失败。`dequant_splitk_gemv_triton` 将 K 拆分到多个 program，并直接把每个部分和原子累加到 FP16 输出张量。原子操作的到达顺序未定义；每次 FP16 原子加法后的舍入因此使结果依赖到达顺序。相同的固定种子输入可能刚好落在测试相对误差预算的两侧。
 
-An FP32-accumulation prototype eliminated the variation but increased median latency for the
-tested 1x512 by 512x256 decode shape from 40.97 microseconds to 50.03 microseconds (22.1%) on the
-same GPU. It was rejected rather than imposing that regression on the decode hot path.
+FP32 累加原型消除了波动，但在相同 GPU 的 1x512 × 512x256 decode shape 上，median latency 从 40.97 微秒增加到 50.03 微秒（+22.1%）。为避免在 decode 热路径强加该回归，未采用该方案。
 
-Phase 0 therefore keeps the inherited runtime unchanged and makes its numerical contract explicit.
-The split-K test has a dedicated `1.25e-3` relative-error floor, narrowly above the observed FP16
-atomic-order envelope, while every fixed-bitwidth GEMV is invoked 16 times and judged by its worst
-observed error. This removes the false pass/fail boundary without hiding materially larger drift.
+Phase 0 因此保留继承的 runtime，并明确其数值契约。split-K 测试设置了专用 `1.25e-3` 相对误差下界，略高于观测到的 FP16 原子顺序误差包络；同时每个固定 bit-width GEMV 执行 16 次，并以观测到的最坏误差判定。这样既消除了错误的通过/失败边界，也不会隐藏更大的数值漂移。
 
-Closure evidence on physical GPU 2:
+物理 GPU 2 上的关闭证据：
 
-- Five independent Python processes ran the 4-bit regression test; each test performed 16 kernel
-  executions. All 80 executions passed.
-- Three consecutive full Phase 0 runs passed: `53 passed, 3 xfailed` in 50.54 s, 49.78 s and
-  50.70 s.
-- All DeepSeek, Mixtral, OLMoE and Qwen3MoE prefill/decode equivalence tests passed in every run.
+- 五个独立 Python 进程执行 4-bit 回归测试；每个测试执行 16 次 kernel。全部 80 次执行通过。
+- 三次连续完整 Phase 0 运行均通过：`53 passed, 3 xfailed`，耗时分别为 50.54 秒、49.78 秒和 50.70 秒。
+- DeepSeek、Mixtral、OLMoE 与 Qwen3MoE 的所有 prefill/decode 等价性测试在每次运行中均通过。
 
-The unused `dequant_sel_splitk_gemv_triton` helper is not called anywhere in the current
-repository and is outside this closure change. It should receive a direct correctness test before
-being adopted by a future inference path.
+未使用的 `dequant_sel_splitk_gemv_triton` helper 当前未被仓库任何路径调用，因而不属于本次关闭改动；若未来推理路径采用它，应先为其补充直接正确性测试。
 
-## Verified environment
+## 已验证环境
 
 - Python 3.12.3
 - PyTorch 2.13.0+cu130
@@ -62,40 +42,29 @@ being adopted by a future inference path.
 - HQQ 0.2.8.post1
 - GemLite 0.6.0.post1
 - NVIDIA driver 610.43.03
-- GPU compute capability reported by PyTorch: 12.0
+- PyTorch 报告的 GPU compute capability：12.0
 
-The exact direct dependency versions are captured in
-`requirements/phase0-constraints.txt`. Machine-readable hardware and package details are in
-`artifacts/phase0/environment.json`, and test exit codes are in
-`artifacts/phase0/smoke-summary.json`.
+精确的直接依赖版本位于 `requirements/phase0-constraints.txt`。机器可读的硬件与包信息位于 `artifacts/phase0/environment.json`，测试返回码位于 `artifacts/phase0/smoke-summary.json`。
 
-## Reproduction defect found
+## 发现的复现缺陷
 
-The upstream dependency declaration uses `transformers>=4.57.0`. On 2026-08-12 this resolved to
-Transformers 5.15.0. That version no longer exports `DeepseekV2MoE` from the path imported by GEMQ,
-so all 53 non-xfail tests initially failed during import with the same error.
+上游依赖声明使用 `transformers>=4.57.0`。在 2026-08-12，这一约束解析到 Transformers 5.15.0。该版本不再从 GEMQ 导入路径导出 `DeepseekV2MoE`，导致全部 53 个非 xfail 测试均在 import 阶段以同一错误失败。
 
-Pinning Transformers to the latest compatible 4.57 patch release, 4.57.6, restored the expected
-API. Without any GEMQ source changes, the same suite then produced 53 passes and 3 expected
-failures. This demonstrates why RobustGEMQ needs a tested dependency compatibility contract rather
-than minimum-only version bounds.
+将 Transformers 固定为最新兼容的 4.57 patch 版本 4.57.6 后，无需修改 GEMQ 源码，同一套件恢复为 53 个通过和 3 个预期失败。这证明 RobustGEMQ 需要经过测试的依赖兼容性契约，而不能只使用最低版本下界。
 
-## Network and model boundary
+## 网络与模型边界
 
-PyPI was reachable, although some large CUDA wheels were slow on particular CDN endpoints.
-Hugging Face was not reachable from the server during Phase 0: an HTTPS probe timed out before an
-HTTP response. Therefore no model artifact was downloaded, and no full-checkpoint perplexity or
-decode claim is made here.
+PyPI 可访问，但部分大型 CUDA wheel 在个别 CDN 端点较慢。Phase 0 期间服务器无法访问 Hugging Face：HTTPS 探测在收到 HTTP 响应前超时。因此未下载模型产物，也未在本阶段声明完整检查点 perplexity 或 decode 结果。
 
-Phase 1 should begin only after one of these inputs is available:
+Phase 1 仅应在以下任一输入可用后开始：
 
-1. Direct Hugging Face access from the server.
-2. A pre-downloaded model and dataset placed under an explicitly supplied local path.
-3. An approved internal model mirror.
+1. 服务器可直接访问 Hugging Face。
+2. 已下载模型与数据集被放置到明确指定的本地路径。
+3. 获准使用内部模型镜像。
 
-This is an external-input blocker, not a failure of the local CUDA baseline.
+这是外部输入阻塞，不是本地 CUDA 基线的失败。
 
-## Commands
+## 命令
 
 ```bash
 cd /data/models/RobustGEMQ
@@ -103,7 +72,4 @@ bash scripts/phase0/setup_env.sh
 PHASE0_GPU=2 bash scripts/phase0/validate.sh
 ```
 
-`validate.sh` runs the smoke suite three times by default; `PHASE0_GPU` is optional and isolates
-validation from other workloads on a shared server. The scripts are idempotent. Runtime logs and
-JUnit XML are generated under `artifacts/phase0/` and intentionally excluded from Git; the small
-JSON summaries are retained.
+`validate.sh` 默认连续运行 smoke suite 三次；`PHASE0_GPU` 为可选参数，可使共享服务器上的验证与其他负载隔离。脚本是幂等的。运行日志与 JUnit XML 生成在 `artifacts/phase0/` 下且有意不提交到 Git；小型 JSON 摘要会保留。
