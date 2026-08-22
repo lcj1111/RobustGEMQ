@@ -47,6 +47,15 @@ cd /data/models/RobustGEMQ
 
 This validator requires: the four frozen allocation methods at the exact 2.5-bpe budget, 1,536 finite per-item NLLs for every packed method, at least 10,000 bootstrap draws, passing H6 records, and the frozen G6 stop decision. The complete execution chain and individual runners are in the [Phase 6 harness](../phase6/HARNESS.md); the detailed result is in the [Phase 6 report](../phase6/REPORT.md).
 
+For public review, [evidence.json](evidence.json) is a compact derivative of the completed private artifact set. It exposes no model weights, prompts, raw per-item scores or checkpoint paths; it does expose the fixed protocol, allocation and scenario hashes, aggregate metrics, bootstrap confidence intervals and the source-file hashes from which it was derived. Its release contract runs without a GPU:
+
+```bash
+python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
+```
+
+The same checks run automatically for relevant pull requests through `.github/workflows/phase9-release.yml`.
+
 ## Permitted and prohibited follow-up
 
 Permitted follow-up is engineering work that strengthens reproducibility or makes the harness easier to operate: artifact manifests, offline verification, regression tests, profiling of an already-fixed checkpoint, and documentation.
