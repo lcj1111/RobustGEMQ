@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "registry_id": "robustgemq-phase6-main-v1",
+  "domains": {
+    "general": {
+      "label": "General",
+      "source": "allenai/c4",
+      "revision": "1588ec454efa1a09f29cd18ddd04fe05fc8653a2",
+      "license": "ODC-BY-1.0; Common Crawl terms also apply",
+      "allocation": {
+        "path": "c4/en/c4-train.00000-of-01024.json",
+        "format": "jsonl",
+        "id_field": "url",
+        "template": "{text}"
+      },
+      "held_out": ["c4/en/c4-validation.00000-of-00008.json.gz", "WikiText-2 test"]
+    },
+    "math": {
+      "label": "Math",
+      "source": "openai/grade-school-math",
+      "revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+      "license": "MIT",
+      "allocation": {
+        "path": "gsm8k/train.jsonl",
+        "format": "jsonl",
+        "template": "Question: {question}\nAnswer: {answer}"
+      },
+      "held_out": ["gsm8k/test.jsonl", "MATH test subset"]
+    },
+    "code": {
+      "label": "Code",
+      "source": "deepmind/code_contests",
+      "revision": "802411c3010cb00d1b05bad57ca77365a3c699d6",
+      "license": "CC-BY-4.0; upstream acknowledgements apply",
+      "allocation": {
+        "path": "code/code_contests_train_python3.jsonl",
+        "format": "jsonl",
+        "id_field": "record_id",
+        "template": "Problem: {description}\nAccepted Python 3 solution:\n{solution}"
+      },
+      "held_out": ["all sanitized MBPP splits", "OpenAI HumanEval"]
+    },
+    "instruction": {
+      "label": "Instruction",
+      "source": "databrickslabs/dolly/databricks-dolly-15k",
+      "revision": "2305eb7f2f4b3beb2379f34c6addf335b46c4b43",
+      "license": "CC-BY-SA-3.0",
+      "allocation": {
+        "path": "dolly/databricks-dolly-15k.jsonl",
+        "format": "jsonl",
+        "template": "Instruction: {instruction}\nContext: {context}\nResponse: {response}"
+      },
+      "held_out": ["ARC", "BoolQ", "HellaSwag", "MMLU"]
+    }
+  }
+}
