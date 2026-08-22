@@ -7,10 +7,16 @@ checkpoint_root="${CHECKPOINT_ROOT:-$repo/results/phase6/real-checkpoints}"
 artifact_root="${ARTIFACT_ROOT:-$repo/artifacts/phase6/h6-validation}"
 python_bin="${PYTHON_BIN:-$repo/.venv/bin/python}"
 cuda_device="${CUDA_DEVICE:-3}"
+data_root="${DATA_ROOT:-/data/models/datasets/gemq-phase1}"
 
 mkdir -p "$artifact_root"
 mapfile -t methods < <("$python_bin" -c 'import json,sys; [print(x) for x in json.load(open(sys.argv[1]))["selected_for_real_packing"]]' "$selection")
 cd "$repo"
+export GEMQ_WIKITEXT_DIR="${GEMQ_WIKITEXT_DIR:-$data_root/wikitext2}"
+export GEMQ_C4_TRAIN_FILE="${GEMQ_C4_TRAIN_FILE:-$data_root/c4/en/c4-train.00000-of-01024.json}"
+export GEMQ_C4_VALIDATION_FILE="${GEMQ_C4_VALIDATION_FILE:-$data_root/c4/en/c4-validation.00000-of-00008.json.gz}"
+export HF_DATASETS_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 for method in "${methods[@]}"; do
   checkpoint="$checkpoint_root/$method"
   method_dir="$artifact_root/$method"
