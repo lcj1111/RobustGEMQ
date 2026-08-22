@@ -5,6 +5,7 @@ import math
 import gc
 import json
 from functools import partial
+from pathlib import Path
 from tqdm import tqdm
 
 import torch
@@ -109,6 +110,39 @@ def finetune_routers(model, dataloader, args):
     # restore
     model = model.to(org_dtype)
     model.config.use_cache = use_cache
+
+
+@torch.inference_mode()
+def evaluate_phase6_scenarios(model, scenario_root, seeds, output_path):
+    """Evaluate immutable domain scenarios and persist NLL before model packing."""
+    root = Path(scenario_root)
+    result = {"schema_version": 1, "quantization_stage": "pre-packing", "scenarios": {}}
+    model.config.use_cache = False
+    for domain in ("general", "math", "code", "instruction"):
+        for seed in seeds:
+            directory = root / domain / f"seed-{seed}"
+            manifest = json.loads((directory / "scenario.json").read_text(encoding="utf-8"))
+            tokens = torch.load(manifest["tokens_path"], map_location="cpu", weights_only=True)
+            total_loss, predicted_tokens = 0.0, 0
+            for row in tokens:
+                batch = row.unsqueeze(0).to("cuda")
+                output = model(input_ids=batch, labels=batch, use_cache=False)
+                count = batch.numel() - batch.shape[0]
+                total_loss += float(output.loss) * count
+                predicted_tokens += count
+            nll = total_loss / predicted_tokens
+            result["scenarios"][f"{domain}:seed-{seed}"] = {
+                "nll": nll,
+                "ppl": float(math.exp(nll)),
+                "predicted_tokens": predicted_tokens,
+                "token_sha256": manifest["token_sha256"],
+            }
+    result["seeds"] = seeds
+    result["scenario_root"] = str(root.resolve())
+    destination = Path(output_path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({"phase6_scenarios": len(result["scenarios"]), "output": str(destination)}))
 
 
 @torch.no_grad()
@@ -310,6 +344,14 @@ def parse_args():
         "--seed", type=int, default=0,
         help="Seed for sampling the calibration data"
     )
+    parser.add_argument(
+        "--scenario_tokens_path", type=str, default="",
+        help="Immutable [nsamples, seqlen] token tensor for audited calibration",
+    )
+    parser.add_argument("--phase6_eval_root", type=str, default="")
+    parser.add_argument("--phase6_eval_seeds", type=str, default="0,1,2")
+    parser.add_argument("--phase6_eval_output", type=str, default="")
+    parser.add_argument("--skip_builtin_eval", action="store_true")
 
     # mixed-precision bit allocation
     parser.add_argument(
@@ -472,9 +514,10 @@ if __name__ == "__main__":
     # finetune routers
     if args.finetune_routers:
         model = dispatch_model_to_all_devices(model)
-        
-        print("Evaluating quantized model before fine-tuning ...")
-        evaluate_perplexity(model, tokenizer, ["wikitext2", "c4"], args.model_name, offload=False)
+
+        if not args.skip_builtin_eval:
+            print("Evaluating quantized model before fine-tuning ...")
+            evaluate_perplexity(model, tokenizer, ["wikitext2", "c4"], args.model_name, offload=False)
 
         print("Fine-tuning routers ...")
         finetune_routers(model, dataloader, args)
@@ -482,7 +525,7 @@ if __name__ == "__main__":
     # evaluate model
     print("Evaluating model ...")
     model.eval()
-    if args.eval_downstream or args.finetune_routers:
+    if not args.skip_builtin_eval and (args.eval_downstream or args.finetune_routers):
         # move all model weights onto gpus and use model() for forwarding
         if not args.finetune_routers:
             model = dispatch_model_to_all_devices(model)
@@ -498,9 +541,21 @@ if __name__ == "__main__":
                 )
             except:
                 print("Downstream evaluation failed. Skipping ...")
-    else:
+    elif not args.skip_builtin_eval:
         # memory-efficient evaluation with layer offloading
         evaluate_perplexity(model, tokenizer, ["wikitext2", "c4"], args.model_name, offload=True)
+
+    if args.phase6_eval_root:
+        if not args.phase6_eval_output:
+            raise ValueError("--phase6_eval_output is required with --phase6_eval_root")
+        # GPTQ leaves decoder blocks on CPU. Put the entire dequantized model on the
+        # visible device(s) only for this fixed evaluation; allocation is unchanged.
+        if not args.finetune_routers and not args.eval_downstream:
+            model = dispatch_model_to_all_devices(model)
+        seeds = [int(seed) for seed in args.phase6_eval_seeds.split(",") if seed]
+        if not seeds or any(seed not in (0, 1, 2) for seed in seeds):
+            raise ValueError("phase6 evaluation seeds must be a non-empty subset of 0,1,2")
+        evaluate_phase6_scenarios(model, args.phase6_eval_root, seeds, args.phase6_eval_output)
 
     # save model
     if args.save_path:

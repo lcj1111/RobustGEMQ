@@ -1,0 +1,220 @@
+{
+  "allocation": {
+    "bpe": 2.5,
+    "budget": 2560.0,
+    "config_sha256": {
+      "alphaq-style": "699c001d5afb8db82cae1cf4c6779574defa39343b5a8dd603d41b93f530a2f6",
+      "concat": "ac0f2cb4092d2cc15d34fdcec0605cf24c1beb84a571a46fc775851a0f460d28",
+      "domain-mean": "4607647dc5c618a59c389f0ccb24012db6c15b18375c87e5c3443f6ff0edb196",
+      "gemq-c4": "e7fe68d41c23390722dbef5793ce17633651a984f5347d0297d0b1ecce533180"
+    },
+    "method_hamming_fraction": {
+      "alphaq-style": {
+        "alphaq-style": 0.0,
+        "concat": 0.6591796875,
+        "domain-mean": 0.6533203125,
+        "gemq-c4": 0.6162109375
+      },
+      "concat": {
+        "alphaq-style": 0.6591796875,
+        "concat": 0.0,
+        "domain-mean": 0.09765625,
+        "gemq-c4": 0.228515625
+      },
+      "domain-mean": {
+        "alphaq-style": 0.6533203125,
+        "concat": 0.09765625,
+        "domain-mean": 0.0,
+        "gemq-c4": 0.2373046875
+      },
+      "gemq-c4": {
+        "alphaq-style": 0.6162109375,
+        "concat": 0.228515625,
+        "domain-mean": 0.2373046875,
+        "gemq-c4": 0.0
+      }
+    },
+    "methods": [
+      "gemq-c4",
+      "concat",
+      "domain-mean",
+      "alphaq-style"
+    ]
+  },
+  "decision": {
+    "domain_mean_on_matched_budget_mean_worst_pareto": false,
+    "g6_status": "STOP_NO_LARGE_MODEL_EXPANSION",
+    "gate": "G6",
+    "h3_full_pass": false,
+    "h6_pass": true,
+    "point_metrics": {
+      "concat": {
+        "domain_nll": {
+          "code": 1.3019073510852952,
+          "general": 2.6459504909192524,
+          "instruction": 1.9801618214696646,
+          "math": 1.2992372997105122
+        },
+        "mean_domain_nll": 1.8068142407961811,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.6459504909192524
+      },
+      "domain-mean": {
+        "domain_nll": {
+          "code": 1.301291999562333,
+          "general": 2.645954915943245,
+          "instruction": 2.001646002444128,
+          "math": 1.298223126679659
+        },
+        "mean_domain_nll": 1.8117790111573413,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.645954915943245
+      },
+      "gemq-c4": {
+        "domain_nll": {
+          "code": 1.4835886438377202,
+          "general": 2.605476639854411,
+          "instruction": 1.9826070958127577,
+          "math": 1.3244196219990652
+        },
+        "mean_domain_nll": 1.8490230003759884,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.605476639854411
+      }
+    },
+    "reason": "H6 passed, but Domain-Mean does not enter the matched-budget mean/worst Pareto frontier on the real checkpoint item-level estimate; H3 also did not pass. Do not expand to a second model."
+  },
+  "model": "allenai/OLMoE-1B-7B-0924",
+  "paired_bootstrap": {
+    "comparisons_target_domain_mean": {
+      "concat": {
+        "mean_domain_nll_difference_target_minus_baseline": {
+          "ci95": [
+            0.004214151978764441,
+            0.005727409321116211
+          ],
+          "point_difference": 0.004968248632790833,
+          "probability_target_better": 0.0
+        },
+        "probability_target_strictly_dominates": 0.0,
+        "worst_domain_nll_difference_target_minus_baseline": {
+          "ci95": [
+            -0.002006689249538174,
+            0.0020474674335370425
+          ],
+          "point_difference": 4.423972871152104e-06,
+          "probability_target_better": 0.4979
+        }
+      },
+      "gemq-c4": {
+        "mean_domain_nll_difference_target_minus_baseline": {
+          "ci95": [
+            -0.03896088474915193,
+            -0.03555075293697883
+          ],
+          "point_difference": -0.03724696111181596,
+          "probability_target_better": 1.0
+        },
+        "probability_target_strictly_dominates": 0.0,
+        "worst_domain_nll_difference_target_minus_baseline": {
+          "ci95": [
+            0.03731037902956178,
+            0.04379297718405752
+          ],
+          "point_difference": 0.040483244122999404,
+          "probability_target_better": 0.0
+        }
+      }
+    },
+    "draws": 10000,
+    "method": "stratified paired bootstrap within each domain/seed scenario over 128 fixed items",
+    "seed": 20260822
+  },
+  "phase": 6,
+  "project": "RobustGEMQ",
+  "real_checkpoint_validation": {
+    "h6_passed": true,
+    "item_nlls_per_method": 1536,
+    "methods": [
+      "concat",
+      "domain-mean",
+      "gemq-c4"
+    ]
+  },
+  "scenario_provenance": {
+    "code:seed-0": {
+      "layer_re_sha256": "89a743ef2ac1408969d1785436d5630888bd6291f3a6d6d3b42ac2ea497355f6",
+      "token_sha256": "d82440d75c8b7d1207ab8eb115992da304133c2a672b018c36b3da5d850f372a"
+    },
+    "code:seed-1": {
+      "layer_re_sha256": "c8a089d0ade6e2eab6b8e81e156a794680d82400dd48e28f2749689eb7771ab7",
+      "token_sha256": "df849adcd13bc59018375936d3b071da7cecba85c6a56e24e41d215b20e9f94e"
+    },
+    "code:seed-2": {
+      "layer_re_sha256": "ca0955778037cbf4bf1562551b15e163f6ad194afe08e4734832a444df587a4b",
+      "token_sha256": "897b1ed8efc64dd9f23c538d26c026f5df981fa78c9dd51a6b613e594126836d"
+    },
+    "general:seed-0": {
+      "layer_re_sha256": "f133f8e92cc76c11b808b09134e264c1f1ed67518e8d3eb19ec15523f6a0d2db",
+      "token_sha256": "cce5aa1bcae123fe956a5eee4d194820caae7028acd7299b117b4584fb0632ed"
+    },
+    "general:seed-1": {
+      "layer_re_sha256": "b47b81b8924570498d607d8f71ac9895ba5a36f0c21517515c7a2acb696add4d",
+      "token_sha256": "9b12713e85a370996a473e4757a3f1f4d2471a1578181f278bf5f8a7e68daefb"
+    },
+    "general:seed-2": {
+      "layer_re_sha256": "9ab954a9fd1df2c0b36f26df892fdc3ba30d4c2d0f96d728cfd1a79fc428b95f",
+      "token_sha256": "b81ed911e84fd2fd704a1c5958b3e468a53505ad7f0c3ec013e5125d982dbf3f"
+    },
+    "instruction:seed-0": {
+      "layer_re_sha256": "d94d01ca015a14da4e799392bd2919cb5460388574f6bc5ca8584c1f3f4e5666",
+      "token_sha256": "a7590820227adc220e68bc2b7a8d1b5386210df9a13aeaa017ecabb75c2312b9"
+    },
+    "instruction:seed-1": {
+      "layer_re_sha256": "3eaa16aae7e3ccb2c48663b21e5469947ac94225809198bffec247ca4eca7284",
+      "token_sha256": "9cbb940187c9fafb171d1a6a5bade880488f91ee56c6e2f55248aeda9afde18c"
+    },
+    "instruction:seed-2": {
+      "layer_re_sha256": "69f3757051a9c3cef66fec91199b503927017422531192c979f2a351122ee3ba",
+      "token_sha256": "156fe1bd5c0c31196793380677cab423dd5a069c27640ee6a3f6178774bdf7ba"
+    },
+    "math:seed-0": {
+      "layer_re_sha256": "c8b48092406dcecc2aaa6f4edafd08b873da3737a5d6a01c60ec38a317744f31",
+      "token_sha256": "0eb8587b6f344610a754b8a06b7fe1006f585286e3da22b2314ef333a7971a79"
+    },
+    "math:seed-1": {
+      "layer_re_sha256": "42ebd1ef3e83727e9c5566d69b4eabbeb61d48437b7dcbcffaab4880d099e0ee",
+      "token_sha256": "b51bdd07808c4028e3e23dbecbe06e534929d0740a3b79df040d49c45221facb"
+    },
+    "math:seed-2": {
+      "layer_re_sha256": "eb0a17b0b8602aaf7218af5ae851b821bb529901d1eef3300ad625e30912739c",
+      "token_sha256": "0b30011ff8cdc871998249a90e82e8a318255664ee8ba929064eafe46e7c50f6"
+    }
+  },
+  "schema_version": 1,
+  "source_file_sha256": {
+    "allocation_manifest": "a578cdf2ada9fb037f5e053abfeb264937735d570192ae1404125bd36ed8ac8b",
+    "bootstrap": "90e85670cf23532df906bfa1d3c7f1353e567225b4be36c3271a185ad75d1dc0",
+    "decision": "d97a9f399fe6b4382599fc928f2c5548c7178f0d0436c0440b57c1c74e68865d",
+    "release_verification": "be9c02b12946642dea787f84cae54f2727bd6ad8d3185fff3e621aced20ed567"
+  },
+  "study_design": {
+    "domains": [
+      "code",
+      "general",
+      "instruction",
+      "math"
+    ],
+    "effective_tokens_per_scenario": [
+      262144
+    ],
+    "scenarios": 12,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "sequences_per_scenario": 128,
+    "tokens_per_sequence": 2048
+  }
+}

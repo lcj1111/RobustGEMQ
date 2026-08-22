@@ -11,6 +11,30 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 2. fine-tuning the routers so they can better work with quantized experts;
 3. optionally using progressive quantization to refine the bit allocation.
 
+## RobustGEMQ release: five-minute overview
+
+RobustGEMQ is an auditable reliability layer built on GEMQ's MoE quantization pipeline. It answers a narrower and operationally important question: **does a proposed allocation remain credible after real checkpoint packing, cross-domain evaluation and a precommitted statistical gate?**
+
+```text
+pinned domain data → immutable token scenarios → LayerGrads / LayerRE
+                 → exact-budget allocation → GPTQ + router fine-tuning
+                 → HQQ packed checkpoint → fake/real H6 validation
+                 → paired bootstrap → frozen G6 scale-up decision
+```
+
+The completed OLMoE study did **not** establish a quality improvement for `Domain-Mean`; the matched-budget gate stopped second-model expansion. This is a documented reliability result, not an unfinished benchmark. Start here:
+
+- [Final release boundary](docs/phase9/REPORT.md): what is established, what is ruled out, and how to position the project.
+- [Public evidence bundle](docs/phase9/evidence.json): compact metrics, allocation hashes and scenario provenance; no checkpoint weights or raw data.
+- [Phase 6 harness](docs/phase6/HARNESS.md): the full re-run and artifact chain.
+
+Run the GPU-free contract checks locally:
+
+```bash
+python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
+```
+
 
 ### What's in this repo
 * An ILP solver for global expert-level bit allocation
@@ -20,6 +44,8 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 
 ## Updates
 
+- [2026/08] RobustGEMQ Phase 9 finalized the release as an auditable MoE-quantization reliability harness. The frozen real-checkpoint evidence rules out a quality-improvement claim for `Domain-Mean`; Phase 7/8 scale-up is consequently ineligible. See the [final release report](docs/phase9/REPORT.md).
+- [2026/08] RobustGEMQ Phase 6 completed an audited four-domain × three-seed OLMoE main study, real GPTQ/RFT packing, H6 fake/real equivalence and item-level bootstrap. `Domain-Mean` did not beat the matched-budget baselines, so G6 stops second-model expansion; the resulting reliability harness and negative-result boundary are documented in the [Phase 6 report](docs/phase6/REPORT.md).
 - [2026/08] RobustGEMQ Phase 3 added audited Mean/Worst/CVaR allocation, exact small-problem verification and a four-domain held-out fake-RTN gate. Solver correctness passed, but the preregistered worst-domain quality target did not; G3 therefore pivots to one retained objective (`Domain-Mean`) instead of expanding CVaR. See the [Phase 3 report](docs/phase3/REPORT.md).
 - [2026/08] RobustGEMQ Phase 2 verified calibration-domain shift on OLMoE with four audited domains and two seeds. Both the coefficient-stability gate and fake-RTN NLL transfer gate passed; a Hamming-controlled route pilot also authorizes the optional Router-proxy phase. See the [Phase 2 report](docs/phase2/REPORT.md).
 - [2026/08] RobustGEMQ Phase 1 completed an auditable OLMoE 2-bit baseline from pinned inputs through real-quant generation. See the [Phase 1 report](docs/phase1/REPORT.md) for quality, numerical-equivalence and prefill-performance results.

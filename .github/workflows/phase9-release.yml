@@ -1,0 +1,39 @@
+name: Phase 9 release checks
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/phase9/**"
+      - "scripts/phase9/**"
+      - "scripts/phase6/verify_release.py"
+      - "tests/test_phase9_public_evidence.py"
+      - "tests/test_robust_solver.py"
+      - ".github/workflows/phase9-release.yml"
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "docs/phase9/**"
+      - "scripts/phase9/**"
+      - "scripts/phase6/verify_release.py"
+      - "tests/test_phase9_public_evidence.py"
+      - "tests/test_robust_solver.py"
+      - ".github/workflows/phase9-release.yml"
+
+jobs:
+  offline-release-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install offline test dependencies
+        run: |
+          python -m pip install --upgrade pip numpy scipy pytest
+          python -m pip install -e . --no-deps
+      - name: Validate published evidence boundary
+        run: python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+      - name: Verify allocation solver exactness
+        run: pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
