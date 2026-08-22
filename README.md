@@ -11,6 +11,30 @@ GEMQ is a post-training quantization framework for Mixture-of-Experts (MoE) LLMs
 2. fine-tuning the routers so they can better work with quantized experts;
 3. optionally using progressive quantization to refine the bit allocation.
 
+## RobustGEMQ release: five-minute overview
+
+RobustGEMQ is an auditable reliability layer built on GEMQ's MoE quantization pipeline. It answers a narrower and operationally important question: **does a proposed allocation remain credible after real checkpoint packing, cross-domain evaluation and a precommitted statistical gate?**
+
+```text
+pinned domain data → immutable token scenarios → LayerGrads / LayerRE
+                 → exact-budget allocation → GPTQ + router fine-tuning
+                 → HQQ packed checkpoint → fake/real H6 validation
+                 → paired bootstrap → frozen G6 scale-up decision
+```
+
+The completed OLMoE study did **not** establish a quality improvement for `Domain-Mean`; the matched-budget gate stopped second-model expansion. This is a documented reliability result, not an unfinished benchmark. Start here:
+
+- [Final release boundary](docs/phase9/REPORT.md): what is established, what is ruled out, and how to position the project.
+- [Public evidence bundle](docs/phase9/evidence.json): compact metrics, allocation hashes and scenario provenance; no checkpoint weights or raw data.
+- [Phase 6 harness](docs/phase6/HARNESS.md): the full re-run and artifact chain.
+
+Run the GPU-free contract checks locally:
+
+```bash
+python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
+```
+
 
 ### What's in this repo
 * An ILP solver for global expert-level bit allocation
