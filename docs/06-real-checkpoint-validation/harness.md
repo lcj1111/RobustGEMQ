@@ -1,4 +1,4 @@
-# Phase 6 可靠性 Harness
+# 阶段六：真实检查点可靠性 Harness
 
 该 Harness 使一条 MoE 量化主张能够从校准输入一直追溯至真实打包推理。它以 Gate 为核心：只有 allocation、场景身份以及 fake/real 执行路径都通过验证，检查点才可作为方法成功的证据。
 

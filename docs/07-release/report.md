@@ -1,4 +1,4 @@
-# RobustGEMQ Phase 9：最终发布与证据边界
+# 阶段七：发布与证据边界
 
 ## 发布决策
 
@@ -45,12 +45,12 @@ cd /data/models/RobustGEMQ
   --output artifacts/phase6/release-verification.json
 ```
 
-该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算、每个打包方法均有 1,536 条有限 NLL、至少 10,000 次 Bootstrap、H6 记录通过，以及冻结的 G6 STOP 决策。完整执行链路和各 runner 见 [Phase 6 Harness](../phase6/HARNESS.md)，详细结果见 [Phase 6 报告](../phase6/REPORT.md)。
+该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算、每个打包方法均有 1,536 条有限 NLL、至少 10,000 次 Bootstrap、H6 记录通过，以及冻结的 G6 STOP 决策。完整执行链路和各 runner 见[阶段六 Harness](../06-real-checkpoint-validation/harness.md)，详细结果见[阶段六报告](../06-real-checkpoint-validation/report.md)。
 
 供公开审阅的 [evidence.json](evidence.json) 是从已完成的私有产物集派生的轻量版本。它不暴露模型权重、prompt、原始逐样本得分或检查点路径；但公开固定协议、allocation 与场景哈希、聚合指标、Bootstrap 置信区间以及派生所依据源文件的哈希。其发布契约无需 GPU：
 
 ```bash
-python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
 pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 ```
 

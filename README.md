@@ -6,7 +6,7 @@
 
 </div>
 
-RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，面向 Mixture-of-Experts（MoE）大语言模型的低比特混合精度量化。项目重点不是事后寻找一个更好的 benchmark 数字，而是提供一套可审计的评测与可靠性验证机制：只有当候选分配在真实检查点、跨域评测和预先冻结的统计 Gate 下都成立时，才允许扩大实验规模。
+RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，面向 Mixture-of-Experts（MoE）大语言模型的低比特混合精度量化。项目重点不是事后寻找一个更好的 benchmark 数字，而是提供一套可审计的评测与可靠性验证机制：只有当候选分配在真实检查点、跨域评测和预先冻结的统计 Gate 下都成立时，才允许扩大实验规模。完整的连续阶段结构见[文档导航](docs/README.md)。
 
 GEMQ 的基础能力包括：根据专家重要性分配不同 bit-width、微调 Router 以适应量化专家，以及可选的渐进式量化。RobustGEMQ 在此基础上补足可复现输入、跨域评测、真实打包验证和失败边界。
 
@@ -23,14 +23,14 @@ RobustGEMQ 回答一个更窄、但对工程交付更关键的问题：**某个�
 
 已完成的 OLMoE 实验**没有**证明 `Domain-Mean` 带来量化质量提升；同预算 Gate 因此停止了第二模型扩展。这是有明确证据支持的可靠性结论，不是尚未完成的 benchmark。
 
-- [最终发布边界](docs/phase9/REPORT.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
-- [公开证据包](docs/phase9/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
-- [Phase 6 可靠性手册](docs/phase6/HARNESS.md)：完整的复现实验链路与产物约定。
+- [最终发布边界](docs/07-release/report.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
+- [公开证据包](docs/07-release/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
+- [阶段六可靠性手册](docs/06-real-checkpoint-validation/harness.md)：完整的复现实验链路与产物约定。
 
 可在本地运行无需 GPU 的发布契约检查：
 
 ```bash
-python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
 pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 ```
 
@@ -43,11 +43,11 @@ pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 
 ## 阶段更新
 
-- [2026/08] RobustGEMQ Phase 9 已作为可审计的 MoE 量化可靠性 Harness 完成发布。冻结的真实检查点证据不支持 `Domain-Mean` 的质量提升主张，因此 Phase 7/8 的扩展不具备资格。详见[最终发布报告](docs/phase9/REPORT.md)。
-- [2026/08] RobustGEMQ Phase 6 完成四领域 × 三随机种子的 OLMoE 主实验、真实 GPTQ/RFT 打包、H6 fake/real 等价性验证与逐样本 Bootstrap。`Domain-Mean` 未超过同预算基线，G6 阻止第二模型扩展；可靠性 Harness 与负结果边界见 [Phase 6 报告](docs/phase6/REPORT.md)。
-- [2026/08] RobustGEMQ Phase 3 增加 Mean/Worst/CVaR 的可审计分配、精确小问题验证和四领域 held-out fake-RTN Gate。求解器正确性通过，但预先注册的最坏领域质量假设未通过；G3 因此 PIVOT，只保留一个待验证目标而不扩展 CVaR。详见 [Phase 3 报告](docs/phase3/REPORT.md)。
-- [2026/08] RobustGEMQ Phase 2 验证 OLMoE 的跨校准域敏感度。系数稳定性 Gate 与 fake-RTN NLL 迁移 Gate 均通过；经过 Hamming 控制的 route pilot 还授权了可选的 Router-proxy 阶段。详见 [Phase 2 报告](docs/phase2/REPORT.md)。
-- [2026/08] RobustGEMQ Phase 1 完成从固定输入到真实量化生成的可审计 OLMoE 2-bit 基线。量化质量、数值等价性和 prefill 性能结果见 [Phase 1 报告](docs/phase1/REPORT.md)。
+- [2026/08] 阶段七完成发布：RobustGEMQ 作为可审计的 MoE 量化可靠性 Harness 交付。冻结的真实检查点证据不支持 `Domain-Mean` 的质量提升主张，因此第二模型与执行性能扩展均不具备资格。详见[最终发布报告](docs/07-release/report.md)。
+- [2026/08] 阶段六完成四领域 × 三随机种子的 OLMoE 主实验、真实 GPTQ/RFT 打包、H6 fake/real 等价性验证与逐样本 Bootstrap。`Domain-Mean` 未超过同预算基线，G6 阻止第二模型扩展；可靠性 Harness 与负结果边界见 [结果报告](docs/06-real-checkpoint-validation/report.md)。
+- [2026/08] 阶段四完成 Mean/Worst/CVaR 的可审计分配、精确小问题验证和四领域 held-out fake-RTN Gate。求解器正确性通过，但预先注册的最坏领域质量假设未通过；G3 因此 PIVOT，只保留一个待验证目标而不扩展 CVaR。详见 [报告](docs/04-allocation-audit/report.md)。
+- [2026/08] 阶段三验证 OLMoE 的跨校准域敏感度。系数稳定性 Gate 与 fake-RTN NLL 迁移 Gate 均通过；经过 Hamming 控制的 route pilot 还授权了可选的 Router-proxy 阶段。详见 [报告](docs/03-domain-sensitivity/report.md)。
+- [2026/08] 阶段二完成从固定输入到真实量化生成的可审计 OLMoE 2-bit 基线。量化质量、数值等价性和 prefill 性能结果见 [报告](docs/02-real-quant-baseline/report.md)。
 - [2026/08] bit 分配默认通过 SciPy 内置的 **HiGHS** ILP 求解器完成，因此重新生成 bit 配置不再依赖 Gurobi 许可证；Gurobi 仍保留为可选后端。
 - [2026/08] 真实量化推理现已覆盖 **OLMoE-1B-7B-0924**、**Qwen3-30B-A3B**、Mixtral-8x7B 与 DeepSeek-V2-Lite；使用 `scripts/bench_generate_<model>.sh` 运行。
 - [2026/08] 已验证实际量化端到端匹配 fake quant：DeepSeek-V2-Lite 的 perplexity 差异为 0.06%，OLMoE-1B-7B-0924 为 0.03%。使用 `scripts/test_real_quant.sh` 复核。
@@ -72,7 +72,7 @@ pip install -e ".[gurobi]"
 
 ## 使用方式
 
-`scripts` 提供 Mixtral-8×7B、DeepSeek-V2-Lite、OLMoE-1B-7B-0924 与 Qwen3-30B-A3B 的完整基础流水线：bit 分配、量化和真实量化推理。RobustGEMQ 的正式跨域与可靠性流程请优先参阅 [Phase 6 手册](docs/phase6/HARNESS.md)。
+`scripts` 提供 Mixtral-8×7B、DeepSeek-V2-Lite、OLMoE-1B-7B-0924 与 Qwen3-30B-A3B 的完整基础流水线：bit 分配、量化和真实量化推理。RobustGEMQ 的正式跨域与可靠性流程请优先参阅[阶段六 Harness](docs/06-real-checkpoint-validation/harness.md)。
 
 ### 1. bit 分配
 

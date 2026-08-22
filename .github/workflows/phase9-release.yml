@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "README.md"
-      - "docs/phase9/**"
+      - "docs/07-release/**"
       - "scripts/phase9/**"
       - "scripts/phase6/verify_release.py"
       - "tests/test_phase9_public_evidence.py"
@@ -14,7 +14,7 @@ on:
     branches: [main]
     paths:
       - "README.md"
-      - "docs/phase9/**"
+      - "docs/07-release/**"
       - "scripts/phase9/**"
       - "scripts/phase6/verify_release.py"
       - "tests/test_phase9_public_evidence.py"
@@ -34,6 +34,6 @@ jobs:
           python -m pip install --upgrade pip numpy scipy pytest
           python -m pip install -e . --no-deps
       - name: Validate published evidence boundary
-        run: python scripts/phase9/verify_public_evidence.py --evidence docs/phase9/evidence.json
+        run: python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
       - name: Verify allocation solver exactness
         run: pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py

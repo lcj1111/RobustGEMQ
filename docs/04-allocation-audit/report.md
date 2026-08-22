@@ -1,4 +1,4 @@
-# RobustGEMQ Phase 3：鲁棒求解器、held-out 质量门禁与失败边界
+# 阶段四：鲁棒分配与求解器审计
 
 日期：2026-08-16<br>
 模型：`allenai/OLMoE-1B-7B-0924`<br>

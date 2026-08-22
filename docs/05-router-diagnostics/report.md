@@ -1,4 +1,4 @@
-# RobustGEMQ Phase 4：Router near-boundary proxy 验证与负结果边界
+# 阶段五：路由诊断与反证边界
 
 日期：2026-08-16<br>
 模型：`allenai/OLMoE-1B-7B-0924`<br>
