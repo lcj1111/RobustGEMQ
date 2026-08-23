@@ -13,7 +13,7 @@ Phase 0 在本地合成 CUDA 验证范围内通过。仓库从本地存储迁移
 | 合成量化 linear 测试 | 通过，含预期 xfail | 纳入 56 项收集测试 |
 | 合成 MoE block 测试 | 通过 | 覆盖 DeepSeek、Mixtral、OLMoE 与 Qwen3MoE 路径 |
 | 整体 pytest 结果 | 通过 | 连续 3 次均为 53 passed、3 expected failures |
-| 完整检查点/模型验证 | Phase 0 阻塞 | 服务器访问 `huggingface.co:443` 超时 |
+
 
 三项预期失败是上游对 GemLite 不支持 3-bit 执行路径所作的明确标记，不是 RobustGEMQ 引入的回归。
 
