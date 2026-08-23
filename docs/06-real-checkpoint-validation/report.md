@@ -4,7 +4,7 @@
 
 **G6：STOP——不扩展到第二模型。** 每个选中的检查点在真实打包与推理路径上均通过 H6，但 `Domain-Mean` 没有证明同预算质量优势。在固定真实检查点的逐样本估计中，它在 mean/worst 两项上均被 `Concat` 支配；预先注册的 Phase 3 H3 Gate 也未通过。观察到该结果后再运行结构性 H5 研究属于事后分析，不能用于挽救 G6。
 
-因此，最终合适的项目表述是可审计的 MoE 量化可靠性与失败边界研究，而不是声称 RobustGEMQ 普遍提升量化质量。
+项目结论是：RobustGEMQ 提供了可审计的 MoE 量化评测与失败边界，而非普遍提升量化质量的方法。
 
 ## 冻结协议
 
@@ -46,6 +46,6 @@ no-RFT GPTQ 筛选恰好保留了三个真实打包候选：`Concat`、`Domain-M
 
 ## 可复现性与范围
 
-[HARNESS.md](HARNESS.md) 记录了 Phase 6 runner。其产物明确分离了来源数据/token manifest、allocation 配置、GPTQ/RFT 参数、打包前得分、打包检查点验证和 G6 决策，因此他人可在不改变事后方法选择的情况下复现或质疑结果。
+[Harness](harness.md) 记录了阶段六 runner。来源数据/token manifest、allocation 配置、GPTQ/RFT 参数、打包前得分、打包检查点验证和 G6 决策相互分离，因此可在不改变方法选择的情况下复现或审查结果。
 
 允许的后续工作是 Harness 打包和透明的负结果报告。禁止的后续工作是事后尝试 H5、第二模型质量扫参，或声称 Domain-Mean 在统计上支配两个基线。
