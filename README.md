@@ -6,13 +6,11 @@
 
 </div>
 
-RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，面向 Mixture-of-Experts（MoE）大语言模型的低比特混合精度量化。项目重点不是事后寻找一个更好的 benchmark 数字，而是提供一套可审计的评测与可靠性验证机制：只有当候选分配在真实检查点、跨域评测和预先冻结的统计 Gate 下都成立时，才允许扩大实验规模。完整的连续阶段结构见[文档导航](docs/README.md)。
+RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大语言模型的低比特混合精度量化。GEMQ 负责专家级 bit 分配、量化和 Router 微调；RobustGEMQ 补足跨域校准、真实检查点验证和可复现的决策流程。完整结构见[文档导航](docs/README.md)。
 
-GEMQ 的基础能力包括：根据专家重要性分配不同 bit-width、微调 Router 以适应量化专家，以及可选的渐进式量化。RobustGEMQ 在此基础上补足可复现输入、跨域评测、真实打包验证和失败边界。
+## 项目结论
 
-## 五分钟了解项目
-
-RobustGEMQ 回答一个更窄、但对工程交付更关键的问题：**某个候选 bit 分配在真实检查点打包、跨域评测和预先承诺的统计 Gate 之后，是否仍然可信？**
+本项目检验的问题是：**一个候选 bit 分配在真实打包、跨域评测和固定统计规则下是否仍然成立。**
 
 ```text
 固定来源的领域数据 → 不可变 token 场景 → LayerGrads / LayerRE
@@ -21,7 +19,7 @@ RobustGEMQ 回答一个更窄、但对工程交付更关键的问题：**某个�
                        → 配对 Bootstrap → 冻结的 G6 扩展决策
 ```
 
-已完成的 OLMoE 实验**没有**证明 `Domain-Mean` 带来量化质量提升；同预算 Gate 因此停止了第二模型扩展。这是有明确证据支持的可靠性结论，不是尚未完成的 benchmark。
+在 OLMoE 的真实检查点实验中，`Domain-Mean` 没有超过同预算基线；因此 G6 停止第二模型扩展。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
 
 - [最终发布边界](docs/07-release/report.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
 - [公开证据包](docs/07-release/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
@@ -41,17 +39,13 @@ pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 * 支持**真实量化推理**的低 bit MoE Triton 内核
 * 跨域校准、真实检查点验证、配对 Bootstrap 与 Gate 化发布资产
 
-## 阶段更新
+## 已完成的工作
 
-- [2026/08] 阶段七完成发布：RobustGEMQ 作为可审计的 MoE 量化可靠性 Harness 交付。冻结的真实检查点证据不支持 `Domain-Mean` 的质量提升主张，因此第二模型与执行性能扩展均不具备资格。详见[最终发布报告](docs/07-release/report.md)。
-- [2026/08] 阶段六完成四领域 × 三随机种子的 OLMoE 主实验、真实 GPTQ/RFT 打包、H6 fake/real 等价性验证与逐样本 Bootstrap。`Domain-Mean` 未超过同预算基线，G6 阻止第二模型扩展；可靠性 Harness 与负结果边界见 [结果报告](docs/06-real-checkpoint-validation/report.md)。
-- [2026/08] 阶段四完成 Mean/Worst/CVaR 的可审计分配、精确小问题验证和四领域 held-out fake-RTN Gate。求解器正确性通过，但预先注册的最坏领域质量假设未通过；G3 因此 PIVOT，只保留一个待验证目标而不扩展 CVaR。详见 [报告](docs/04-allocation-audit/report.md)。
-- [2026/08] 阶段三验证 OLMoE 的跨校准域敏感度。系数稳定性 Gate 与 fake-RTN NLL 迁移 Gate 均通过；经过 Hamming 控制的 route pilot 还授权了可选的 Router-proxy 阶段。详见 [报告](docs/03-domain-sensitivity/report.md)。
-- [2026/08] 阶段二完成从固定输入到真实量化生成的可审计 OLMoE 2-bit 基线。量化质量、数值等价性和 prefill 性能结果见 [报告](docs/02-real-quant-baseline/report.md)。
-- [2026/08] bit 分配默认通过 SciPy 内置的 **HiGHS** ILP 求解器完成，因此重新生成 bit 配置不再依赖 Gurobi 许可证；Gurobi 仍保留为可选后端。
-- [2026/08] 真实量化推理现已覆盖 **OLMoE-1B-7B-0924**、**Qwen3-30B-A3B**、Mixtral-8x7B 与 DeepSeek-V2-Lite；使用 `scripts/bench_generate_<model>.sh` 运行。
-- [2026/08] 已验证实际量化端到端匹配 fake quant：DeepSeek-V2-Lite 的 perplexity 差异为 0.06%，OLMoE-1B-7B-0924 为 0.03%。使用 `scripts/test_real_quant.sh` 复核。
-- [2026/08] 修复了 HF 内置实现遗漏 YaRN `mscale` 所造成的 DeepSeek-V2 约 15% perplexity 回归（[transformers#47435](https://github.com/huggingface/transformers/pull/47435)）。
+- 在 OLMoE 上打通统计、bit 分配、GPTQ、Router 微调、HQQ 打包和真实推理。
+- 固定四个校准域、三个随机种子和 12 个 token 场景；每次运行均记录输入与中间产物哈希。
+- 在相同 2.5 bpe 预算下比较 `GEMQ-C4`、`Concat`、`Domain-Mean` 和 `AlphaQ-style`；对选中方法完成 1,536 条样本的配对 Bootstrap。
+- 验证 fake/real 路径：三个检查点均通过 H6，PPL 误差小于 1%，decode argmax 一致率不低于 95%。
+- 将 `G6=STOP_NO_LARGE_MODEL_EXPANSION` 作为冻结结论写入公开证据和 CI；详见[发布报告](docs/07-release/report.md)。
 
 ## 安装
 
