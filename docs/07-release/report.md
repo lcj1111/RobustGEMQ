@@ -2,9 +2,9 @@
 
 ## 发布决策
 
-**将项目作为可审计的 MoE 量化可靠性 Harness 与负结果研究发布。**
+**将项目作为可审计的 MoE 量化可靠性 Harness 发布。**
 
-RobustGEMQ 不声称提出了可提升量化质量的新领域感知 allocation。最终真实检查点实验显示，`Domain-Mean` 未进入 OLMoE 上同预算 mean/worst-domain Pareto 前沿。该结论是有意设计且可复现的：实验矩阵、allocation 预算、候选集、真实打包检查和 Bootstrap 规则均在最终决策前冻结。
+RobustGEMQ 不声称提出了可提升量化质量的新 allocation。真实检查点实验显示，`Domain-Mean` 未进入 OLMoE 的同预算 mean/worst-domain Pareto 前沿。实验矩阵、预算、候选集、打包检查和 Bootstrap 规则均在最终决策前冻结。
 
 ## 本发布确立的能力
 
@@ -16,7 +16,7 @@ RobustGEMQ 不声称提出了可提升量化质量的新领域感知 allocation�
 
 ## 最终证据地图
 
-| 阶段 | 结果 | 对发布的含义 |
+| 历史执行阶段 | 结果 | 对发布的含义 |
 | --- | --- | --- |
 | Phase 0 | 完成上游复现与基线 | 建立可执行起点。 |
 | Phase 1 | 完成真实 OLMoE 量化与打包基线 | 证明项目能够评测真实量化推理。 |
