@@ -1,8 +1,7 @@
-"""Auditable distributionally robust bit allocation for MoE experts.
+"""面向 MoE 专家的可审计鲁棒 bit 分配。
 
-The binary decision variables are shared by all scenarios.  Domain-Mean,
-Domain-Worst and Domain-CVaR therefore differ only in their risk objective; they
-use exactly the same cached reconstruction-error tensors and feasibility set.
+所有场景共享同一组二元决策变量。Domain-Mean、Domain-Worst 和
+Domain-CVaR 仅风险目标不同，使用相同的重构误差张量与可行域。
 """
 
 from __future__ import annotations
@@ -22,7 +21,7 @@ OBJECTIVES = ("mean", "worst", "cvar")
 
 
 def _as_tensor(value, bits: tuple[int, ...]) -> np.ndarray:
-    """Accept a dense [layer, expert, bit] tensor or GEMQ's nested dictionaries."""
+    """接收稠密 `[layer, expert, bit]` 张量或 GEMQ 的嵌套字典。"""
     if isinstance(value, np.ndarray):
         tensor = np.asarray(value, dtype=np.float64)
     else:
@@ -47,7 +46,7 @@ def _as_tensor(value, bits: tuple[int, ...]) -> np.ndarray:
 
 
 def empirical_cvar(losses, alpha: float, weights=None) -> float:
-    """Return weighted upper-tail CVaR using the same LP definition as the solver."""
+    """按与求解器一致的 LP 定义计算加权上尾 CVaR。"""
     values = np.asarray(losses, dtype=np.float64)
     if values.ndim != 1 or values.size == 0 or not np.isfinite(values).all():
         raise ValueError("losses must be a non-empty finite vector")
@@ -63,7 +62,7 @@ def empirical_cvar(losses, alpha: float, weights=None) -> float:
             raise ValueError("weights must be non-negative with positive total mass")
         probabilities = probabilities / probabilities.sum()
 
-    # The optimum of eta + E[(loss-eta)+]/(1-alpha) occurs at an observed loss.
+    # 该分段线性目标的最优 eta 必落在某个观测损失上，无需额外做连续优化。
     return float(
         min(
             eta + np.dot(probabilities, np.maximum(values - eta, 0.0)) / (1.0 - alpha)
@@ -79,7 +78,7 @@ class RobustSolveResult:
 
 
 class RobustGEMQSolver:
-    """Solve Mean, Worst or CVaR risk over a fixed set of domain scenarios."""
+    """在固定领域场景上求解 Mean、Worst 或 CVaR 风险。"""
 
     def __init__(
         self,
@@ -190,8 +189,7 @@ class RobustGEMQSolver:
         return [LinearConstraint(matrix, np.asarray(lower), np.asarray(upper))]
 
     def _formulate(self, total_bits: float):
-        # HiGHS rejects extremely large matrix coefficients and may drop extremely
-        # small ones.  A single positive scale factor preserves the argmin exactly.
+        # HiGHS 会拒绝过大的系数，并可能忽略极小系数；统一正比例缩放不改变 argmin。
         flattened = (
             self.tensor / self.optimization_scale
         ).reshape(self.num_scenarios, self.num_binary)
@@ -222,7 +220,7 @@ class RobustGEMQSolver:
             c[eta] = 1.0
             c[excess_start:] = self.weights / (1.0 - self.alpha)
             constraints = self._base_constraints(variable_count, total_bits)
-            # loss_s - eta - u_s <= 0
+            # 每个场景的超额损失：loss_s - eta - u_s <= 0。
             risk_rows = []
             for scenario in range(self.num_scenarios):
                 row = sp.lil_matrix((1, variable_count))
