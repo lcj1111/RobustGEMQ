@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Create a compact, publishable Phase 6 evidence bundle from private artifacts.
+"""从完整实验产物导出可提交 Git 的轻量证据包。
 
-The input directory may contain large checkpoints and per-item scores.  The
-output intentionally contains only decision-relevant metrics, reproducibility
-hashes and validation status, so it is suitable for version control.
+输入目录可能包含大检查点和逐样本得分；输出只保留结论、哈希和验证状态，
+避免把权重或原始评测数据提交到仓库。
 """
 
 from __future__ import annotations
@@ -30,6 +29,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     root = args.artifact_root
+    # 这四个文件分别覆盖 allocation、统计结论、Gate 决策和离线验收。
+    # 缺少任意一个文件时应直接失败，不能导出看似完整的证据包。
     paths = {
         "allocation_manifest": root / "configs" / "bpe-2.5" / "manifest.json",
         "bootstrap": root / "item-bootstrap" / "bootstrap.json",
@@ -42,6 +43,7 @@ def main() -> None:
     decision = documents["decision"]
     release = documents["release_verification"]
     source_scenarios = config["source_scenarios"]
+    # 场景名是 ``domain:seed-N``；从名称反推域与种子，可避免维护第二份清单。
     domains = sorted({name.split(":", 1)[0] for name in source_scenarios})
     seeds = sorted({int(name.split("seed-", 1)[1]) for name in source_scenarios})
     evidence = {
@@ -98,6 +100,7 @@ def main() -> None:
             "point_metrics": decision["point_metrics"],
             "reason": decision["reason"],
         },
+        # 记录输入摘要，公开证据与服务器产物不一致时可定位发生变化的文件。
         "source_file_sha256": {name: sha256(path) for name, path in paths.items()},
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

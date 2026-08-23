@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the compact Phase 9 evidence bundle without GPUs or checkpoints."""
+"""无需 GPU 或检查点，验证公开证据包是否仍满足发布约束。"""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ REAL_METHODS = ["concat", "domain-mean", "gemq-c4"]
 
 
 def fail(message: str) -> None:
-    raise ValueError(f"invalid Phase 9 public evidence: {message}")
+    raise ValueError(f"公开证据包无效：{message}")
 
 
 def main() -> None:
@@ -22,6 +22,7 @@ def main() -> None:
     parser.add_argument("--evidence", type=Path, required=True)
     args = parser.parse_args()
     evidence = json.loads(args.evidence.read_text(encoding="utf-8"))
+    # 先锁定身份和实验设计，再检查指标；否则新实验可能误用这套发布结论。
     if evidence.get("schema_version") != 1 or evidence.get("project") != "RobustGEMQ":
         fail("unexpected identity/schema")
     if evidence.get("model") != "allenai/OLMoE-1B-7B-0924":
@@ -45,6 +46,7 @@ def main() -> None:
     provenance = evidence["scenario_provenance"]
     if len(provenance) != 12:
         fail("expected 12 scenario provenance records")
+    # 公开的是摘要哈希而非 token 本身；固定长度检查可防止空值混入发布文件。
     for name, record in provenance.items():
         if len(record.get("token_sha256", "")) != 64 or len(record.get("layer_re_sha256", "")) != 64:
             fail(f"invalid scenario hash for {name}")
@@ -68,6 +70,7 @@ def main() -> None:
         for value in (metrics[method]["mean_domain_nll"], metrics[method]["worst_domain_nll"]):
             if not math.isfinite(float(value)):
                 fail(f"non-finite metric for {method}")
+    # G6 的核心边界：若该置信区间不再完整为正，就不能继续写“均值稳定更差”。
     delta = bootstrap["comparisons_target_domain_mean"]["concat"]
     mean_ci = delta["mean_domain_nll_difference_target_minus_baseline"]["ci95"]
     if not (mean_ci[0] > 0 and mean_ci[1] > 0):

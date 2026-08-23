@@ -1,4 +1,4 @@
-name: Phase 9 release checks
+name: 发布契约检查
 
 on:
   pull_request:
