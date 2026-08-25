@@ -18,19 +18,19 @@
     },
     "calibration_a": {
       "scenario_seeds": [0, 1, 2],
-      "sequences_per_domain_seed": 32,
+      "sequences_per_domain_seed": 24,
       "tokens_per_sequence": 2048
     },
     "calibration_b": {
-      "sequences_per_domain": 32,
+      "sequences_per_domain": 24,
       "tokens_per_sequence": 2048
     },
     "validation": {
-      "sequences_per_domain": 64,
+      "sequences_per_domain": 48,
       "tokens_per_sequence": 2048
     },
     "test": {
-      "sequences_per_domain": 128,
+      "sequences_per_domain": 96,
       "tokens_per_sequence": 2048
     }
   },

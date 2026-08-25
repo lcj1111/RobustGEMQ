@@ -35,11 +35,17 @@ materialize() {
 }
 
 for seed in 0 1 2; do
-  materialize "calibration-a-seed-$seed" calibration-a "$seed" 32
+  materialize "calibration-a-seed-$seed" calibration-a "$seed" 24
 done
-materialize calibration-b calibration-b 0 32
-materialize validation validation 0 64
-materialize test test 0 128
+materialize calibration-b calibration-b 0 24
+materialize validation validation 0 48
+materialize test test 0 96
+
+"$python_bin" scripts/phase6/materialize_balanced_calibration.py \
+  --scenario-root "$scenario_root/calibration-b" \
+  --output-dir "$scenario_root/calibration-b-balanced" \
+  --seed 0 --samples-per-domain 24 \
+  > "$artifact_root/calibration-b-balanced.json"
 
 "$python_bin" scripts/phase10/verify_materialized_protocol.py \
   --experiment "$experiment" --split-manifest "$split_root/split-manifest.json" \
