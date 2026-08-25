@@ -11,7 +11,7 @@ phase1_data="${PHASE1_DATA_ROOT:-/data/models/datasets/gemq-phase1}"
 phase2_data="${PHASE2_DATA_ROOT:-/data/models/datasets/robustgemq-phase2}"
 devices=(4 5 6)
 
-"$python_bin" -c 'import json,sys; assert json.load(open(sys.argv[1]))["test_opened"] is True' "$unlock"
+"$python_bin" -c 'import json,sys; assert json.load(open(sys.argv[1]))["test_unlocked"] is True' "$unlock"
 mapfile -t methods < <("$python_bin" -c 'import json,sys; [print(x) for x in json.load(open(sys.argv[1]))["selected_methods"]]' "$selection")
 [[ ${#methods[@]} -eq 3 ]] || { echo "selection must contain exactly three methods" >&2; exit 2; }
 mkdir -p "$output_root"
