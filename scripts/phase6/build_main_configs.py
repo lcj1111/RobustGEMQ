@@ -199,6 +199,13 @@ def main() -> None:
         "phase": 6,
         "status": "frozen-main-statistics",
         "methods": list(METHODS),
+        "method_labels": {
+            "gemq-c4": "GEMQ-C4",
+            "concat": "Concat",
+            "domain-mean": "Scenario-Normalized-Mean",
+            "alphaq-style": "AlphaQ-style",
+        },
+        "compatibility_note": "domain-mean is the historical artifact key for Scenario-Normalized-Mean",
         "bpe": args.bpe,
         "risk_hierarchy": "domain is the risk scenario; three seeds are averaged within each domain",
         "normalization": "per-token then each seed tensor divided by its own median bit-2 coefficient",

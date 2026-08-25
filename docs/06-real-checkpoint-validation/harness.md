@@ -44,8 +44,10 @@ cd /data/models/RobustGEMQ
 - `run_main_stats.sh`：逐场景使用 4 张 GPU 收集梯度并分片计算专家误差；验证后的临时数据会被删除。
 - `run_gptq_no_rft.sh`：在相同预算下筛选全部四个冻结方法。
 - `run_gptq_real_rft.sh`：只打包不超过三个预先注册的 no-RFT 候选。
-- `run_h6_validation.sh`：验证保存检查点的 fake/real PPL、有限值与 decode 一致性。
+- `run_h6_validation.sh`：验证保存检查点的 fake/real PPL、有限值、decode logits 与 `argmax >= 95%`；每个方法写出 `run.log`、JUnit XML 和结构化 `summary.json`。
 - `run_item_bootstrap.sh`：对每个打包方法评估 1,536 个固定样本，并执行配对 Bootstrap。
+
+发布校验会验证逐样本字段、完整的 `(domain, seed, item)` 主键、场景 token SHA-256、方法间样本身份一致性，并从逐样本 NLL 重算聚合指标与 Pareto 状态。Bootstrap 仅描述固定训练场景内的样本波动，不替代独立测试集。
 
 ## Gate 规则
 

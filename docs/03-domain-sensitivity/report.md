@@ -18,7 +18,7 @@
 2. 在相同实际 bit budget 下，单域配置迁移到其他域的最大 fake-RTN NLL regret 为 `0.4380 @ 2.5 bpe`，两档预算最大值为 `0.7612`，超过 H2 的 `0.10 NLL/token` 阈值。
 3. 20 个保持总 bit 和逐层 bit 直方图不变的扰动配置中，控制 config Hamming fraction 后，系数风险与 Top-k route flip 的偏 Spearman 为 `0.6662`，bootstrap 95% CI 为 `[0.2121, 0.9245]`，两个 scenario seed 均为正。该结果只授权 Phase 4 继续验证 near-boundary proxy，不构成 route-aware 方法贡献。
 
-因此，下一阶段按正式方案进入 **Phase 3：Domain-Mean/Worst/CVaR 求解器与审计**。不先扩展模型，不先做 Kernel，也不把 route 相关性升级为主线。
+因此，下一阶段按正式方案进入 **Phase 3：Scenario-Normalized-Mean、Domain-Worst、Domain-CVaR 求解器与审计**。不先扩展模型，不先做 Kernel，也不把 route 相关性升级为主线。
 
 ## 2. 数据域、许可证与 split 隔离
 
@@ -140,7 +140,7 @@ H4 pilot 通过，但只能说明 reconstruction risk 与 downstream route shift
 
 1. **域差异可能来自模板。** General/Math/Code/Instruction 的文体和模板不同；主实验必须报告无标签纯文本或统一模板消融。
 2. **fake RTN 不等于 GEMQ 的最终 GPTQ。** H2 仅用于决定是否进入 Phase 3，不能作为简历最终质量数字。
-3. **同域 seed 不是独立 domain。** 风险目标必须先在 domain 内聚合 seed，再做 Domain-Mean/Worst/CVaR。
+3. **同域 seed 不是独立 domain。** 风险目标必须先在 domain 内聚合 seed，再做 Scenario-Normalized-Mean、Domain-Worst 或 Domain-CVaR。
 4. **route correlation 可能由配置改动幅度驱动。** 当前分析已控制 Hamming fraction，但还没有排除其他结构混杂；Phase 4 Gate 保持不变。
 5. **Code 域样本较少。** Sanitized MBPP train 只有 120 条；token packing 足够，但 Main 阶段应增加许可兼容 code-train source 或做 source-size sensitivity，不能悄悄改 source。
 6. **Pilot tokens 也是方法选择数据。** Phase 3 可以在这些场景上筛选目标，但 held-out evaluation 必须使用注册表中的 evaluation split，不能回流。
@@ -153,7 +153,7 @@ H4 pilot 通过，但只能说明 reconstruction risk 与 downstream route shift
 - Normalization：per-token + scenario median-bit2；
 - 主档 2.5 bpe，压力档 2.0 bpe；
 - CVaR `alpha=0.5`；
-- Phase 3 方法：GEMQ-C4、Concat、Domain-Mean、Domain-Worst、Domain-CVaR、AlphaQ-style；
+- Phase 3 方法：GEMQ-C4、Concat、Scenario-Normalized-Mean、Domain-Worst、Domain-CVaR、AlphaQ-style；
 - Phase 4 获准，但在 Phase 3 之后执行；只能选择一次 route lambda。
 
 ## 11. 复现命令

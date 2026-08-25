@@ -34,6 +34,12 @@
         "gemq-c4": 0.0
       }
     },
+    "method_labels": {
+      "alphaq-style": "AlphaQ-style",
+      "concat": "Concat",
+      "domain-mean": "Scenario-Normalized-Mean",
+      "gemq-c4": "GEMQ-C4"
+    },
     "methods": [
       "gemq-c4",
       "concat",
@@ -82,7 +88,18 @@
         "worst_domain_nll": 2.605476639854411
       }
     },
-    "reason": "H6 passed, but Domain-Mean does not enter the matched-budget mean/worst Pareto frontier on the real checkpoint item-level estimate; H3 also did not pass. Do not expand to a second model."
+    "reason": "H6 passed, but Scenario-Normalized-Mean (historical key: domain-mean) does not enter the matched-budget mean/worst Pareto frontier on the real checkpoint item-level estimate; H3 also did not pass. Do not expand to a second model."
+  },
+  "evidence_revision": {
+    "historical_source_note": "Source hashes identify the frozen schema-v1 private artifacts. Schema v2 only changes public labels, recomputes point_difference from published point metrics, records the inference boundary, and exposes the item-identity contract; confidence intervals and aggregate measurements are unchanged.",
+    "schema_v2_policy": "public labels, exact recomputed point differences, explicit inference scope, and item identity contract"
+  },
+  "item_identity": {
+    "cross_method_match": "not-retroactively-verified",
+    "definition": "sha256 of canonical sorted [domain, seed, item, token_sha256] rows",
+    "future_release_requirement": true,
+    "items_per_method": 1536,
+    "sha256": "702eaa97991038418d48b6af18fdf1300f87c12a25894207289b92d872a89c04"
   },
   "model": "allenai/OLMoE-1B-7B-0924",
   "paired_bootstrap": {
@@ -93,7 +110,7 @@
             0.004214151978764441,
             0.005727409321116211
           ],
-          "point_difference": 0.004968248632790833,
+          "point_difference": 0.004964770361160165,
           "probability_target_better": 0.0
         },
         "probability_target_strictly_dominates": 0.0,
@@ -102,7 +119,7 @@
             -0.002006689249538174,
             0.0020474674335370425
           ],
-          "point_difference": 4.423972871152104e-06,
+          "point_difference": 4.425023992560284e-06,
           "probability_target_better": 0.4979
         }
       },
@@ -112,7 +129,7 @@
             -0.03896088474915193,
             -0.03555075293697883
           ],
-          "point_difference": -0.03724696111181596,
+          "point_difference": -0.03724398921864713,
           "probability_target_better": 1.0
         },
         "probability_target_strictly_dominates": 0.0,
@@ -121,18 +138,24 @@
             0.03731037902956178,
             0.04379297718405752
           ],
-          "point_difference": 0.040483244122999404,
+          "point_difference": 0.04047827608883381,
           "probability_target_better": 0.0
         }
       }
     },
     "draws": 10000,
-    "method": "stratified paired bootstrap within each domain/seed scenario over 128 fixed items",
+    "inference_scope": "descriptive bootstrap on the fixed Phase 6 training scenarios; not an independent validation or test set",
+    "method": "descriptive stratified paired bootstrap within each fixed training domain/seed scenario over 128 items",
     "seed": 20260822
   },
   "phase": 6,
   "project": "RobustGEMQ",
   "real_checkpoint_validation": {
+    "current_h6_contract": {
+      "decode_argmax_agreement_min": 0.95,
+      "structured_json": true
+    },
+    "h6_evidence_format": "historical-status-text",
     "h6_passed": true,
     "item_nlls_per_method": 1536,
     "methods": [
@@ -191,7 +214,8 @@
       "token_sha256": "0b30011ff8cdc871998249a90e82e8a318255664ee8ba929064eafe46e7c50f6"
     }
   },
-  "schema_version": 1,
+  "result_scope": "descriptive bootstrap on the fixed Phase 6 training scenarios; not an independent validation or test set",
+  "schema_version": 2,
   "source_file_sha256": {
     "allocation_manifest": "a578cdf2ada9fb037f5e053abfeb264937735d570192ae1404125bd36ed8ac8b",
     "bootstrap": "90e85670cf23532df906bfa1d3c7f1353e567225b4be36c3271a185ad75d1dc0",

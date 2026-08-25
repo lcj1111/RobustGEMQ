@@ -44,6 +44,10 @@ TEXT = (
     "far below what the total parameter count would suggest."
 )
 
+# H6 的最小离散输出一致性门槛。相对误差约束负责检查整体 logits，
+# argmax 约束则直接覆盖最终 token 选择，二者缺一不可。
+ARGMAX_MIN_AGREEMENT = 0.95
+
 
 @torch.inference_mode()
 def _forward_full(model, input_ids):
@@ -202,4 +206,15 @@ def test_decode_logits_match_fake(decode_traces):
         f"the {floor:.3e} the same model shows against itself, and above the {prefill_rel:.3e} "
         f"the prefill path shows for the same positions. The decode-only kernels "
         f"(fused_dequant_up/down_proj, splitk gemv) are implicated."
+    )
+
+
+@pytest.mark.cuda
+@pytest.mark.checkpoint
+def test_decode_argmax_matches_fake(decode_traces):
+    """真实打包路径与 fake twin 的逐步 token 选择至少有 95% 一致。"""
+    agreement = _argmax_agreement(decode_traces["real_step"], decode_traces["fake_step"])
+    assert agreement >= ARGMAX_MIN_AGREEMENT, (
+        f"real-quant decode argmax agreement {agreement:.2%} is below the "
+        f"H6 threshold {ARGMAX_MIN_AGREEMENT:.2%}"
     )

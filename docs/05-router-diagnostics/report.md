@@ -16,7 +16,7 @@ c_route[a,l,e,b] = sum_t v[a,l+1,t] * ||delta_h[a,l,e,b,t]||^2 / valid_tokens[a]
 
 最后一个 MoE 层没有下游 router，因此 route cost 明确为 0。每个 domain/seed 先按有效 token 归一，再除以该场景 bit-2 系数中位数；seed 只在 domain 内平均。
 
-在围绕 Phase 3 冻结 `Domain-Mean @ 2.5 bpe` 构造的 20 个 matched-budget 配置上，proxy 与实际 Top-k flip 的 raw Spearman 为 `0.702256`。但控制配置 Hamming 距离后，partial Spearman 仅为 `0.087218`，bootstrap 95% CI 为 `[-0.419910, 0.613968]`；两个 seed 分别为 `0.218045` 和 `0.120301`。这不满足预注册的 `rho >= 0.4`、CI 下界大于 0 条件。
+在围绕 Phase 3 冻结 `Scenario-Normalized-Mean @ 2.5 bpe` 构造的 20 个 matched-budget 配置上，proxy 与实际 Top-k flip 的 raw Spearman 为 `0.702256`。但控制配置 Hamming 距离后，partial Spearman 仅为 `0.087218`，bootstrap 95% CI 为 `[-0.419910, 0.613968]`；两个 seed 分别为 `0.218045` 和 `0.120301`。这不满足预注册的 `rho >= 0.4`、CI 下界大于 0 条件。
 
 因此 **H4 失败，G4 在首个必要条件处失败**。没有执行非零 lambda 网格选择，也没有查看 held-out NLL 来补救失败；`lambda_route` 固定为 0。后续 Phase 5/6 继续使用 Phase 3 冻结方法集，不包含 route-aware objective。
 
@@ -50,7 +50,7 @@ c_route[a,l,e,b] = sum_t v[a,l+1,t] * ||delta_h[a,l,e,b,t]||^2 / valid_tokens[a]
 
 ### 3.2 20 个独立验证配置
 
-验证配置不复用 Phase 2 围绕 General 单域 allocation 的旧配置，而是重新以 Phase 3 唯一保留的 `Domain-Mean @ 2.5 bpe` 为 base。对每层交换不同 bit 的 expert，使用 5 档请求扰动比例 `{0.05,0.10,0.20,0.30,0.40}` × 4 replicates：
+验证配置不复用 Phase 2 围绕 General 单域 allocation 的旧配置，而是重新以 Phase 3 唯一保留的 `Scenario-Normalized-Mean @ 2.5 bpe` 为 base。对每层交换不同 bit 的 expert，使用 5 档请求扰动比例 `{0.05,0.10,0.20,0.30,0.40}` × 4 replicates：
 
 - 总 bit 恒为 `2560`，即精确 `2.5 bpe`；
 - 每层 `{1,2,3}` bit 直方图完全不变；
@@ -104,7 +104,7 @@ raw correlation 较高，但 partial correlation 接近 0，说明 proxy 主要�
 - 不宣称 Router-aware 质量或 routing-stability 改善；
 - 保留 route trace、margin proxy 实现、测试和负结果报告作为诊断资产。
 
-Phase 3 的 `Domain-Mean` allocation 不变，因此 `lambda=0` 与已评测配置完全相同；再次运行 held-out 只能重复已有数字，不能使 G4 转为通过。
+Phase 3 的 `Scenario-Normalized-Mean` allocation 不变，因此 `lambda=0` 与已评测配置完全相同；再次运行 held-out 只能重复已有数字，不能使 G4 转为通过。
 
 对整个项目而言，这个负结果不会阻塞结构约束或真实 checkpoint 主线。它反而明确了贡献边界：RobustGEMQ 当前应定位为 domain-aware allocation 与严格 failure-boundary study，不能包装成 Router-aware quantization 方法。
 
@@ -112,13 +112,13 @@ Phase 3 的 `Domain-Mean` allocation 不变，因此 `lambda=0` 与已评测配�
 
 | 后续阶段 | 是否继续 | Phase 3 PIVOT / H4 FAIL 后的修改 |
 | --- | --- | --- |
-| Phase 5 结构约束 | 继续 | 所有结构 allocation 固定 `lambda_route=0`；只比较相同 S1/S2 约束下的 quality-only 与 Domain-Mean，不再讨论 route-aware structure synergy |
-| Phase 6 OLMoE 主实验 | 优先继续 | 方法集冻结为 `GEMQ-C4 / Concat / Domain-Mean / AlphaQ-style`；使用 GPTQ/RFT、真实 packed checkpoint 和正式 downstream 指标，决定 Domain-Mean 的有限 fake-RTN 信号能否复现 |
+| Phase 5 结构约束 | 继续 | 所有结构 allocation 固定 `lambda_route=0`；只比较相同 S1/S2 约束下的 quality-only 与 Scenario-Normalized-Mean，不再讨论 route-aware structure synergy |
+| Phase 6 OLMoE 主实验 | 优先继续 | 方法集冻结为 `GEMQ-C4 / Concat / Scenario-Normalized-Mean / AlphaQ-style`；使用 GPTQ/RFT、真实 packed checkpoint 和正式 downstream 指标，决定 Scenario-Normalized-Mean 的有限 fake-RTN 信号能否复现 |
 | Phase 7 第二模型 | 条件继续 | 若 Phase 6 有可复现信号，则验证迁移；若 Phase 6 再失败，只做最小规模边界复核，不扩展成大规模调参 |
 | Phase 8 固定执行验证 | 条件继续 | 仅当 Phase 5 的结构 Gate 通过时验证 bit-bucket fragmentation 与固定 prefill；不得声称 Router proxy 带来 runtime 收益 |
 | Phase 9 总结发布 | 继续 | 结论等级由后续证据决定；当前上限是 `Moderate/Diagnostic`，不能提前写成 Router-aware 或 worst-domain 强改进 |
 
-因此项目仍然可按 Gate 化计划展开，但路线已经收缩：**量化主线的关键判决点从 Router proxy 转移到 Phase 6 的真实 checkpoint 复核**。若 Phase 6 中 Domain-Mean 仍不能在 matched budget 下稳定超过 Concat/GEMQ，则应停止“新量化方法取得质量提升”的叙事，把最终成果定位为可复现的 domain sensitivity、严格 solver/audit 基础设施和 negative-result study。这个结果仍有工程与研究价值，但竞争力会低于具有真实质量提升的量化方法论文式项目。
+因此项目仍然可按 Gate 化计划展开，但路线已经收缩：**量化主线的关键判决点从 Router proxy 转移到 Phase 6 的真实 checkpoint 复核**。若 Phase 6 中 Scenario-Normalized-Mean 仍不能在 matched budget 下稳定超过 Concat/GEMQ，则应停止“新量化方法取得质量提升”的叙事，把最终成果定位为可复现的 domain sensitivity、严格 solver/audit 基础设施和 negative-result study。这个结果仍有工程与研究价值，但竞争力会低于具有真实质量提升的量化方法论文式项目。
 
 ## 7. 测试与复现
 
