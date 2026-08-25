@@ -62,7 +62,7 @@
   "downstream_suite": [
     {"task": "wikitext2-test", "metric": "perplexity", "limit": "full fixed local split"},
     {"task": "gsm8k-test", "metric": "exact_match", "limit": 128},
-    {"task": "mbpp-test", "metric": "pass@1", "limit": 100},
     {"task": "boolq-validation", "metric": "accuracy", "limit": 256}
-  ]
+  ],
+  "downstream_note": "MBPP pass@1 is excluded because the current host has no isolated sandbox for executing model-generated code."
 }
