@@ -1,5 +1,6 @@
 import os
 import argparse
+import random
 import time
 import math
 import gc
@@ -9,6 +10,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 import torch
+import numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer, logging
 from hqq.models.hf.base import AutoHQQHFModel
 
@@ -479,6 +481,12 @@ def parse_args():
 if __name__ == "__main__":
     # parse args
     args = parse_args()
+    # checkpoint seed 同时固定量化累积顺序与 Router 微调顺序。
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     print(json.dumps(vars(args), indent=4))
 
     # load pre-trained model
@@ -500,6 +508,8 @@ if __name__ == "__main__":
     # load calibration dataset
     print("Loading calibration data ...")
     dataloader = get_calib_loader(tokenizer, args)
+    if args.scenario_tokens_path and isinstance(dataloader, list):
+        random.Random(args.seed).shuffle(dataloader)
 
     # quantize model weights
     if not args.eval_fp:
