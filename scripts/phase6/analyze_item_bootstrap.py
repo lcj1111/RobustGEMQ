@@ -49,7 +49,7 @@ def point_metrics(values: dict[tuple[str, int], np.ndarray]) -> dict:
     }
 
 
-def paired_bootstrap(target, baseline, draws, rng) -> dict:
+def paired_bootstrap(target, baseline, target_point, baseline_point, draws, rng) -> dict:
     mean_diffs = np.empty(draws, dtype=np.float64)
     worst_diffs = np.empty(draws, dtype=np.float64)
     for draw in range(draws):
@@ -66,15 +66,19 @@ def paired_bootstrap(target, baseline, draws, rng) -> dict:
         baseline_domains = np.asarray(baseline_domains)
         mean_diffs[draw] = target_domains.mean() - baseline_domains.mean()
         worst_diffs[draw] = target_domains.max() - baseline_domains.max()
-    def summary(samples):
+    def summary(samples, point_difference):
         return {
-            "point_difference": float(samples.mean()),
+            "point_difference": float(point_difference),
             "ci95": [float(np.quantile(samples, 0.025)), float(np.quantile(samples, 0.975))],
             "probability_target_better": float(np.mean(samples < 0)),
         }
     return {
-        "mean_domain_nll_difference_target_minus_baseline": summary(mean_diffs),
-        "worst_domain_nll_difference_target_minus_baseline": summary(worst_diffs),
+        "mean_domain_nll_difference_target_minus_baseline": summary(
+            mean_diffs, target_point["mean_domain_nll"] - baseline_point["mean_domain_nll"]
+        ),
+        "worst_domain_nll_difference_target_minus_baseline": summary(
+            worst_diffs, target_point["worst_domain_nll"] - baseline_point["worst_domain_nll"]
+        ),
         "probability_target_strictly_dominates": float(np.mean((mean_diffs < 0) & (worst_diffs < 0))),
     }
 
@@ -92,17 +96,20 @@ def main() -> None:
     point = {name: point_metrics(values) for name, values in data.items()}
     rng = np.random.default_rng(args.seed)
     comparisons = {
-        baseline: paired_bootstrap(data[TARGET], data[baseline], args.draws, rng)
+        baseline: paired_bootstrap(
+            data[TARGET], data[baseline], point[TARGET], point[baseline], args.draws, rng
+        )
         for baseline in BASELINES
     }
     result = {
         "schema_version": 1,
-        "method": "stratified paired bootstrap within each domain/seed scenario over 128 fixed items",
+        "method": "descriptive stratified paired bootstrap within each fixed training domain/seed scenario over 128 items",
+        "inference_scope": "fixed Phase 6 training scenarios; not an independent validation or test set",
         "draws": args.draws,
         "seed": args.seed,
         "point_metrics": point,
         "comparisons_target_domain_mean": comparisons,
-        "interpretation": "Negative target-minus-baseline differences favor Domain-Mean.",
+        "interpretation": "Negative target-minus-baseline differences favor Scenario-Normalized-Mean (historical key: domain-mean).",
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")

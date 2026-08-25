@@ -147,7 +147,7 @@ def main() -> None:
             "expert output perturbation energy"
         ),
         "proxy_formula": "v=clip(1/max(margin,1e-6),0,100); final-layer route cost=0",
-        "control": "actual config Hamming fraction from the frozen Domain-Mean base",
+        "control": "actual config Hamming fraction from the frozen Scenario-Normalized-Mean base",
         "source_scenarios": sources,
         "configs": rows,
         "summary": {

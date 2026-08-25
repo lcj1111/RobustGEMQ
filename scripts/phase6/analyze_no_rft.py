@@ -60,7 +60,7 @@ def main() -> None:
     result = {
         "schema_version": 1,
         "stage": "no-RFT GPTQ screen",
-        "selection_rule": "same 2.5-bpe allocation budget; retain Concat and Domain-Mean, then fill to at most three by no-RFT mean/worst Pareto order",
+        "selection_rule": "same 2.5-bpe allocation budget; retain Concat and Scenario-Normalized-Mean (historical key: domain-mean), then fill to at most three by no-RFT mean/worst Pareto order",
         "metrics": metrics,
         "pareto_methods": pareto,
         "selected_for_real_packing": selected,

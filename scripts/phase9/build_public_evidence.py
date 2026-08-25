@@ -23,6 +23,14 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+METHOD_LABELS = {
+    "gemq-c4": "GEMQ-C4",
+    "concat": "Concat",
+    "domain-mean": "Scenario-Normalized-Mean",
+    "alphaq-style": "AlphaQ-style",
+}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact-root", type=Path, required=True)
@@ -42,15 +50,21 @@ def main() -> None:
     bootstrap = documents["bootstrap"]
     decision = documents["decision"]
     release = documents["release_verification"]
+    if release.get("schema_version") != 2 or release.get("cross_method_item_identity_match") is not True:
+        raise ValueError("release-verification.json must use schema v2 and prove cross-method item identity")
     source_scenarios = config["source_scenarios"]
     # 场景名是 ``domain:seed-N``；从名称反推域与种子，可避免维护第二份清单。
     domains = sorted({name.split(":", 1)[0] for name in source_scenarios})
     seeds = sorted({int(name.split("seed-", 1)[1]) for name in source_scenarios})
     evidence = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project": "RobustGEMQ",
         "phase": 6,
         "model": "allenai/OLMoE-1B-7B-0924",
+        "evidence_revision": {
+            "schema_v2_policy": "public labels, exact recomputed point differences, explicit inference scope, and item identity contract",
+            "historical_source_note": None,
+        },
         "study_design": {
             "domains": domains,
             "seeds": seeds,
@@ -65,6 +79,7 @@ def main() -> None:
             "bpe": config["bpe"],
             "budget": config["budget"],
             "methods": config["methods"],
+            "method_labels": METHOD_LABELS,
             "method_hamming_fraction": config["method_hamming_fraction"],
             "config_sha256": {
                 method: entry["config_sha256"]
@@ -82,12 +97,24 @@ def main() -> None:
             "methods": release["methods_with_real_checkpoints"],
             "item_nlls_per_method": release["item_nlls_per_method"],
             "h6_passed": release["h6_passed"],
+            "h6_evidence_format": release["h6_evidence_format"],
+            "current_h6_contract": {
+                "structured_json": True,
+                "decode_argmax_agreement_min": 0.95,
+            },
+        },
+        "item_identity": {
+            "definition": "sha256 of canonical sorted [domain, seed, item, token_sha256] rows",
+            "items_per_method": release["item_nlls_per_method"],
+            "sha256": release["item_identity_sha256"],
+            "cross_method_match": release["cross_method_item_identity_match"],
         },
         "paired_bootstrap": {
             "method": bootstrap["method"],
             "draws": bootstrap["draws"],
             "seed": bootstrap["seed"],
             "comparisons_target_domain_mean": bootstrap["comparisons_target_domain_mean"],
+            "inference_scope": bootstrap["inference_scope"],
         },
         "decision": {
             "gate": decision["gate"],
@@ -100,6 +127,7 @@ def main() -> None:
             "point_metrics": decision["point_metrics"],
             "reason": decision["reason"],
         },
+        "result_scope": "descriptive bootstrap on the fixed Phase 6 training scenarios; not an independent validation or test set",
         # 记录输入摘要，公开证据与服务器产物不一致时可定位发生变化的文件。
         "source_file_sha256": {name: sha256(path) for name, path in paths.items()},
     }

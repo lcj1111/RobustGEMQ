@@ -22,10 +22,20 @@ for method in "${methods[@]}"; do
   method_dir="$artifact_root/$method"
   mkdir -p "$method_dir"
   [[ -d "$checkpoint" ]] || { echo "missing checkpoint: $checkpoint" >&2; exit 2; }
+  set +e
   CUDA_VISIBLE_DEVICES="$cuda_device" "$python_bin" -m pytest \
     tests/test_real_vs_fake_ppl.py tests/test_decode_equiv.py -q -s \
     --model-path "$checkpoint" --model-name allenai/OLMoE-1B-7B-0924 \
     --nseq 8 --seqlen 2048 --ndecode 32 --no-trust-remote-code \
+    --junitxml "$method_dir/junit.xml" \
     > "$method_dir/run.log" 2>&1
-  printf 'method=%s\ncheckpoint=%s\nexit_code=0\n' "$method" "$checkpoint" > "$method_dir/status.txt"
+  exit_code=$?
+  set -e
+  "$python_bin" scripts/phase6/write_h6_summary.py \
+    --method "$method" --checkpoint "$checkpoint" --exit-code "$exit_code" \
+    --junit "$method_dir/junit.xml" --log "$method_dir/run.log" \
+    --output "$method_dir/summary.json"
+  # 保留文本状态仅兼容旧的人工排查流程；后续 Gate 读取 summary.json。
+  printf 'method=%s\ncheckpoint=%s\nexit_code=%s\n' "$method" "$checkpoint" "$exit_code" > "$method_dir/status.txt"
+  [[ "$exit_code" -eq 0 ]] || exit "$exit_code"
 done

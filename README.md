@@ -19,7 +19,11 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
                        → 配对 Bootstrap → 冻结的 G6 扩展决策
 ```
 
-在 OLMoE 的真实检查点实验中，`Domain-Mean` 没有超过同预算基线；因此 G6 停止第二模型扩展。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
+在 OLMoE 的真实检查点实验中，`Scenario-Normalized-Mean` 没有超过同预算基线；因此 G6 停止第二模型扩展。历史脚本、配置和产物继续使用键 `domain-mean`，仅作为兼容标识。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
+
+> [!IMPORTANT]
+>
+> 当前 Bootstrap 是**固定 Phase 6 训练场景内的描述性 Bootstrap**，用于量化这些既定样本上的估计不确定性；它不是独立 validation/test，也不支持外推泛化结论。
 
 - [最终发布边界](docs/07-release/report.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
 - [公开证据包](docs/07-release/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
@@ -29,7 +33,9 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 
 ```bash
 python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
-pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
+python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
+  tests/test_phase6_release_evidence.py tests/test_h6_summary.py \
+  tests/test_phase9_public_evidence.py
 ```
 
 ## 仓库包含的内容
@@ -43,7 +49,7 @@ pytest -q tests/test_robust_solver.py tests/test_phase9_public_evidence.py
 
 - 在 OLMoE 上打通统计、bit 分配、GPTQ、Router 微调、HQQ 打包和真实推理。
 - 固定四个校准域、三个随机种子和 12 个 token 场景；每次运行均记录输入与中间产物哈希。
-- 在相同 2.5 bpe 预算下比较 `GEMQ-C4`、`Concat`、`Domain-Mean` 和 `AlphaQ-style`；对选中方法完成 1,536 条样本的配对 Bootstrap。
+- 在相同 2.5 bpe 预算下比较 `GEMQ-C4`、`Concat`、`Scenario-Normalized-Mean` 和 `AlphaQ-style`；对选中方法完成 1,536 条样本的配对 Bootstrap。
 - 验证 fake/real 路径：三个检查点均通过 H6，PPL 误差小于 1%，decode argmax 一致率不低于 95%。
 - 将 `G6=STOP_NO_LARGE_MODEL_EXPANSION` 作为冻结结论写入公开证据和 CI；详见[发布报告](docs/07-release/report.md)。
 
@@ -54,15 +60,17 @@ conda create -n gemq python=3.10 -y
 conda activate gemq
 git clone https://github.com/lcj1111/RobustGEMQ
 cd RobustGEMQ
-pip install -e .
+pip install -c requirements/phase0-constraints.txt -e .
 
 # 可选：仅在需要使用 Gurobi 而非默认 HiGHS 求解器时安装；此项需要 Gurobi 许可证
-pip install -e ".[gurobi]"
+pip install -c requirements/phase0-constraints.txt -e ".[gurobi]"
 ```
 
 > [!NOTE]
 >
 > 默认使用无需商业许可证的 **HiGHS** 完成 bit 分配。项目中已有的 `configs/` 与原 GEMQ 论文报告的结果由 Gurobi 后端产生。两个后端求解相同 ILP，但当最优解不唯一时，HiGHS 可能返回不同分配；如需精确复现原论文，请使用提供的配置或在 allocation 脚本中设置 `ilp_backend="gurobi"`。
+>
+> `requirements/phase0-constraints.txt` 是本项目已验证环境的默认依赖约束。若目标 CUDA/Python 组合不同，应先生成并记录新的约束文件，再开始实验。
 
 ## 使用方式
 
