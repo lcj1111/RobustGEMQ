@@ -35,6 +35,20 @@ def get_inout_hook(m, x, y, inps, outs):
         outs.append(y)  # (bsz, seqlen, hidden_size)
 
 
+def get_expert_usage_hook(m, x, y, counts):
+    """记录 Top-k expert 命中次数；排序 logits 与排序 softmax 完全等价。"""
+    del x
+    if not isinstance(y, (list, tuple)) or len(y) < 2:
+        raise ValueError("MoE block output does not expose router logits")
+    router_logits = y[1]
+    top_k = int(getattr(m, "top_k"))
+    num_experts = int(getattr(m, "num_experts"))
+    selected = torch.topk(router_logits, top_k, dim=-1, sorted=False).indices.reshape(-1)
+    counts.append(
+        torch.bincount(selected, minlength=num_experts).to(dtype=torch.int64, device="cpu")
+    )
+
+
 @torch.inference_mode()
 def get_stats(model, enc, args):
     """
@@ -348,6 +362,7 @@ def compute_faster_layer_re(model, dataloader, args):
 
     # forward layer-by-layer to collect stats
     quant_loss = {}
+    expert_usage = {}
     outs = torch.zeros_like(inps)
     for i in tqdm(range(len(layers)), desc="Computing rec errors"):
         layer = layers[i].to("cuda")
@@ -370,11 +385,20 @@ def compute_faster_layer_re(model, dataloader, args):
         # get unquantized layer outputs and moe block in/outs
         block_inps, block_outs = [], []
         handle = moe_block.register_forward_hook(partial(get_inout_hook, inps=block_inps, outs=block_outs))
+        usage_parts = []
+        usage_handle = None
+        if args.expert_usage_path:
+            usage_handle = moe_block.register_forward_hook(
+                partial(get_expert_usage_hook, counts=usage_parts)
+            )
         for j in range(num_samples // fwd_bsz):
             outs[j * fwd_bsz:(j + 1) * fwd_bsz] = layer(inps[j * fwd_bsz:(j + 1) * fwd_bsz], **layer_kwargs)[0]  # (bsz, seqlen, hidden_size)
         block_inps = torch.cat(block_inps, dim=0)  # (num_samples, seqlen, hidden_size)
         block_outs = torch.cat(block_outs, dim=0)  # (num_samples, seqlen, hidden_size)
         handle.remove()
+        if usage_handle is not None:
+            usage_handle.remove()
+            expert_usage[i] = sum(usage_parts)
 
         # compute expert quantization errors
         bit_cfg = list(map(int, args.wbits.split(",")))  # e.g., [1, 2, 3]
@@ -468,6 +492,11 @@ def compute_faster_layer_re(model, dataloader, args):
         pickle.dump(quant_loss, f)
     weight_name = "route-margin" if route_trace is not None else "gradient"
     print(f"{weight_name}-weighted reconstruction errors saved to:", args.layer_re_path)
+    if args.expert_usage_path:
+        os.makedirs(osp.dirname(args.expert_usage_path), exist_ok=True)
+        with open(args.expert_usage_path, "wb") as f:
+            pickle.dump(expert_usage, f)
+        print("Expert routing counts saved to:", args.expert_usage_path)
 
 
 
@@ -568,6 +597,10 @@ def parse_args():
     parser.add_argument(
         "--layer_re_path",  type=str, default="",
         help="Path to the weighted reconstruction errors"
+    )
+    parser.add_argument(
+        "--expert_usage_path", type=str, default="",
+        help="Optional path for per-layer Top-k expert counts observed during layer_re",
     )
     parser.add_argument(
         "--route_margin_path", type=str, default="",

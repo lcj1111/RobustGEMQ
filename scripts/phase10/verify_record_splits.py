@@ -7,16 +7,28 @@ import argparse
 import json
 from pathlib import Path
 
-from scripts.phase10.build_record_splits import (
-    DOMAINS,
-    SPLITS,
-    digest_text,
-    format_record,
-    identity_set_sha256,
-    load_domain_registry,
-    load_records,
-    sha256_file,
-)
+try:
+    from scripts.phase10.build_record_splits import (
+        DOMAINS,
+        SPLITS,
+        digest_text,
+        format_record,
+        identity_set_sha256,
+        load_domain_registry,
+        load_records,
+        sha256_file,
+    )
+except ModuleNotFoundError:  # 允许直接执行 ``python scripts/phase10/verify_record_splits.py``。
+    from build_record_splits import (
+        DOMAINS,
+        SPLITS,
+        digest_text,
+        format_record,
+        identity_set_sha256,
+        load_domain_registry,
+        load_records,
+        sha256_file,
+    )
 
 
 def fail(message: str) -> None:
