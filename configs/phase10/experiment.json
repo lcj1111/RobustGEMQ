@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "experiment_id": "robustgemq-independent-study-v1",
+  "model": "allenai/OLMoE-1B-7B-0924",
+  "budget": {
+    "bpe": 2.5,
+    "candidate_bits": [1, 2, 3],
+    "expert_bit_budget": 2560,
+    "constraint": "c2c3"
+  },
+  "data_protocol": {
+    "split_salt": "robustgemq-independent-study-v1-20260825",
+    "record_fractions": {
+      "calibration-a": 0.3,
+      "calibration-b": 0.1,
+      "validation": 0.2,
+      "test": 0.4
+    },
+    "calibration_a": {
+      "scenario_seeds": [0, 1, 2],
+      "sequences_per_domain_seed": 32,
+      "tokens_per_sequence": 2048
+    },
+    "calibration_b": {
+      "sequences_per_domain": 32,
+      "tokens_per_sequence": 2048
+    },
+    "validation": {
+      "sequences_per_domain": 64,
+      "tokens_per_sequence": 2048
+    },
+    "test": {
+      "sequences_per_domain": 128,
+      "tokens_per_sequence": 2048
+    }
+  },
+  "methods": [
+    {"key": "gemq-c4", "label": "GEMQ-C4", "role": "upstream-reference"},
+    {"key": "layer-balanced", "label": "Layer-Balanced", "role": "allocation-free-control"},
+    {"key": "usage-only", "label": "Usage-Only", "role": "router-usage-control"},
+    {"key": "concat", "label": "Concat", "role": "pooled-reconstruction-baseline"},
+    {"key": "domain-mean", "label": "Scenario-Normalized-Mean", "role": "scenario-normalized-candidate"}
+  ],
+  "checkpoint_seeds": [101, 202, 303],
+  "selection": {
+    "screen_seed": 101,
+    "final_method_count": 3,
+    "rule": [
+      "always retain gemq-c4 as the upstream reference",
+      "retain the non-GEMQ method with the lowest validation mean-domain NLL",
+      "retain the remaining method with the lowest validation worst-domain NLL"
+    ],
+    "tie_break": "method key in lexicographic order",
+    "test_locked_until_selection_sha256_is_written": true
+  },
+  "statistics": {
+    "checkpoint_variance": "sample variance across checkpoint seeds for every selected method",
+    "item_bootstrap": "paired item-level bootstrap within independent test domain; checkpoint seed is retained as a second variation axis",
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 20260825
+  },
+  "downstream_suite": [
+    {"task": "wikitext2-test", "metric": "perplexity", "limit": "full fixed local split"},
+    {"task": "gsm8k-test", "metric": "exact_match", "limit": 128},
+    {"task": "mbpp-test", "metric": "pass@1", "limit": 100},
+    {"task": "boolq-validation", "metric": "accuracy", "limit": 256}
+  ]
+}

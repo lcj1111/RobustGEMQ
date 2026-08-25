@@ -51,5 +51,6 @@ jobs:
             tests/test_merge_layer_re.py \
             tests/test_phase6_layer_re.py \
             tests/test_phase6_release_evidence.py \
+            tests/test_phase10_record_splits.py \
             tests/test_h6_summary.py \
             tests/test_phase9_public_evidence.py
