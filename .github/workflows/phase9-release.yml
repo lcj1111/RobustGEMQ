@@ -53,5 +53,7 @@ jobs:
             tests/test_phase6_release_evidence.py \
             tests/test_phase10_record_splits.py \
             tests/test_phase10_method_configs.py \
+            tests/test_phase10_selection.py \
+            tests/test_phase10_independent_test.py \
             tests/test_h6_summary.py \
             tests/test_phase9_public_evidence.py
