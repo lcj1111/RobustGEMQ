@@ -20,6 +20,7 @@ cd "$repo"
 run_one() {
   local method="$1" seed="$2" gpu="$3" output="$output_root/$method/seed-$seed.json"
   [[ -s "$output" ]] && return
+  mkdir -p "$(dirname "$output")"
   CUDA_VISIBLE_DEVICES="$gpu" HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
     "$python_bin" scripts/phase10/evaluate_downstream.py \
       --checkpoint "$checkpoint_root/$method/seed-$seed" --method "$method" --checkpoint-seed "$seed" \
