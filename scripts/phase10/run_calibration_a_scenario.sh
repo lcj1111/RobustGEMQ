@@ -30,7 +30,7 @@ done
 
 if [[ -s "$merged" && -s "$usage" ]]; then
   "$python_bin" scripts/phase6/validate_layer_re.py "$merged" --output "$artifact_dir/layer-re-summary.json"
-  "$python_bin" scripts/phase10/validate_expert_usage.py "$usage" --samples 32 --output "$artifact_dir/usage-summary.json"
+  "$python_bin" scripts/phase10/validate_expert_usage.py "$usage" --samples 24 --output "$artifact_dir/usage-summary.json"
   exit 0
 fi
 
@@ -41,7 +41,7 @@ if [[ ! -s "$grads" ]]; then
     "$python_bin" -m gemq.compute_model_stats \
       --mode layer_grads --model "$model_path" --model_name allenai/OLMoE-1B-7B-0924 \
       --model_dtype bfloat16 --device_map auto --calib_dataset "$DOMAIN" \
-      --scenario_tokens_path "$tokens" --use_fast --seed "$SEED" --nsamples 32 --seqlen 2048 \
+      --scenario_tokens_path "$tokens" --use_fast --seed "$SEED" --nsamples 24 --seqlen 2048 \
       --layer_grads_path "$grads" > "$artifact_dir/layer-grads.log" 2>&1
 fi
 [[ -s "$grads" ]] || { echo "LayerGrads was not created" >&2; exit 5; }
@@ -61,7 +61,7 @@ for index in 0 1 2 3; do
       "$python_bin" -m gemq.compute_model_stats \
         --mode layer_re --model "$model_path" --model_name allenai/OLMoE-1B-7B-0924 \
         --model_dtype bfloat16 --calib_dataset "$DOMAIN" --scenario_tokens_path "$tokens" \
-        --use_fast --seed "$SEED" --nsamples 32 --seqlen 2048 --wbits 1,2,3 \
+        --use_fast --seed "$SEED" --nsamples 24 --seqlen 2048 --wbits 1,2,3 \
         --expert_start "$expert_start" --expert_end "$expert_end" \
         --layer_grads_path "$grads" --layer_re_path "$shard" --forward_batch_size 8 \
         "${usage_args[@]}"
@@ -75,7 +75,7 @@ for pid in "${pids[@]}"; do wait "$pid" || status=1; done
 "$python_bin" scripts/phase1/merge_layer_re.py "${shards[@]}" --output "$merged" \
   --layers 16 --experts 64 --bits 1,2,3 > "$artifact_dir/merge.log"
 "$python_bin" scripts/phase6/validate_layer_re.py "$merged" --output "$artifact_dir/layer-re-summary.json"
-"$python_bin" scripts/phase10/validate_expert_usage.py "$usage" --samples 32 --output "$artifact_dir/usage-summary.json"
+"$python_bin" scripts/phase10/validate_expert_usage.py "$usage" --samples 24 --output "$artifact_dir/usage-summary.json"
 rm -f -- "$grads" "${shards[@]}"
 printf 'domain=%s\nseed=%s\nstarted_utc=%s\nfinished_utc=%s\nexit_code=0\n' \
   "$DOMAIN" "$SEED" "$started" "$(date -u +%FT%TZ)" > "$artifact_dir/status.txt"
