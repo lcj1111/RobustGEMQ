@@ -25,8 +25,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=2)
     parser.add_argument("--samples-per-domain", type=int, default=32)
     args = parser.parse_args()
-    if args.samples_per_domain <= 0 or args.samples_per_domain * len(DOMAINS) != 128:
-        raise ValueError("samples-per-domain must be positive and total exactly 128")
+    if args.samples_per_domain <= 0:
+        raise ValueError("samples-per-domain must be positive")
     chunks = []
     source = {}
     for domain in DOMAINS:
@@ -45,8 +45,9 @@ def main() -> None:
             "indices": indices,
         }
     balanced = torch.cat(chunks, dim=0).contiguous()
-    if tuple(balanced.shape) != (128, 2048):
-        raise ValueError(f"expected [128, 2048], got {tuple(balanced.shape)}")
+    expected_shape = (args.samples_per_domain * len(DOMAINS), 2048)
+    if tuple(balanced.shape) != expected_shape:
+        raise ValueError(f"expected {expected_shape}, got {tuple(balanced.shape)}")
     args.output_dir.mkdir(parents=True, exist_ok=True)
     digest = tensor_hash(balanced)
     token_path = args.output_dir / f"tokens-{digest[:12]}.pt"
