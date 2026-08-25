@@ -53,7 +53,7 @@ cd /data/models/RobustGEMQ
 
 ```bash
 python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
-pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
+python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
   tests/test_phase6_release_evidence.py tests/test_h6_summary.py \
   tests/test_phase9_public_evidence.py
 ```
