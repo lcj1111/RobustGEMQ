@@ -146,7 +146,9 @@ def evaluate_boolq(model, tokenizer, path: Path, device: str, limit: int) -> dic
 def evaluate_gsm8k(model, tokenizer, path: Path, device: str, limit: int, batch_size: int) -> dict:
     rows = read_jsonl(path, limit)
     old_side = tokenizer.padding_side
+    old_cache = model.config.use_cache
     tokenizer.padding_side = "left"
+    model.config.use_cache = True
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     items = []
@@ -159,6 +161,7 @@ def evaluate_gsm8k(model, tokenizer, path: Path, device: str, limit: int, batch_
             generated = model.generate(
                 **encoded,
                 do_sample=False,
+                use_cache=True,
                 max_new_tokens=128,
                 pad_token_id=tokenizer.pad_token_id,
                 eos_token_id=tokenizer.eos_token_id,
@@ -178,6 +181,7 @@ def evaluate_gsm8k(model, tokenizer, path: Path, device: str, limit: int, batch_
                 "completion": continuation,
             })
     tokenizer.padding_side = old_side
+    model.config.use_cache = old_cache
     return {"metric": "exact_match", "value": sum(x["correct"] for x in items) / len(items), "items": items}
 
 
