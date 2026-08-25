@@ -23,7 +23,8 @@ run_method() {
   local checkpoint="$checkpoint_root/$method/seed-101"
   mkdir -p "$method_dir" "$checkpoint"
   local h6_dir="$h6_root/$method/seed-101"
-  if [[ -s "$method_dir/validation-items.json" && -s "$h6_dir/summary.json" ]]; then
+  if [[ -s "$method_dir/validation-items.json" && -s "$h6_dir/summary.json" ]] && \
+     "$python_bin" -c 'import json,sys; assert json.load(open(sys.argv[1]))["passed"] is True' "$h6_dir/summary.json"; then
     echo "reusing completed $method"
     return
   fi
