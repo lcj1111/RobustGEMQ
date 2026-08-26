@@ -24,6 +24,49 @@ from gemq.utils.hf_loading import align_deepseek_softmax_scale
 logging.set_verbosity_error()
 
 
+def summarize_router_updates(before, router_named_params):
+    """逐参数统计 Router 更新，避免均值求和相互抵消。"""
+    changed_elements = 0
+    changed_tensors = 0
+    total_elements = 0
+    delta_sq_sum = 0.0
+    delta_max_abs = 0.0
+    per_parameter = {}
+    for name, parameter in router_named_params:
+        if name not in before:
+            raise KeyError(f"Missing Router snapshot: {name}")
+        current = parameter.detach().to(device="cpu", dtype=torch.float32)
+        reference = before[name]
+        if current.shape != reference.shape:
+            raise ValueError(f"Router shape changed during RFT: {name}")
+        delta = current - reference
+        count = int(torch.count_nonzero(delta).item())
+        squared = float(torch.sum(delta.double().square()).item())
+        maximum = float(delta.abs().max().item()) if delta.numel() else 0.0
+        total_elements += delta.numel()
+        changed_elements += count
+        changed_tensors += int(count > 0)
+        delta_sq_sum += squared
+        delta_max_abs = max(delta_max_abs, maximum)
+        per_parameter[name] = {
+            "elements": delta.numel(),
+            "changed_elements": count,
+            "delta_l2": math.sqrt(squared),
+            "delta_max_abs": maximum,
+        }
+    return {
+        "router_parameter_tensors": len(router_named_params),
+        "router_parameter_elements": total_elements,
+        "changed_parameter_tensors": changed_tensors,
+        "changed_elements": changed_elements,
+        "changed_fraction": changed_elements / total_elements if total_elements else 0.0,
+        "delta_l2": math.sqrt(delta_sq_sum),
+        "delta_max_abs": delta_max_abs,
+        "effective_update": changed_elements > 0,
+        "per_parameter": per_parameter,
+    }
+
+
 def save_quantized_model(model, tokenizer, save_path, save_dtype, real_quant):
     """
     Save the real/pseudo quantized model.
@@ -42,7 +85,7 @@ def finetune_routers(model, dataloader, args):
     """
     Fine-tune all router modules in the MoE model.
     """
-    # disable kv cahce
+    # disable kv cache
     use_cache = model.config.use_cache
     model.config.use_cache = False
     org_dtype = next(model.parameters()).dtype
@@ -56,25 +99,46 @@ def finetune_routers(model, dataloader, args):
         input_ids.append(data[0])  # (1, seqlen)
     input_ids = torch.cat(input_ids, dim=0)  # (nsamples, seqlen)
 
-    # enable gradients for all routers
+    # 只把 Router 交给优化器；这比对全部非 Router 参数求均值更直接地约束更新范围。
     router_params = get_router_params(model, args.model_name)  # NOTE: return a list of parameters
+    router_ids = {id(parameter) for parameter in router_params}
+    router_named_params = [
+        (name, parameter)
+        for name, parameter in model.named_parameters()
+        if id(parameter) in router_ids
+    ]
+    if not router_named_params or len(router_named_params) != len(router_params):
+        raise RuntimeError("Router parameter discovery is empty or contains duplicate identities")
     for p in model.parameters():
         p.requires_grad = False
     for p in router_params:
         p.requires_grad = True
-
-    # sanity check
-    org_pmean, org_gmean = 0.0, 0.0
-    for name, param in model.named_parameters():
-        if get_module_type(name, args.model_name) == LinearModuleType.GATE:
-            org_gmean += param.mean().item()
-        else:
-            org_pmean += param.mean().item()
+    unexpected_trainable = [
+        name
+        for name, parameter in model.named_parameters()
+        if parameter.requires_grad and id(parameter) not in router_ids
+    ]
+    if unexpected_trainable:
+        raise RuntimeError(f"Non-Router parameters are trainable: {unexpected_trainable[:5]}")
+    before = {
+        name: parameter.detach().to(device="cpu", dtype=torch.float32).clone()
+        for name, parameter in router_named_params
+    }
     if args.verbose:
-        print("Router stats before fine-tuning:", org_gmean)
+        print(f"Router tensors before fine-tuning: {len(router_named_params)}")
 
     # start fine-tuning
     optimizer = torch.optim.AdamW(router_params, lr=args.rft_lr, weight_decay=args.rft_wd)
+    optimizer_ids = {
+        id(parameter) for group in optimizer.param_groups for parameter in group["params"]
+    }
+    if optimizer_ids != router_ids:
+        raise RuntimeError("Optimizer parameter scope differs from the Router parameter set")
+    gradient_sq_sum = 0.0
+    gradient_max_abs = 0.0
+    gradient_nonzero_observations = 0
+    steps_with_nonzero_gradient = 0
+    optimizer_steps = 0
     for epoch in range(args.rft_epochs):
         loss_sum = 0.
         start = time.time()
@@ -86,7 +150,24 @@ def finetune_routers(model, dataloader, args):
 
             optimizer.zero_grad()
             loss.backward()
+            step_has_gradient = False
+            for _, parameter in router_named_params:
+                if parameter.grad is None:
+                    continue
+                gradient = parameter.grad.detach().float()
+                if not torch.isfinite(gradient).all():
+                    raise FloatingPointError("Router gradient contains NaN or Inf")
+                nonzero = int(torch.count_nonzero(gradient).item())
+                gradient_nonzero_observations += nonzero
+                step_has_gradient |= nonzero > 0
+                gradient_sq_sum += float(torch.sum(gradient.double().square()).item())
+                if gradient.numel():
+                    gradient_max_abs = max(
+                        gradient_max_abs, float(gradient.abs().max().item())
+                    )
+            steps_with_nonzero_gradient += int(step_has_gradient)
             optimizer.step()
+            optimizer_steps += 1
 
             loss_sum += loss.item()
             if i % 32 == 0:
@@ -94,20 +175,42 @@ def finetune_routers(model, dataloader, args):
         elapse = time.time() - start
         print(f"epoch {epoch:>2} loss: {loss_sum / len(dataloader):.6f}, elapse: {elapse:.2f} seconds")
 
-        # sanity check
-        if epoch == 0:
-            pmean, gmean = 0., 0.
-            for name, param in model.named_parameters():
-                if get_module_type(name, args.model_name) == LinearModuleType.GATE:
-                    gmean += param.mean().item()
-                else:
-                    pmean += param.mean().item()
-
-            assert math.fabs(org_pmean - pmean) < 1e-8, "Other parameters are changing during router fine-tuning!"
-            assert math.fabs(org_gmean - gmean) > 1e-10, "Routers are not changing during fine-tuning!"
-            print("Sanity check passed!")
-            if args.verbose:
-                print("Sum of routers params after finetuning:", gmean)
+    update = summarize_router_updates(before, router_named_params)
+    audit = {
+        "schema_version": 1,
+        "status": (
+            "effective-update" if update["effective_update"] else "no-representable-update"
+        ),
+        "checkpoint_seed": args.seed,
+        "epochs": args.rft_epochs,
+        "learning_rate": args.rft_lr,
+        "weight_decay": args.rft_wd,
+        "optimizer_steps": optimizer_steps,
+        "scope": {
+            "optimizer_only_contains_routers": optimizer_ids == router_ids,
+            "unexpected_trainable_parameters": unexpected_trainable,
+        },
+        "gradient": {
+            "steps_with_nonzero_gradient": steps_with_nonzero_gradient,
+            "nonzero_element_observations": gradient_nonzero_observations,
+            "l2_across_steps": math.sqrt(gradient_sq_sum),
+            "max_abs": gradient_max_abs,
+            "finite": True,
+        },
+        "update": update,
+    }
+    if not update["effective_update"]:
+        print(
+            "WARNING: RFT produced no representable Router update; "
+            "retaining an auditable no-op result."
+        )
+    print(json.dumps({"router_update_audit": audit}, sort_keys=True))
+    if args.rft_audit_path:
+        destination = Path(args.rft_audit_path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(
+            json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
 
     # restore
     model = model.to(org_dtype)
@@ -441,6 +544,10 @@ def parse_args():
     parser.add_argument(
         "--rft_wd", type=float, default=0.0001,
         help="Weight decay for the router fine-tuning"
+    )
+    parser.add_argument(
+        "--rft_audit_path", type=str, default="",
+        help="Optional path for the structured per-parameter Router update audit",
     )
 
     # evaluation args

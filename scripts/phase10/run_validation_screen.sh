@@ -37,6 +37,7 @@ run_method() {
         --attn_wbits 4 --gate_wbits 16 --dense_wbits 4 --expert_wbits 2 \
         --groupsize 128 --blocksize 128 --percdamp 0.01 --mse --reproduce_mcmoe \
         --finetune_routers --rft_epochs 1 --rft_lr 0.0001 --rft_wd 0.0001 \
+        --rft_audit_path "$method_dir/router-update.json" \
         --real_quant --save_path "$checkpoint" --skip_builtin_eval \
         > "$method_dir/quantize.log" 2>&1
   fi
