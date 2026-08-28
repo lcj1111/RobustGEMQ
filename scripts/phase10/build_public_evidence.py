@@ -8,6 +8,11 @@ import hashlib
 import json
 from pathlib import Path
 
+try:
+    from scripts.phase10.select_validation_methods import selection_hash
+except ModuleNotFoundError:
+    from select_validation_methods import selection_hash
+
 
 METHOD_LABELS = {
     "gemq-c4": "GEMQ-C4",
@@ -37,6 +42,17 @@ def main() -> None:
     selection = read_json(args.selection)
     unlock = read_json(args.unlock)
     statistics = read_json(args.statistics)
+    recorded_selection_hash = selection.get("selection_sha256")
+    canonical_selection = dict(selection)
+    canonical_selection.pop("selection_sha256", None)
+    if selection_hash(canonical_selection) != recorded_selection_hash:
+        raise ValueError("selection hash does not match its frozen contents")
+    if unlock.get("selection_sha256") != recorded_selection_hash:
+        raise ValueError("test unlock refers to a different selection")
+    if unlock.get("selection_file_sha256") != sha256(args.selection):
+        raise ValueError("test unlock refers to a different selection file")
+    if statistics.get("test_unlock_sha256") != sha256(args.unlock):
+        raise ValueError("statistics refer to a different test unlock")
     methods = selection["selected_methods"]
     if methods != ["gemq-c4", "concat", "domain-mean"]:
         raise ValueError("Phase 10 public evidence expects the frozen three-method selection")
@@ -46,6 +62,8 @@ def main() -> None:
         raise ValueError("statistics methods differ from frozen selection")
     if statistics.get("checkpoint_seeds") != [101, 202, 303]:
         raise ValueError("checkpoint seeds differ from the frozen protocol")
+    if unlock.get("checkpoint_seeds") != statistics["checkpoint_seeds"]:
+        raise ValueError("test unlock and statistics use different checkpoint seeds")
     if statistics.get("cross_method_and_checkpoint_item_identity_match") is not True:
         raise ValueError("statistics must prove cross-method and cross-checkpoint identity")
 
