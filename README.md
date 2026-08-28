@@ -16,18 +16,24 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 固定来源的领域数据 → 不可变 token 场景 → LayerGrads / LayerRE
                        → 精确预算分配 → GPTQ + Router 微调
                        → HQQ 实际打包检查点 → H6 fake/real 验证
-                       → 配对 Bootstrap → 冻结的 G6 扩展决策
+                       → 固定场景 Bootstrap 与 G6 决策
+                       → 记录级隔离 validation/test 的独立复核
 ```
 
-在 OLMoE 的真实检查点实验中，`Scenario-Normalized-Mean` 没有超过同预算基线；因此 G6 停止第二模型扩展。历史脚本、配置和产物继续使用键 `domain-mean`，仅作为兼容标识。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
+在 OLMoE 的真实检查点实验中，`Scenario-Normalized-Mean` 没有超过同预算基线；随后在记录级隔离的独立 test 上复核得到相同结论：`Concat` 的平均质量更好，`GEMQ-C4` 的最坏领域表现更好。G6 因而继续停止第二模型扩展。历史脚本、配置和产物继续使用键 `domain-mean`，仅作为兼容标识。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
 
 > [!IMPORTANT]
 >
 > 当前 Bootstrap 是**固定 Phase 6 训练场景内的描述性 Bootstrap**，用于量化这些既定样本上的估计不确定性；它不是独立 validation/test，也不支持外推泛化结论。
 
+> [!NOTE]
+>
+> Phase 10 在此基础上新增记录级互斥的 validation/test、冻结选择规则、三 checkpoint seed 与跨方法样本 identity 校验。它确认阶段六的结论，但同样只适用于已固定的 OLMoE 协议，不宣称通用最优。
+
 - [最终发布边界](docs/07-release/report.md)：已证实的能力、明确排除的主张，以及项目应如何定位。
 - [公开证据包](docs/07-release/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
 - [阶段六可靠性手册](docs/06-real-checkpoint-validation/harness.md)：完整的复现实验链路与产物约定。
+- [独立复核报告](docs/08-independent-confirmation/report.md)：Phase 10 的冻结筛选、独立 test 与结论边界。
 
 可在本地运行无需 GPU 的发布契约检查：
 
@@ -35,7 +41,9 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
 python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
   tests/test_phase6_release_evidence.py tests/test_h6_summary.py \
-  tests/test_phase9_public_evidence.py
+  tests/test_phase9_public_evidence.py tests/test_phase10_public_evidence.py
+python scripts/phase10/verify_public_evidence.py \
+  --evidence docs/08-independent-confirmation/evidence.json
 ```
 
 ## 仓库包含的内容
@@ -52,6 +60,7 @@ python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
 - 在相同 2.5 bpe 预算下比较 `GEMQ-C4`、`Concat`、`Scenario-Normalized-Mean` 和 `AlphaQ-style`；对选中方法完成 1,536 条样本的配对 Bootstrap。
 - 验证 fake/real 路径：三个检查点均通过 H6，PPL 误差小于 1%，decode argmax 一致率不低于 95%。
 - 将 `G6=STOP_NO_LARGE_MODEL_EXPANSION` 作为冻结结论写入公开证据和 CI；详见[发布报告](docs/07-release/report.md)。
+- 使用记录级互斥的 calibration、validation、test 重新执行固定方法选择和 3×3 checkpoint 独立测试，确认平均质量与最坏领域鲁棒性的权衡；详见[独立复核报告](docs/08-independent-confirmation/report.md)。
 
 ## 安装
 

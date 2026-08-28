@@ -1,0 +1,207 @@
+{
+  "conclusion": {
+    "interpretation": "独立 test 复核了平均质量与最差领域鲁棒性之间的权衡；不支持将 Scenario-Normalized-Mean 表述为通用质量提升。",
+    "mean_domain_nll_winner": "concat",
+    "scenario_normalized_mean_strictly_dominates_baselines": false,
+    "worst_domain_nll_winner": "gemq-c4"
+  },
+  "independent_test": {
+    "checkpoint_variance": {
+      "concat": {
+        "domain_nll_sample_variance": {
+          "code": 1.8178783015314655e-06,
+          "general": 4.5845731473707657e-07,
+          "instruction": 3.014816570678196e-06,
+          "math": 4.972551041359375e-07
+        },
+        "mean_domain_nll_sample_variance": 2.582019589275672e-07,
+        "worst_domain_nll_sample_variance": 4.5845731473707657e-07
+      },
+      "domain-mean": {
+        "domain_nll_sample_variance": {
+          "code": 1.2438235724769255e-06,
+          "general": 1.0109301307803054e-07,
+          "instruction": 7.753217738279617e-07,
+          "math": 5.612203533692365e-06
+        },
+        "mean_domain_nll_sample_variance": 5.255306998522515e-07,
+        "worst_domain_nll_sample_variance": 1.0109301307803054e-07
+      },
+      "gemq-c4": {
+        "domain_nll_sample_variance": {
+          "code": 6.350264860779317e-06,
+          "general": 2.73606056062371e-06,
+          "instruction": 3.6960163262915957e-06,
+          "math": 2.433338709462711e-05
+        },
+        "mean_domain_nll_sample_variance": 6.813706816530262e-06,
+        "worst_domain_nll_sample_variance": 2.73606056062371e-06
+      }
+    },
+    "paired_item_bootstrap": {
+      "comparisons": {
+        "concat__minus__domain-mean": {
+          "mean_domain_nll_left_minus_right": {
+            "ci95": [
+              -0.004402551891851447,
+              -0.002075981203880518
+            ],
+            "point_difference": -0.0032322083910303334,
+            "probability_left_better": 1.0
+          },
+          "worst_domain_nll_left_minus_right": {
+            "ci95": [
+              -0.008962313830852265,
+              -0.002554142475128041
+            ],
+            "point_difference": -0.005738693806860429,
+            "probability_left_better": 0.9996
+          }
+        },
+        "gemq-c4__minus__concat": {
+          "mean_domain_nll_left_minus_right": {
+            "ci95": [
+              0.04696231302805236,
+              0.05317498983090926
+            ],
+            "point_difference": 0.05003106314688921,
+            "probability_left_better": 0.0
+          },
+          "worst_domain_nll_left_minus_right": {
+            "ci95": [
+              -0.03169207297679448,
+              -0.021661112892130963
+            ],
+            "point_difference": -0.026711583965353558,
+            "probability_left_better": 1.0
+          }
+        },
+        "gemq-c4__minus__domain-mean": {
+          "mean_domain_nll_left_minus_right": {
+            "ci95": [
+              0.04368242799795962,
+              0.050035944098554816
+            ],
+            "point_difference": 0.046798854755858876,
+            "probability_left_better": 0.0
+          },
+          "worst_domain_nll_left_minus_right": {
+            "ci95": [
+              -0.03793768681999667,
+              -0.02680202354159639
+            ],
+            "point_difference": -0.03245027777221399,
+            "probability_left_better": 1.0
+          }
+        }
+      },
+      "draws": 10000,
+      "method": "average each item across checkpoint seeds, then stratified paired resampling within independent test domains",
+      "seed": 20260825
+    },
+    "seed_mean_point_metrics": {
+      "concat": {
+        "domain_nll": {
+          "code": 1.3293206441319652,
+          "general": 2.7281865469283524,
+          "instruction": 2.0456505392988524,
+          "math": 1.3210753177603085
+        },
+        "mean_domain_nll": 1.8560582620298698,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.7281865469283524
+      },
+      "domain-mean": {
+        "domain_nll": {
+          "code": 1.32464408977992,
+          "general": 2.733925240735213,
+          "instruction": 2.06085742596123,
+          "math": 1.317735125207239
+        },
+        "mean_domain_nll": 1.8592904704209001,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.733925240735213
+      },
+      "gemq-c4": {
+        "domain_nll": {
+          "code": 1.5168847191250985,
+          "general": 2.701474962962999,
+          "instruction": 2.055606493933333,
+          "math": 1.3503911246856053
+        },
+        "mean_domain_nll": 1.906089325176759,
+        "worst_domain": "general",
+        "worst_domain_nll": 2.701474962962999
+      }
+    }
+  },
+  "integrity": {
+    "h6_summary_sha256": {
+      "concat": {
+        "101": "3a2f784c3f876638474edbcbf2169325087b019ab293c6101e6ed6ccf62cef9e",
+        "202": "dd8f3bd15851086b7c3702854461416c32a1f4251008a911b7bbc5896282dee3",
+        "303": "48684c29124d893bfc6bffb8f2a1d627a24bec074dd0398b88c950597ab764d6"
+      },
+      "domain-mean": {
+        "101": "47e23e6eaf748644ee3b0ca77825a1fc381dec93746a25d0bc497e1c06016e3e",
+        "202": "1db338b2100a2871a143727c9f5ec3d78d0455f9f8d27944daa75b1f65e49555",
+        "303": "bcc785cc8a41cd1189976d8f1b62ec0ac41e2b574723ff97ed8089857ebbdefc"
+      },
+      "gemq-c4": {
+        "101": "b675b637db042fbcd5c779e977e2e2dafe8090af9e8c2ad0de58f4e5da2e4560",
+        "202": "7a5705d3d82675f281d667fba236f572dbca403a4ac13157d45abd50090d0e56",
+        "303": "8d0ea7edf3838549808c60f219f9b7f774cc627915c295a4da187d37e8d2bb26"
+      }
+    },
+    "selection_sha256": "4f9603496305c4b4c0563f5b630f5cf98a28a7506b7beb66d2569667cd227bf3",
+    "test_unlock_sha256": "95a406d7989ef5b148e90c2b688c202175cf5a5bcbf34a44d5711bfc5e6158a3",
+    "test_unlocked_only_after_all_h6_passed": true
+  },
+  "method_labels": {
+    "concat": "Concat",
+    "domain-mean": "Scenario-Normalized-Mean",
+    "gemq-c4": "GEMQ-C4"
+  },
+  "model": "allenai/OLMoE-1B-7B-0924",
+  "phase": 10,
+  "phase_label": "independent-confirmation",
+  "project": "RobustGEMQ",
+  "protocol": {
+    "methods_compared_in_validation": [
+      "gemq-c4",
+      "layer-balanced",
+      "usage-only",
+      "concat",
+      "domain-mean"
+    ],
+    "screen_checkpoint_seed": 101,
+    "selected_methods": [
+      "gemq-c4",
+      "concat",
+      "domain-mean"
+    ],
+    "selection_rule": [
+      "retain gemq-c4",
+      "lowest validation mean-domain NLL among non-GEMQ methods",
+      "lowest validation worst-domain NLL among remaining methods"
+    ],
+    "selection_split": "validation",
+    "test_checkpoint_seeds": [
+      101,
+      202,
+      303
+    ],
+    "test_cross_method_and_checkpoint_item_identity_match": true,
+    "test_item_identity_sha256": "ce965ddba1f455c3890c47c7a8ba3d0ee32466eff619fbdf72f3b604bf8f9686",
+    "test_items_per_checkpoint": 384,
+    "validation_cross_method_item_identity_match": true,
+    "validation_item_identity_sha256": "5f2c2d3c865f25c2308da85cf482d34c9b93b51f195dd508c789dba33edaf70e"
+  },
+  "schema_version": 1,
+  "scope": "record-disjoint independent test after validation-only method selection; paired bootstrap averages each item across three checkpoint seeds and then resamples within domains. This confirms the OLMoE protocol only, not universal superiority.",
+  "source_file_sha256": {
+    "independent_statistics": "0b2b4203f72d99a7a9b4aa342fe70b70f71382459b2787a489d3aaba42f9f88e",
+    "selection": "3d31a7b774bf183716b773ffb60573366996c85ce1daf892c22d8bc804dfb141",
+    "test_unlock": "95a406d7989ef5b148e90c2b688c202175cf5a5bcbf34a44d5711bfc5e6158a3"
+  }
+}

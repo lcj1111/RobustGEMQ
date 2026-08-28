@@ -7,7 +7,8 @@ model_path="${MODEL_PATH:-/data/models/modelscope/LLM-Research/OLMoE-1B-7B-0924}
 config_root="${CONFIG_ROOT:-$repo/artifacts/phase10/configs/bpe-2.5}"
 scenario_root="${SCENARIO_ROOT:-$repo/cache/phase10}"
 calibration_manifest="${CALIBRATION_MANIFEST:-$scenario_root/calibration-b-balanced/manifest.json}"
-selection="${SELECTION:-$repo/artifacts/phase10/validation-screen/seed-101/selection.json}"
+# 方法筛选产物独立于 validation 明细；默认路径必须与筛选脚本的输出一致。
+selection="${SELECTION:-$repo/artifacts/phase10/selection/seed-101/selection.json}"
 artifact_root="${ARTIFACT_ROOT:-$repo/artifacts/phase10/final-checkpoints}"
 checkpoint_root="${CHECKPOINT_ROOT:-$repo/results/phase10/checkpoints}"
 h6_root="${H6_ROOT:-$repo/artifacts/phase10/h6}"
