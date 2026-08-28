@@ -3,7 +3,8 @@ set -euo pipefail
 
 repo="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 python_bin="${PYTHON_BIN:-$repo/.venv/bin/python}"
-selection="${SELECTION:-$repo/artifacts/phase10/validation-screen/seed-101/selection.json}"
+# 下游评测只能读取已经冻结的 selection，而不是 validation 原始目录。
+selection="${SELECTION:-$repo/artifacts/phase10/selection/seed-101/selection.json}"
 unlock="${TEST_UNLOCK:-$repo/artifacts/phase10/final-checkpoints/test-unlock.json}"
 checkpoint_root="${CHECKPOINT_ROOT:-$repo/results/phase10/checkpoints}"
 output_root="${OUTPUT_ROOT:-$repo/artifacts/phase10/downstream}"

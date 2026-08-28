@@ -13,10 +13,11 @@
 | 阶段五：路由诊断 | 检验 Router proxy 是否具有独立解释力 | Phase 4 | 反证；`lambda_route=0` | [报告](05-router-diagnostics/report.md) |
 | 阶段六：真实检查点确认 | 在真实 GPTQ/RFT/HQQ 路径上完成冻结比较与 Gate 决策 | Phase 6 | G6=STOP | [结果报告](06-real-checkpoint-validation/report.md) · [复现 Harness](06-real-checkpoint-validation/harness.md) |
 | 阶段七：发布交付 | 发布轻量证据、离线校验与 CI 契约 | Phase 9 | 完成 | [发布报告](07-release/report.md) · [公开证据](07-release/evidence.json) |
+| 阶段八：独立测试复核 | 在记录级隔离的 validation/test 上冻结选择并确认阶段六结论 | Phase 10 | 完成 | [复核报告](08-independent-confirmation/report.md) · [公开证据](08-independent-confirmation/evidence.json) |
 
-## 为什么没有“阶段八”
+## 为什么没有历史计划中的扩展阶段
 
-历史执行计划中的 Phase 5、Phase 7 和 Phase 8 都是条件分支，而不是遗漏任务：结构性 H5 未在主实验前执行，因而不能在结果出现后用于挽救结论；Phase 7 的第二模型扩展被 `G6=STOP` 阻止；Phase 8 依赖未通过的结构 Gate。它们没有进入正式项目主线，避免把未发生的工作包装为成果。
+历史执行计划中的 Phase 5、Phase 7 和 Phase 8 都是条件分支，而不是遗漏任务：结构性 H5 未在主实验前执行，因而不能在结果出现后用于挽救结论；Phase 7 的第二模型扩展被 `G6=STOP` 阻止；历史 Phase 8 依赖未通过的结构 Gate。它们没有进入正式项目主线，避免把未发生的工作包装为成果。这里的正式“阶段八”对应后来执行的 Phase 10：它只做记录级独立复核，不恢复被 Gate 阻止的质量扫参。
 
 ## 阅读顺序
 

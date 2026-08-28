@@ -40,7 +40,9 @@ jobs:
           python -m pip install --upgrade pip numpy scipy pytest
           python -m pip install -e . --no-deps
       - name: Validate published evidence boundary
-        run: python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
+        run: |
+          python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
+          python scripts/phase10/verify_public_evidence.py --evidence docs/08-independent-confirmation/evidence.json
       - name: Compile Python sources
         run: python -m compileall -q gemq scripts tests
       - name: Run CPU reliability tests
@@ -55,5 +57,6 @@ jobs:
             tests/test_phase10_method_configs.py \
             tests/test_phase10_selection.py \
             tests/test_phase10_independent_test.py \
+            tests/test_phase10_public_evidence.py \
             tests/test_h6_summary.py \
             tests/test_phase9_public_evidence.py
