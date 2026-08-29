@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,6 +15,23 @@ from gemq.triton_kernels.dequant_group_gemm import dequant_group_gemm_triton
 from gemq.triton_kernels.dequant_gemm import dequant_gemm_triton
 from gemq.triton_kernels.dequant_gemv import dequant_splitk_gemv_triton
 from gemq.triton_kernels.fused_dequant_bmm import fused_dequant_up_proj_triton, fused_dequant_down_proj_triton
+from gemq.triton_kernels.mixedbit_moe_prefill import (
+    deterministic_unpermute_reduce,
+    mixedbit_fused_up_activation,
+    mixedbit_variable_m_grouped_gemm,
+)
+
+
+def sort_expert_assignments(selected_experts, routing_weights, top_k, num_experts):
+    """按 expert 排列 top-k assignment，并返回每个 expert 的 assignment 数量。"""
+    flat_experts = selected_experts.reshape(-1)
+    flat_weights = routing_weights.reshape(-1)
+    assignment_order = torch.argsort(flat_experts, stable=True)
+    sorted_experts = flat_experts[assignment_order]
+    sorted_tokens = torch.div(assignment_order, top_k, rounding_mode="floor")
+    sorted_weights = flat_weights[assignment_order]
+    expert_counts = torch.bincount(flat_experts, minlength=num_experts).cpu().tolist()
+    return sorted_experts, sorted_tokens, sorted_weights, expert_counts
 
 
 def check_deepseek_routing_supported(config):
@@ -77,6 +96,9 @@ def check_w1_w3_aligned(fused_block):
     )
     assert torch.equal(fused_block.w1_wq_strides, fused_block.w3_wq_strides), (
         "w1 and w3 must share packed strides: forward_one_token reads w3 at w1's offsets"
+    )
+    assert torch.equal(fused_block.w1_zs_strides, fused_block.w3_zs_strides), (
+        "w1 and w3 must share scale strides: fused prefill indexes both with w1's offsets"
     )
 
 
@@ -693,6 +715,12 @@ class QuantFusedOlmoeMoEBlock(nn.Module):
         self.num_experts = config.num_experts
         self.top_k = config.num_experts_per_tok
         self.norm_topk_prob = config.norm_topk_prob
+        self.prefill_backend = os.environ.get("GEMQ_PREFILL_BACKEND", "fused")
+        if self.prefill_backend not in {"fused", "grouped", "sorted"}:
+            raise ValueError(
+                "GEMQ_PREFILL_BACKEND 仅支持 fused、grouped 或 sorted，"
+                f"实际为 {self.prefill_backend!r}"
+            )
 
         # gating
         self.gate = nn.Linear(self.hidden_dim, self.num_experts, bias=False)
@@ -778,10 +806,13 @@ class QuantFusedOlmoeMoEBlock(nn.Module):
 
         return x2
 
-    def forward_n_tokens(self, hidden_states: Tensor) -> Tensor:
+    def forward_n_tokens_sorted(self, hidden_states: Tensor) -> Tensor:
         """
-        Fallback to the original implementation for multiple tokens input.
-        This function is NOT compatible with torch.compile due to the dynamic inputs in the loop.
+        多 token 的 OLMoE 路径。
+
+        先按 expert 对 top-k assignment 排序，再逐段执行量化 GEMM。这样不再构造
+        [E, A, T] one-hot 张量，并把逐 expert 的动态 shape 同步压缩为一次 counts 拷贝。
+        该路径作为 P1 参考后端保留，用于数值回归与性能归因。
         """
         batch_size, sequence_length, hidden_dim = hidden_states.shape
 
@@ -800,19 +831,165 @@ class QuantFusedOlmoeMoEBlock(nn.Module):
             (batch_size * sequence_length, hidden_dim), dtype=hidden_states.dtype, device=hidden_states.device
         )
 
-        # one hot encode the selected experts to create an expert mask
-        expert_mask = torch.nn.functional.one_hot(selected_experts, num_classes=self.num_experts).permute(2, 1, 0)
-        # [E, A, T]
-
-        expert_hit = torch.greater(expert_mask.sum(dim=(-1, -2)), 0).nonzero()
-        for expert_idx in expert_hit:
-            idx, top_x = torch.where(expert_mask[expert_idx].squeeze(0))
-            current_state = hidden_states[None, top_x].reshape(-1, hidden_dim)
-            current_hidden_states = self.forward_single_expert(expert_idx, current_state) * routing_weights[top_x, idx, None]
+        # selected_experts 按 [token, top-k slot] 展平；stable sort 保留同一 expert
+        # 内部的确定性顺序，便于逐项数值回归。
+        # 这里只发生一次 GPU -> CPU 同步；原 one-hot + where 路径会对每个命中
+        # expert 生成一次动态长度结果，从而在 Python 循环中重复同步。
+        sorted_experts, sorted_tokens, sorted_weights, expert_counts = sort_expert_assignments(
+            selected_experts, routing_weights, self.top_k, self.num_experts
+        )
+        start = 0
+        for count in expert_counts:
+            end = start + count
+            if count == 0:
+                start = end
+                continue
+            top_x = sorted_tokens[start:end]
+            expert_idx = sorted_experts[start:start + 1]
+            current_state = hidden_states.index_select(0, top_x)
+            current_hidden_states = self.forward_single_expert(expert_idx, current_state)
+            current_hidden_states *= sorted_weights[start:end, None]
             final_hidden_states.index_add_(0, top_x, current_hidden_states.to(hidden_states.dtype))
+            start = end
 
         final_hidden_states = final_hidden_states.reshape(batch_size, sequence_length, hidden_dim)
         return final_hidden_states, router_logits
+
+    def forward_n_tokens_grouped(self, hidden_states: Tensor) -> Tensor:
+        """用三个 variable-M grouped GEMM 完成全部 expert 的 prefill。"""
+        batch_size, sequence_length, hidden_dim = hidden_states.shape
+        hidden_states = hidden_states.view(-1, hidden_dim)
+        router_logits = self.gate(hidden_states)
+        routing_weights = F.softmax(router_logits, dim=1, dtype=torch.float)
+        routing_weights, selected_experts = torch.topk(
+            routing_weights, self.top_k, dim=-1
+        )
+        if self.norm_topk_prob:
+            routing_weights /= routing_weights.sum(dim=-1, keepdim=True)
+        routing_weights = routing_weights.to(hidden_states.dtype)
+
+        flat_experts = selected_experts.reshape(-1)
+        assignment_order = torch.argsort(flat_experts, stable=True)
+        sorted_tokens = torch.div(
+            assignment_order, self.top_k, rounding_mode="floor"
+        )
+        sorted_weights = routing_weights.reshape(-1)[assignment_order]
+        counts = torch.bincount(
+            flat_experts, minlength=self.num_experts
+        ).to(torch.int32)
+        expert_offsets = torch.cat((counts.new_zeros(1), counts.cumsum(dim=0)))
+        expert_input = hidden_states.index_select(0, sorted_tokens)
+
+        x1 = mixedbit_variable_m_grouped_gemm(
+            expert_input,
+            expert_offsets,
+            self.w1_wq,
+            self.w1_scales,
+            self.w1_zeros,
+            self.w1_nbits,
+            self.w1_group_sizes,
+            self.w1_wq_strides,
+            self.w1_zs_strides,
+        )
+        x3 = mixedbit_variable_m_grouped_gemm(
+            expert_input,
+            expert_offsets,
+            self.w3_wq,
+            self.w3_scales,
+            self.w3_zeros,
+            self.w3_nbits,
+            self.w3_group_sizes,
+            self.w3_wq_strides,
+            self.w3_zs_strides,
+        )
+        activated = F.silu(x1) * x3
+        expert_output = mixedbit_variable_m_grouped_gemm(
+            activated,
+            expert_offsets,
+            self.w2_wq,
+            self.w2_scales,
+            self.w2_zeros,
+            self.w2_nbits,
+            self.w2_group_sizes,
+            self.w2_wq_strides,
+            self.w2_zs_strides,
+        )
+        expert_output *= sorted_weights[:, None]
+
+        final_hidden_states = torch.zeros(
+            (batch_size * sequence_length, hidden_dim),
+            dtype=hidden_states.dtype,
+            device=hidden_states.device,
+        )
+        final_hidden_states.index_add_(0, sorted_tokens, expert_output)
+        final_hidden_states = final_hidden_states.reshape(
+            batch_size, sequence_length, hidden_dim
+        )
+        return final_hidden_states, router_logits
+
+    def forward_n_tokens_fused(self, hidden_states: Tensor) -> Tensor:
+        """融合上投影/激活，并以固定 top-k 顺序完成确定性归并。"""
+        batch_size, sequence_length, hidden_dim = hidden_states.shape
+        hidden_states = hidden_states.view(-1, hidden_dim)
+        router_logits = self.gate(hidden_states)
+        routing_weights = F.softmax(router_logits, dim=1, dtype=torch.float)
+        routing_weights, selected_experts = torch.topk(
+            routing_weights, self.top_k, dim=-1
+        )
+        if self.norm_topk_prob:
+            routing_weights /= routing_weights.sum(dim=-1, keepdim=True)
+        routing_weights = routing_weights.to(hidden_states.dtype)
+
+        flat_experts = selected_experts.reshape(-1)
+        assignment_order = torch.argsort(flat_experts, stable=True)
+        sorted_tokens = torch.div(
+            assignment_order, self.top_k, rounding_mode="floor"
+        )
+        counts = torch.bincount(
+            flat_experts, minlength=self.num_experts
+        ).to(torch.int32)
+        expert_offsets = torch.cat((counts.new_zeros(1), counts.cumsum(dim=0)))
+        expert_input = hidden_states.index_select(0, sorted_tokens)
+
+        activated = mixedbit_fused_up_activation(
+            expert_input,
+            expert_offsets,
+            self.w1_wq,
+            self.w3_wq,
+            self.w1_scales,
+            self.w1_zeros,
+            self.w3_scales,
+            self.w3_zeros,
+            self.w1_nbits,
+            self.w1_group_sizes,
+            self.w1_wq_strides,
+            self.w1_zs_strides,
+        )
+        expert_output = mixedbit_variable_m_grouped_gemm(
+            activated,
+            expert_offsets,
+            self.w2_wq,
+            self.w2_scales,
+            self.w2_zeros,
+            self.w2_nbits,
+            self.w2_group_sizes,
+            self.w2_wq_strides,
+            self.w2_zs_strides,
+        )
+        final_hidden_states = deterministic_unpermute_reduce(
+            expert_output, assignment_order, routing_weights
+        )
+        final_hidden_states = final_hidden_states.reshape(
+            batch_size, sequence_length, hidden_dim
+        )
+        return final_hidden_states, router_logits
+
+    def forward_n_tokens(self, hidden_states: Tensor) -> Tensor:
+        if self.prefill_backend == "sorted":
+            return self.forward_n_tokens_sorted(hidden_states)
+        if self.prefill_backend == "grouped":
+            return self.forward_n_tokens_grouped(hidden_states)
+        return self.forward_n_tokens_fused(hidden_states)
 
     def forward_one_token(self, hidden_states: Tensor) -> Tensor:
         """

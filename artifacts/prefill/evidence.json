@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "title": "OLMoE 混合精度量化 prefill 优化证据",
+  "checkpoint": "results/phase10/checkpoints/concat/seed-101",
+  "protocol": {
+    "seed": 20260829,
+    "warmup": 2,
+    "repeats": 5,
+    "lengths": [128, 512, 2048, 4096],
+    "profile_length": 2048,
+    "block_index": 7,
+    "device": "NVIDIA GeForce RTX 5090",
+    "sm_count": 170,
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0"
+  },
+  "stages": {
+    "baseline": {
+      "backend": "GEMQ 原始 one-hot + 逐 expert GEMM",
+      "result": "artifacts/prefill/baseline/concat-seed101.json",
+      "sha256": "82c705a02da896739bb760444133b3b7c93c5cfc42d4aaa2abc71b94e3bd65f8",
+      "wall_time_seconds": 1535.30694079399
+    },
+    "p1": {
+      "backend": "排序式 dispatch + M 分桶 autotune + 动态 SM",
+      "result": "artifacts/prefill/p1/concat-seed101.json",
+      "sha256": "2abe379c67e54c11553a51c70c71930d2cbaef6b6f233621774f615597014689",
+      "wall_time_seconds": 63.4339566230774
+    },
+    "p2": {
+      "backend": "variable-M mixed-bit grouped GEMM",
+      "result": "artifacts/prefill/p2/concat-seed101.json",
+      "sha256": "d8cd2175d2e421d49c84ae0f146d068f8cc3f8809f9f61b1fc3fae3da1baa759",
+      "wall_time_seconds": 32.9658005237579
+    },
+    "p3": {
+      "backend": "融合 W1/W3/SiLU + grouped down + 确定性归并",
+      "result": "artifacts/prefill/p3/concat-seed101.json",
+      "sha256": "e9d8552c7da8e4f69941fbdadd5c7de80afc24036fca8fbb63c017ab7b0ab7ec",
+      "wall_time_seconds": 35.4489231109619
+    }
+  },
+  "expected_medians_ms": {
+    "128": {"baseline_full": 263.870666503906, "p3_full": 27.9631996154785, "baseline_block": 11.0120964050293, "p3_block": 0.993247985839844},
+    "512": {"baseline_full": 410.678070068359, "p3_full": 37.8143348693848, "baseline_block": 23.3744964599609, "p3_block": 2.01164793968201},
+    "2048": {"baseline_full": 998.18408203125, "p3_full": 113.761505126953, "baseline_block": 60.2879371643066, "p3_block": 5.79731178283691},
+    "4096": {"baseline_full": 1796.80017089844, "p3_full": 227.417953491211, "baseline_block": 106.438110351562, "p3_block": 10.7134084701538}
+  },
+  "correctness": [
+    {"path": "artifacts/prefill/p1/correctness-128.json", "sha256": "296bb4e2dd66e7ee7ad51681b8f0c60ecbc2e126dc6f331018af6eda88538e34"},
+    {"path": "artifacts/prefill/p1/correctness-512.json", "sha256": "20d0fb3b17e7c97196074a30da878a0bfc5c85574a55c5a9331a29b6fad0d135"},
+    {"path": "artifacts/prefill/p2/correctness-128.json", "sha256": "4ed61fd59fe52a2eb5919f1dcf16f5b02f75d8b856d0d706e39ec88e20da9ca8"},
+    {"path": "artifacts/prefill/p2/correctness-512.json", "sha256": "3084479deff6207171dd71d4a4e31b5bde51c73fee65ca29709e6b22a8def055"},
+    {"path": "artifacts/prefill/p3/correctness-128.json", "sha256": "5bb45d907d456a1786a05c099e2ee1207972f63d10c6e4309eeb84ca573a58dc"},
+    {"path": "artifacts/prefill/p3/correctness-512.json", "sha256": "fc24bc422b212fcc3b77b91f670f947bdcb3e3057c5d398acdc7ebd64bb93ca1"},
+    {"path": "artifacts/prefill/p3/correctness-block0-128.json", "sha256": "3a6533ec80a4ab507a95d39f6063bf51b930b600e1126c51e7332319f448d2b5"},
+    {"path": "artifacts/prefill/p3/correctness-block15-128.json", "sha256": "c6fc47deff0d61d8d2ce87805a04d63beca6f4d6d1279d11fc87cebd6a432f0a"}
+  ],
+  "end_to_end": [
+    {"path": "artifacts/prefill/p2/end-to-end-128-512.json", "sha256": "419091fbb287629a914e00b4a29cbae9518d9e43714c534f651a7b18675000b5"},
+    {"path": "artifacts/prefill/p3/end-to-end-128-512.json", "sha256": "6cc07a5a76d721a634f10b7a70ee3090a70a044014b2ce49cf0098dbc42d1dda"}
+  ],
+  "traces": [
+    {"path": "artifacts/prefill/traces/baseline/moe-block-2048.json.tar.gz", "sha256": "4beda08a3051c60b9e89d61bdbd079ac40530d04b15d493d08d187ad0d981cbe"},
+    {"path": "artifacts/prefill/traces/p1/moe-block-2048.json.tar.gz", "sha256": "187b03dc0146ec81e9a4e0a786808e4cb38ca39f9d9decff2dd0afa4958820a6"},
+    {"path": "artifacts/prefill/traces/p2/moe-block-2048.json.tar.gz", "sha256": "dfe115be4db61b551743450b94de9ff0e16f569d3db7f0eccd1edc377c81987c"},
+    {"path": "artifacts/prefill/traces/p3/moe-block-2048.json.tar.gz", "sha256": "72f3cecc03e2d09992c554410a53959e35c9a406e16643bdcf38b4fce1ed2ec9"}
+  ],
+  "source_snapshot": [
+    {"path": "gemq/inference/moe_block.py", "sha256": "21338840c5b9c550f97745688b4128ee0d731180c8d86b6eafb933b30b66f86a"},
+    {"path": "gemq/triton_kernels/dequant_group_gemm.py", "sha256": "c7b949caa552688502ef19b803e2be7d42ba99f469b29163382097649d17cbd3"},
+    {"path": "gemq/triton_kernels/mixedbit_moe_prefill.py", "sha256": "7fa0b21a1533eea847339ed2672599e65ce06fb0e218646578e3513570164350"},
+    {"path": "scripts/prefill/benchmark_prefill.py", "sha256": "689025094ca1b79980bc62cb14bf8f9bc5c10efe4ac241311ce94a070a7bec6f"},
+    {"path": "scripts/prefill/check_prefill_correctness.py", "sha256": "449d49618e1d5067c27b09bfb34c34c5288ad5be2e8d9a4502cea069ebbb84e6"},
+    {"path": "scripts/prefill/check_prefill_end_to_end.py", "sha256": "1d04a75aa6b2d6225a1a93ae859f9cd8559b3ef4d63d940c990a1e98bebe01d9"}
+  ]
+}

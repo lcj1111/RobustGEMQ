@@ -7,17 +7,23 @@ import triton.language as tl
 from gemq.triton_kernels.utils import dequantize
 
 
+def bucket_expert_tokens(tokens: int) -> int:
+    """将动态 expert token 数映射到有限的 autotune 桶。"""
+    if tokens <= 0:
+        raise ValueError("expert token 数必须为正数")
+    return max(16, 1 << (tokens - 1).bit_length())
+
+
 def get_cuda_autotune_config():
     return [
-        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 256, 'BLOCK_SIZE_K': 64, "NUM_SM": 128}, num_stages=3, num_warps=8),
-        triton.Config({'BLOCK_SIZE_M': 16,  'BLOCK_SIZE_N': 256, 'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=4, num_warps=4),
-        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=4, num_warps=4),
-        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 64,  'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=4, num_warps=4),
-        triton.Config({'BLOCK_SIZE_M': 16,  'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=4, num_warps=4),
-        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 32,  'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=4, num_warps=4),
-        triton.Config({'BLOCK_SIZE_M': 16,  'BLOCK_SIZE_N': 32,  'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=5, num_warps=2),
-        triton.Config({'BLOCK_SIZE_M': 16,  'BLOCK_SIZE_N': 64,  'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=5, num_warps=2),
-        triton.Config({'BLOCK_SIZE_M': 16,  'BLOCK_SIZE_N': 64,  'BLOCK_SIZE_K': 32, "NUM_SM": 128}, num_stages=2, num_warps=4),
+        # 小 M 是稀疏路由的常态；32/64 两档用于长 prefill 的热点 expert。
+        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 256, 'BLOCK_SIZE_K': 64}, num_stages=3, num_warps=8),
+        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32}, num_stages=4, num_warps=4),
+        triton.Config({'BLOCK_SIZE_M': 16, 'BLOCK_SIZE_N': 64, 'BLOCK_SIZE_K': 32}, num_stages=2, num_warps=4),
+        triton.Config({'BLOCK_SIZE_M': 32, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32}, num_stages=4, num_warps=4),
+        triton.Config({'BLOCK_SIZE_M': 32, 'BLOCK_SIZE_N': 64, 'BLOCK_SIZE_K': 32}, num_stages=3, num_warps=4),
+        triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32}, num_stages=4, num_warps=4),
+        triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_N': 64, 'BLOCK_SIZE_K': 32}, num_stages=3, num_warps=4),
     ]
 
 
@@ -34,7 +40,8 @@ def get_cuda_autotune_config_1():
 
 @triton.autotune(
     configs=get_cuda_autotune_config(),
-    key=["M", "N", "K", "A", "E"],
+    # 路由产生的精确 M 几乎每次都不同；按 2 的幂分桶可复用调优结果。
+    key=["M_BUCKET", "N", "K", "A", "E", "NUM_SM"],
 )
 @triton.jit
 def dequant_group_gemm_kernel(
@@ -44,7 +51,7 @@ def dequant_group_gemm_kernel(
     nbits_ptr, group_sizes_ptr,
     b_stride_ptr, zs_stride_ptr,
     # Matrix dimensions
-    M, N, K, A, E,
+    M, N, K, A, E, M_BUCKET: tl.constexpr,
     # The stride variables represent how much to increase the ptr by when moving by 1
     # element in a particular dimension. E.g. `stride_am` is how much to increase `a_ptr`
     # by to get the element one row down (A has M rows).
@@ -176,27 +183,25 @@ def dequant_group_gemm_triton(
     _, N = wq.shape
     A, = indices.shape
     E, = nbits.shape
+    m_bucket = bucket_expert_tokens(M)
 
     # allocates output
     output = torch.empty((A, M, N), device=x.device, dtype=compute_dtype)
 
-    # 1D grid
-    grid = lambda META: (META["NUM_SM"], )
+    # persistent grid 按当前设备的实际 SM 数启动，避免绑定到某一代 GPU。
+    num_sm = torch.cuda.get_device_properties(x.device).multi_processor_count
+    grid = (num_sm,)
 
     dequant_group_gemm_kernel[grid](
         x, wq, output, indices,
         scales, zeros,
         nbits, group_sizes, wq_strides, zs_strides,
-        M, N, K, A, E,
+        M, N, K, A, E, m_bucket,
         x.stride(0), x.stride(1),
         wq.stride(0), wq.stride(1),
         output.stride(0), output.stride(1), output.stride(2),
         scales.stride(0), scales.stride(1),
-        # NOTE: comment out for autotune
-        # NUM_SM=torch.cuda.get_device_properties("cuda").multi_processor_count,
-        # BLOCK_SIZE_M=64,
-        # BLOCK_SIZE_N=64,
-        # BLOCK_SIZE_K=32,
+        NUM_SM=num_sm,
     )
 
     return output

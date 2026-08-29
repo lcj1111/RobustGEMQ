@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "benchmark": "mixed-bit-moe-prefill-baseline",
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "model_name": "allenai/OLMoE-1B-7B-0924",
+  "git_revision": "ed4227412a2a26d0497c43e3e99f06e4132105b7",
+  "seed": 20260829,
+  "warmup": 2,
+  "repeats": 5,
+  "block_index": 7,
+  "device": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "compute_capability": [
+      12,
+      0
+    ],
+    "sm_count": 170,
+    "total_memory_bytes": 33711521792,
+    "torch_version": "2.13.0+cu130",
+    "cuda_version": "13.0",
+    "python": "3.12.3"
+  },
+  "cases": {
+    "128": {
+      "tokens": 128,
+      "full_model": {
+        "samples_ms": [
+          34.724510192871094,
+          33.26051330566406,
+          27.963199615478516,
+          27.774368286132812,
+          27.656543731689453
+        ],
+        "median_ms": 27.963199615478516,
+        "p95_ms": 34.43171081542969,
+        "min_ms": 27.656543731689453,
+        "max_ms": 34.724510192871094,
+        "median_tokens_per_second": 4577.444704473231,
+        "peak_allocated_bytes": 2970848256,
+        "peak_workspace_delta_bytes": 13403136
+      },
+      "moe_block": {
+        "samples_ms": [
+          1.024191975593567,
+          1.0130239725112915,
+          0.9853119850158691,
+          0.9932479858398438,
+          0.9875839948654175
+        ],
+        "median_ms": 0.9932479858398438,
+        "p95_ms": 1.0219583749771117,
+        "min_ms": 0.9853119850158691,
+        "max_ms": 1.024191975593567,
+        "median_tokens_per_second": 128870.13296258458,
+        "peak_allocated_bytes": 2968507904,
+        "peak_workspace_delta_bytes": 11062784
+      }
+    },
+    "512": {
+      "tokens": 512,
+      "full_model": {
+        "samples_ms": [
+          37.84134292602539,
+          37.814334869384766,
+          37.819583892822266,
+          37.7724494934082,
+          37.80476760864258
+        ],
+        "median_ms": 37.814334869384766,
+        "p95_ms": 37.83699111938476,
+        "min_ms": 37.7724494934082,
+        "max_ms": 37.84134292602539,
+        "median_tokens_per_second": 13539.838840707082,
+        "peak_allocated_bytes": 3062965248,
+        "peak_workspace_delta_bytes": 53612544
+      },
+      "moe_block": {
+        "samples_ms": [
+          2.028831958770752,
+          2.0471038818359375,
+          2.009727954864502,
+          2.011647939682007,
+          2.0100159645080566
+        ],
+        "median_ms": 2.011647939682007,
+        "p95_ms": 2.0434494972229005,
+        "min_ms": 2.009727954864502,
+        "max_ms": 2.0471038818359375,
+        "median_tokens_per_second": 254517.69661093625,
+        "peak_allocated_bytes": 3053599232,
+        "peak_workspace_delta_bytes": 44246528
+      }
+    },
+    "2048": {
+      "tokens": 2048,
+      "full_model": {
+        "samples_ms": [
+          113.79043579101562,
+          113.93513488769531,
+          113.74508666992188,
+          113.76150512695312,
+          113.72102355957031
+        ],
+        "median_ms": 113.76150512695312,
+        "p95_ms": 113.90619506835938,
+        "min_ms": 113.72102355957031,
+        "max_ms": 113.93513488769531,
+        "median_tokens_per_second": 18002.574752457054,
+        "peak_allocated_bytes": 3436972544,
+        "peak_workspace_delta_bytes": 219989504
+      },
+      "moe_block": {
+        "samples_ms": [
+          5.7709760665893555,
+          5.813375949859619,
+          6.0978240966796875,
+          5.797311782836914,
+          5.769087791442871
+        ],
+        "median_ms": 5.797311782836914,
+        "p95_ms": 6.040934467315673,
+        "min_ms": 5.769087791442871,
+        "max_ms": 6.0978240966796875,
+        "median_tokens_per_second": 353267.18256954115,
+        "peak_allocated_bytes": 3393964544,
+        "peak_workspace_delta_bytes": 176981504,
+        "profile": {
+          "cuda_event_count": 48,
+          "unique_cuda_event_names": 30,
+          "dequant_group_gemm": {
+            "calls": 0,
+            "device_time_us": 0.0
+          },
+          "variable_m_grouped_gemm": {
+            "calls": 1,
+            "device_time_us": 2022.4590000000007
+          },
+          "fused_up_activation": {
+            "calls": 1,
+            "device_time_us": 3245.4310000000005
+          },
+          "deterministic_unpermute_reduce": {
+            "calls": 1,
+            "device_time_us": 28.959000000000742
+          },
+          "device_to_host_memcpy": {
+            "calls": 2,
+            "device_time_us": 2.4000000000005457
+          },
+          "top_cuda_events": [
+            {
+              "name": "robustgemq_prefill_profile",
+              "calls": 1,
+              "device_time_us": 6114.126
+            },
+            {
+              "name": "mixedbit_fused_up_activation_kernel",
+              "calls": 1,
+              "device_time_us": 3245.4310000000005
+            },
+            {
+              "name": "mixedbit_variable_m_grouped_gemm_kernel",
+              "calls": 1,
+              "device_time_us": 2022.4590000000007
+            },
+            {
+              "name": "void at_cuda_detail::cub::detail::radix_sort::DeviceRadixSortOnesweepKernel<at_cuda_detail::cub::detail::radix::policy_hub<long, at::cuda::cub::detail::OpaqueType<8>, unsigned long long>::Policy1000, (at_cuda_detail::cub::SortOrder)0, long, at::cuda::cub::detail::OpaqueType<8>, unsigned long long, int, int, at_cuda_detail::cub::detail::identity_decomposer_t>(int*, int*, unsigned long long*, unsigned long long const*, long*, long const*, at::cuda::cub::detail::OpaqueType<8>*, at::cuda::cub::detail::OpaqueType<8> const*, int, int, int, at_cuda_detail::cub::detail::identity_decomposer_t)",
+              "calls": 8,
+              "device_time_us": 37.25
+            },
+            {
+              "name": "deterministic_unpermute_reduce_kernel",
+              "calls": 1,
+              "device_time_us": 28.959000000000742
+            },
+            {
+              "name": "void at::native::vectorized_gather_kernel<16, long>(char*, char*, long*, int, long, long, long, long, bool)",
+              "calls": 1,
+              "device_time_us": 25.408000000000357
+            },
+            {
+              "name": "Memset (Device)",
+              "calls": 10,
+              "device_time_us": 8.864999999998872
+            },
+            {
+              "name": "void cutlass::Kernel2<cutlass_80_tensorop_f16_s16816gemm_relu_f16_64x64_64x6_tn_align8>(cutlass_80_tensorop_f16_s16816gemm_relu_f16_64x64_64x6_tn_align8::Params)",
+              "calls": 1,
+              "device_time_us": 7.934999999999491
+            },
+            {
+              "name": "void at::native::sbtopk::gatherTopK<float, unsigned int, 2, false>(at::cuda::detail::TensorInfo<float const, unsigned int>, unsigned int, unsigned int, bool, unsigned int, unsigned int, at::cuda::detail::TensorInfo<float, unsigned int>, unsigned int, at::cuda::detail::TensorInfo<long, unsigned int>, unsigned int, float*)",
+              "calls": 1,
+              "device_time_us": 6.624000000000706
+            },
+            {
+              "name": "void at::native::_scatter_gather_elementwise_kernel<128, 8, at::native::_cuda_scatter_gather_internal_kernel<true, at::native::OpaqueType<8>, long>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1}>(int, at::native::_cuda_scatter_gather_internal_kernel<true, at::native::OpaqueType<8>, long>::operator()<at::native::TensorAssign>(at::TensorIterator&, long, long, long, at::native::TensorAssign const&)::{lambda(int)#1})",
+              "calls": 1,
+              "device_time_us": 6.079999999999927
+            },
+            {
+              "name": "void at::cuda::kernelHistogram1D<long, long, long, 1, 2, -1, (at::cuda::CUDAHistogramMemoryType)0, at::cuda::CUDA_tensor_histogram<long, long, false>(at::Tensor, at::Tensor, at::Tensor, long, at::AccumulateType<long, true>::type, at::AccumulateType<long, true>::type, at::cuda::TensorArgType, at::cuda::TensorArgType, at::cuda::TensorArgType)::{lambda(long)#2}>(at::cuda::detail::TensorInfo<long, long>, at::cuda::detail::TensorInfo<long, long>, at::cuda::detail::TensorInfo<long const, long>, long, at::AccumulateType<long, true>::type, at::AccumulateType<long, true>::type, long, at::cuda::CUDA_tensor_histogram<long, long, false>(at::Tensor, at::Tensor, at::Tensor, long, at::AccumulateType<long, true>::type, at::AccumulateType<long, true>::type, at::cuda::TensorArgType, at::cuda::TensorArgType, at::cuda::TensorArgType)::{lambda(long)#2})",
+              "calls": 1,
+              "device_time_us": 3.6480000000001382
+            },
+            {
+              "name": "void at::native::bitonicSortKVInPlace<2, -1, 16, 16, float, long, at::native::GTOp<float, true>, unsigned int>(at::cuda::detail::TensorInfo<float, unsigned int>, unsigned int, unsigned int, unsigned int, at::cuda::detail::TensorInfo<long, unsigned int>, unsigned int, at::native::GTOp<float, true>)",
+              "calls": 1,
+              "device_time_us": 3.5520000000005894
+            },
+            {
+              "name": "void at::native::reduce_kernel<512, 1, at::native::ReduceOp<long, at::native::MinMaxOps<long, long, int>, unsigned int, long, 4, 4> >(at::native::ReduceOp<long, at::native::MinMaxOps<long, long, int>, unsigned int, long, 4, 4>)",
+              "calls": 1,
+              "device_time_us": 3.295999999999367
+            },
+            {
+              "name": "void at_cuda_detail::cub::detail::radix_sort::DeviceRadixSortHistogramKernel<at_cuda_detail::cub::detail::radix::policy_hub<long, at::cuda::cub::detail::OpaqueType<8>, unsigned long long>::Policy1000, (at_cuda_detail::cub::SortOrder)0, long, unsigned long long, at_cuda_detail::cub::detail::identity_decomposer_t>(unsigned long long*, long const*, unsigned long long, int, int, at_cuda_detail::cub::detail::identity_decomposer_t)",
+              "calls": 1,
+              "device_time_us": 2.4960000000000946
+            },
+            {
+              "name": "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)",
+              "calls": 2,
+              "device_time_us": 1.9840000000003783
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<2, at::native::BUnaryFunctor<long, long, long, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long, long)#1}>, std::array<char*, 2ul> >(int, at::native::BUnaryFunctor<long, long, long, at::native::binary_internal::div_floor_kernel_cuda(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long, long)#1}>, std::array<char*, 2ul>)",
+              "calls": 1,
+              "device_time_us": 1.7600000000002183
+            },
+            {
+              "name": "Memcpy DtoD (Device -> Device)",
+              "calls": 2,
+              "device_time_us": 1.6000000000003638
+            },
+            {
+              "name": "void cublasLt::splitKreduce_kernel<32, 16, int, __half, __half, float, __half, false, __half, __half, __half, true, false, false, false>(cublasLt::cublasSplitKParams<float>, __half const*, __half const*, __half*, __half*, float const*, float const*, __half const*, __half const*, __half*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+              "calls": 1,
+              "device_time_us": 1.5359999999991487
+            },
+            {
+              "name": "Memcpy DtoH (Device -> Pageable)",
+              "calls": 1,
+              "device_time_us": 1.2160000000003492
+            },
+            {
+              "name": "void at_cuda_detail::cub::detail::scan::DeviceScanKernel<at_cuda_detail::cub::detail::scan::policy_hub<long, long, long, unsigned int, std::plus<long> >::Policy1000, long const*, long*, at_cuda_detail::cub::ScanTileState<long, true>, std::plus<long>, at_cuda_detail::cub::NullType, unsigned int, long, false, at_cuda_detail::cub::NullType>(long const*, long*, at_cuda_detail::cub::ScanTileState<long, true>, int, std::plus<long>, at_cuda_detail::cub::NullType, unsigned int)",
+              "calls": 1,
+              "device_time_us": 1.2159999999994398
+            },
+            {
+              "name": "Memcpy DtoH (Device -> Pinned)",
+              "calls": 1,
+              "device_time_us": 1.1840000000001965
+            },
+            {
+              "name": "void (anonymous namespace)::softmax_warp_forward<c10::Half, float, float, 6, false, false, 32>(float*, c10::Half const*, int, int, int, bool const*, int, bool)",
+              "calls": 1,
+              "device_time_us": 1.1520000000000437
+            },
+            {
+              "name": "void (anonymous namespace)::elementwise_kernel_with_index<int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}>(int, at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, function_traits<at::native::arange_cuda_out(c10::Scalar const&, c10::Scalar const&, c10::Scalar const&, at::Tensor&)::{lambda()#1}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}>::result_type*)",
+              "calls": 1,
+              "device_time_us": 1.1200000000008004
+            },
+            {
+              "name": "at::native::(anonymous namespace)::fill_reverse_indices_kernel(long*, int, at::cuda::detail::IntDivider<unsigned int>)",
+              "calls": 1,
+              "device_time_us": 0.9920000000001892
+            },
+            {
+              "name": "void at_cuda_detail::cub::detail::radix_sort::DeviceRadixSortExclusiveSumKernel<at_cuda_detail::cub::detail::radix::policy_hub<long, at::cuda::cub::detail::OpaqueType<8>, unsigned long long>::Policy1000, unsigned long long>(unsigned long long*)",
+              "calls": 1,
+              "device_time_us": 0.9600000000000364
+            }
+          ],
+          "trace_path": "artifacts/prefill/traces/p3/moe-block-2048.json"
+        }
+      }
+    },
+    "4096": {
+      "tokens": 4096,
+      "full_model": {
+        "samples_ms": [
+          227.41795349121094,
+          227.46424865722656,
+          227.41629028320312,
+          227.4167022705078,
+          227.8165740966797
+        ],
+        "median_ms": 227.41795349121094,
+        "p95_ms": 227.74610900878906,
+        "min_ms": 227.41629028320312,
+        "max_ms": 227.8165740966797,
+        "median_tokens_per_second": 18010.8911241183,
+        "peak_allocated_bytes": 3950578176,
+        "peak_workspace_delta_bytes": 456754688
+      },
+      "moe_block": {
+        "samples_ms": [
+          10.745792388916016,
+          10.711968421936035,
+          10.713408470153809,
+          10.7074556350708,
+          10.772095680236816
+        ],
+        "median_ms": 10.713408470153809,
+        "p95_ms": 10.766835021972657,
+        "min_ms": 10.7074556350708,
+        "max_ms": 10.772095680236816,
+        "median_tokens_per_second": 382324.636590767,
+        "peak_allocated_bytes": 3847784960,
+        "peak_workspace_delta_bytes": 353961472
+      }
+    }
+  },
+  "wall_time_seconds": 35.448923110961914
+}

@@ -6,7 +6,7 @@
 
 </div>
 
-RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大语言模型的低比特混合精度量化。GEMQ 负责专家级 bit 分配、量化和 Router 微调；RobustGEMQ 补足跨域校准、真实检查点验证和可复现的决策流程。完整结构见[文档导航](docs/README.md)。
+RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大语言模型的低比特混合精度量化。GEMQ 负责专家级 bit 分配、量化和 Router 微调；RobustGEMQ 补足跨域校准、真实检查点验证、可复现的决策流程，以及 OLMoE 的混合精度 prefill grouped/fused kernel。完整结构见[文档导航](docs/README.md)。
 
 ## 项目结论
 
@@ -34,6 +34,8 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 - [公开证据包](docs/07-release/evidence.json)：轻量指标、allocation 哈希与场景溯源；不含检查点权重或原始数据。
 - [阶段六可靠性手册](docs/06-real-checkpoint-validation/harness.md)：完整的复现实验链路与产物约定。
 - [独立复核报告](docs/08-independent-confirmation/report.md)：Phase 10 的冻结筛选、独立 test 与结论边界。
+- [Prefill 内核优化报告](docs/09-prefill-kernel-optimization/report.md)：variable-M mixed-bit grouped GEMM、融合路径、性能结果与显存权衡。
+- [Prefill 可审计证据](artifacts/prefill/evidence.json)：原始样本、trace 与核心源码的 SHA-256 清单。
 
 可在本地运行无需 GPU 的发布契约检查：
 
@@ -44,6 +46,8 @@ python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
   tests/test_phase9_public_evidence.py tests/test_phase10_public_evidence.py
 python scripts/phase10/verify_public_evidence.py \
   --evidence docs/08-independent-confirmation/evidence.json
+python scripts/prefill/verify_evidence.py \
+  --evidence artifacts/prefill/evidence.json
 ```
 
 ## 仓库包含的内容
@@ -61,6 +65,7 @@ python scripts/phase10/verify_public_evidence.py \
 - 验证 fake/real 路径：三个检查点均通过 H6，PPL 误差小于 1%，decode argmax 一致率不低于 95%。
 - 将 `G6=STOP_NO_LARGE_MODEL_EXPANSION` 作为冻结结论写入公开证据和 CI；详见[发布报告](docs/07-release/report.md)。
 - 使用记录级互斥的 calibration、validation、test 重新执行固定方法选择和 3×3 checkpoint 独立测试，确认平均质量与最坏领域鲁棒性的权衡；详见[独立复核报告](docs/08-independent-confirmation/report.md)。
+- 将 OLMoE prefill 从 one-hot + 逐 expert 三 GEMM 改为 variable-M mixed-bit grouped/fused kernel；固定检查点上完整模型中位延迟降低 7.90–10.86 倍，同时保留逐项数值证据与 workspace 权衡；详见[Prefill 内核优化报告](docs/09-prefill-kernel-optimization/report.md)。
 
 ## 安装
 
@@ -111,7 +116,7 @@ pip install -c requirements/phase0-constraints.txt -e ".[gurobi]"
 
 > [!NOTE]
 >
-> decode 已完全融合；prefill 仍在 Python 中遍历命中的专家，因此其吞吐主要受 kernel launch 开销影响，并随层数、专家数增长，而非单纯随 prompt 长度增长。
+> OLMoE decode 使用原有单 token 融合路径；多 token prefill 默认使用 `fused` 后端：W1/W3/SiLU 融合、variable-M grouped down 与确定性归并。可通过 `GEMQ_PREFILL_BACKEND=grouped` 或 `sorted` 切换到 P2/P1 参考后端。当前 grouped 路径以更高 workspace 换取吞吐，显存受限场景应参考[优化报告](docs/09-prefill-kernel-optimization/report.md)中的边界。
 
 ## 许可证
 
