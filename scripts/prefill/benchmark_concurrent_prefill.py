@@ -20,14 +20,6 @@ import subprocess
 import time
 from pathlib import Path
 
-import torch
-
-from gemq.inference.kv_cache import StaticCache
-from gemq.inference.patch import prepare_for_inference
-from gemq.utils.hf_loading import load_quantized_model
-from gemq.utils.model_utils import get_blocks
-
-
 def percentile(values: list[float], probability: float) -> float:
     if not values:
         raise ValueError("不能统计空样本")
@@ -83,6 +75,8 @@ def git_revision(repo: Path) -> str | None:
 
 
 def device_metadata() -> dict:
+    import torch
+
     properties = torch.cuda.get_device_properties(0)
     return {
         "name": properties.name,
@@ -95,7 +89,6 @@ def device_metadata() -> dict:
     }
 
 
-@torch.inference_mode()
 def execute_prefill_batch(
     model,
     input_ids: torch.Tensor,
@@ -103,6 +96,10 @@ def execute_prefill_batch(
     max_num_batched_tokens: int,
 ) -> None:
     """按 scheduler token 预算执行一个同长度请求批次。"""
+    import torch
+
+    from gemq.inference.kv_cache import StaticCache
+
     batch_size = input_ids.shape[0]
     per_request_chunk = max_num_batched_tokens // batch_size
     if per_request_chunk <= 0:
@@ -119,8 +116,13 @@ def execute_prefill_batch(
         del output
 
 
-@torch.inference_mode()
 def main() -> None:
+    import torch
+
+    from gemq.inference.patch import prepare_for_inference
+    from gemq.utils.hf_loading import load_quantized_model
+    from gemq.utils.model_utils import get_blocks
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--model-name", default="allenai/OLMoE-1B-7B-0924")
@@ -161,6 +163,7 @@ def main() -> None:
         raise ValueError("code-revision 必须是 40 位小写 Git SHA")
     if not torch.cuda.is_available():
         raise RuntimeError("并发 prefill benchmark 需要 CUDA")
+    torch.set_grad_enabled(False)
 
     repo = Path(__file__).resolve().parents[2]
     torch.manual_seed(args.seed)

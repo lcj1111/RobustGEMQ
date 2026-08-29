@@ -89,7 +89,7 @@
     },
     {
       "path": "scripts/prefill/benchmark_concurrent_prefill.py",
-      "sha256": "ff3741b908bd3547af2b12a78bb2ffecd056112efe1deadab458fd249d08d31a"
+      "sha256": "1866e13ce3f22c43eb508ee67a6298f7b0624a5f3f8cad660dc9933bcbbed0f1"
     },
     {
       "path": "scripts/prefill/check_prefill_correctness.py",

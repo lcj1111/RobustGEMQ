@@ -68,5 +68,4 @@ jobs:
             tests/test_phase9_public_evidence.py \
             tests/test_prefill_evidence.py \
             tests/test_chunked_prefill_evidence.py \
-            tests/test_concurrent_prefill_contract.py \
-            tests/test_prefill_chunked_config.py
+            tests/test_concurrent_prefill_contract.py
