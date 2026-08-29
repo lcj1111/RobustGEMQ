@@ -36,6 +36,8 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 - [独立复核报告](docs/08-independent-confirmation/report.md)：Phase 10 的冻结筛选、独立 test 与结论边界。
 - [Prefill 内核优化报告](docs/09-prefill-kernel-optimization/report.md)：variable-M mixed-bit grouped GEMM、融合路径、性能结果与显存权衡。
 - [Prefill 可审计证据](artifacts/prefill/evidence.json)：原始样本、trace 与核心源码的 SHA-256 清单。
+- [并发 Prefill 评测](docs/10-concurrent-prefill/report.md)：受限显存分块、真实模型开放环负载、TTFT 与 p95/p99。
+- [并发 Prefill 证据](artifacts/prefill/p4/evidence.json)：请求级记录、workspace 扫描和跨后端 workload identity。
 
 可在本地运行无需 GPU 的发布契约检查：
 
@@ -48,6 +50,8 @@ python scripts/phase10/verify_public_evidence.py \
   --evidence docs/08-independent-confirmation/evidence.json
 python scripts/prefill/verify_evidence.py \
   --evidence artifacts/prefill/evidence.json
+python scripts/prefill/verify_chunked_evidence.py \
+  --evidence artifacts/prefill/p4/evidence.json
 ```
 
 ## 仓库包含的内容
@@ -66,6 +70,7 @@ python scripts/prefill/verify_evidence.py \
 - 将 `G6=STOP_NO_LARGE_MODEL_EXPANSION` 作为冻结结论写入公开证据和 CI；详见[发布报告](docs/07-release/report.md)。
 - 使用记录级互斥的 calibration、validation、test 重新执行固定方法选择和 3×3 checkpoint 独立测试，确认平均质量与最坏领域鲁棒性的权衡；详见[独立复核报告](docs/08-independent-confirmation/report.md)。
 - 将 OLMoE prefill 从 one-hot + 逐 expert 三 GEMM 改为 variable-M mixed-bit grouped/fused kernel；固定检查点上完整模型中位延迟降低 7.90–10.86 倍，同时保留逐项数值证据与 workspace 权衡；详见[Prefill 内核优化报告](docs/09-prefill-kernel-optimization/report.md)。
+- 增加 workspace-bounded chunked 后端，并用真实模型执行开放环并发请求：4096-token 单层 MoE workspace 降低 73.4%；同时报告吞吐、显存与 TTFT p50/p95/p99，明确长 prompt 接近饱和时的尾延迟代价；详见[并发 Prefill 评测](docs/10-concurrent-prefill/report.md)。
 
 ## 安装
 
@@ -116,7 +121,7 @@ pip install -c requirements/phase0-constraints.txt -e ".[gurobi]"
 
 > [!NOTE]
 >
-> OLMoE decode 使用原有单 token 融合路径；多 token prefill 默认使用 `fused` 后端：W1/W3/SiLU 融合、variable-M grouped down 与确定性归并。可通过 `GEMQ_PREFILL_BACKEND=grouped` 或 `sorted` 切换到 P2/P1 参考后端。当前 grouped 路径以更高 workspace 换取吞吐，显存受限场景应参考[优化报告](docs/09-prefill-kernel-optimization/report.md)中的边界。
+> OLMoE decode 使用原有单 token 融合路径；多 token prefill 默认使用 `fused` 后端：W1/W3/SiLU 融合、variable-M grouped down 与确定性归并。可通过 `GEMQ_PREFILL_BACKEND=grouped` 或 `sorted` 切换到 P2/P1 参考后端。显存受限时可设置 `GEMQ_PREFILL_BACKEND=chunked` 与 `GEMQ_PREFILL_CHUNK_TOKENS=512`；该模式会增加尾延迟，应根据[并发 Prefill 评测](docs/10-concurrent-prefill/report.md)按实际负载选择，不能无条件替换默认后端。
 
 ## 许可证
 

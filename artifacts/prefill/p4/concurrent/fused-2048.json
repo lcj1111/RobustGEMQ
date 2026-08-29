@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "benchmark": "vllm-style-concurrent-prefill",
+  "scope": "真实模型执行到首 token logits；同长度请求的开放环微批处理，不是 vLLM 引擎实测",
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "model_name": "allenai/OLMoE-1B-7B-0924",
+  "code_revision": "992e53b736a6691bc492566a06a540266ec4becc",
+  "runtime_checkout_revision": "ed4227412a2a26d0497c43e3e99f06e4132105b7",
+  "seed": 20260829,
+  "backend": "fused",
+  "scheduler": {
+    "policy": "fcfs",
+    "arrival_process": "poisson",
+    "request_rate_per_second": 8.0,
+    "realized_arrival_rate_per_second": 8.560605825041034,
+    "max_num_seqs": 8,
+    "max_num_batched_tokens": 4096,
+    "prompt_chunking": true,
+    "moe_workspace_chunk_tokens": 512
+  },
+  "workload": {
+    "num_requests": 100,
+    "prompt_length": 2048,
+    "output_tokens_per_request": 1,
+    "prompt_token_ids_sha256": "0065b6640d1fb628302d8121bdd1f8ad59fc150820ea66688a178a38984f8780",
+    "arrival_schedule_sha256": "01180766a763d0ff4b097c98fc42ed534c59cafc6cde6cd4cc6ac94cb4c777e9"
+  },
+  "device": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "compute_capability": [
+      12,
+      0
+    ],
+    "sm_count": 170,
+    "total_memory_bytes": 33711521792,
+    "torch_version": "2.13.0+cu130",
+    "cuda_version": "13.0",
+    "python": "3.12.3"
+  },
+  "duration_s": 12.346325229853392,
+  "throughput": {
+    "requests_per_second": 8.099576038884848,
+    "input_tokens_per_second": 16587.93172763617,
+    "total_tokens_per_second": 16596.031303675056
+  },
+  "latency": {
+    "ttft": {
+      "count": 100,
+      "mean_ms": 661.8159221655683,
+      "p50_ms": 709.4523274208937,
+      "p95_ms": 1291.2146568509654,
+      "p99_ms": 1406.1568716808995,
+      "min_ms": 112.40222352885976,
+      "max_ms": 1500.125133689881
+    },
+    "queue": {
+      "count": 100,
+      "mean_ms": 207.8272736615496,
+      "p50_ms": 137.97365089356362,
+      "p95_ms": 597.2792150738983,
+      "p99_ms": 874.4663048803648,
+      "min_ms": 0.007098540663719177,
+      "max_ms": 968.4345668893463
+    },
+    "batch_service": {
+      "count": 45,
+      "mean_ms": 239.38720770594148,
+      "p50_ms": 112.81179171055555,
+      "p95_ms": 741.5485700592399,
+      "p99_ms": 837.9183042794466,
+      "min_ms": 112.3444614931941,
+      "max_ms": 838.3280718699098
+    }
+  },
+  "memory": {
+    "baseline_allocated_bytes": 2940142592,
+    "peak_allocated_bytes": 5511191040,
+    "peak_workspace_delta_bytes": 2571048448
+  },
+  "batching": {
+    "num_batches": 45,
+    "mean_batch_size": 2.2222222222222223,
+    "max_batch_size": 8,
+    "batches": [
+      {
+        "batch_id": 0,
+        "size": 1,
+        "request_ids": [
+          0
+        ],
+        "service_ms": 113.11531905084848
+      },
+      {
+        "batch_id": 1,
+        "size": 1,
+        "request_ids": [
+          1
+        ],
+        "service_ms": 112.80656605958939
+      },
+      {
+        "batch_id": 2,
+        "size": 1,
+        "request_ids": [
+          2
+        ],
+        "service_ms": 112.81744111329317
+      },
+      {
+        "batch_id": 3,
+        "size": 1,
+        "request_ids": [
+          3
+        ],
+        "service_ms": 112.34577745199203
+      },
+      {
+        "batch_id": 4,
+        "size": 1,
+        "request_ids": [
+          4
+        ],
+        "service_ms": 112.61743865907192
+      },
+      {
+        "batch_id": 5,
+        "size": 1,
+        "request_ids": [
+          5
+        ],
+        "service_ms": 112.72992100566626
+      },
+      {
+        "batch_id": 6,
+        "size": 1,
+        "request_ids": [
+          6
+        ],
+        "service_ms": 112.56133392453194
+      },
+      {
+        "batch_id": 7,
+        "size": 1,
+        "request_ids": [
+          7
+        ],
+        "service_ms": 112.85829823464155
+      },
+      {
+        "batch_id": 8,
+        "size": 2,
+        "request_ids": [
+          8,
+          9
+        ],
+        "service_ms": 212.41568587720394
+      },
+      {
+        "batch_id": 9,
+        "size": 1,
+        "request_ids": [
+          10
+        ],
+        "service_ms": 112.3444614931941
+      },
+      {
+        "batch_id": 10,
+        "size": 1,
+        "request_ids": [
+          11
+        ],
+        "service_ms": 112.75791097432375
+      },
+      {
+        "batch_id": 11,
+        "size": 2,
+        "request_ids": [
+          12,
+          13
+        ],
+        "service_ms": 209.4825878739357
+      },
+      {
+        "batch_id": 12,
+        "size": 1,
+        "request_ids": [
+          14
+        ],
+        "service_ms": 113.00280038267374
+      },
+      {
+        "batch_id": 13,
+        "size": 1,
+        "request_ids": [
+          15
+        ],
+        "service_ms": 112.52807453274727
+      },
+      {
+        "batch_id": 14,
+        "size": 1,
+        "request_ids": [
+          16
+        ],
+        "service_ms": 112.79550846666098
+      },
+      {
+        "batch_id": 15,
+        "size": 1,
+        "request_ids": [
+          17
+        ],
+        "service_ms": 112.81179171055555
+      },
+      {
+        "batch_id": 16,
+        "size": 1,
+        "request_ids": [
+          18
+        ],
+        "service_ms": 112.66882810741663
+      },
+      {
+        "batch_id": 17,
+        "size": 1,
+        "request_ids": [
+          19
+        ],
+        "service_ms": 112.54260968416929
+      },
+      {
+        "batch_id": 18,
+        "size": 1,
+        "request_ids": [
+          20
+        ],
+        "service_ms": 112.38834261894226
+      },
+      {
+        "batch_id": 19,
+        "size": 1,
+        "request_ids": [
+          21
+        ],
+        "service_ms": 112.70859465003014
+      },
+      {
+        "batch_id": 20,
+        "size": 1,
+        "request_ids": [
+          22
+        ],
+        "service_ms": 112.80187033116817
+      },
+      {
+        "batch_id": 21,
+        "size": 2,
+        "request_ids": [
+          23,
+          24
+        ],
+        "service_ms": 209.8553143441677
+      },
+      {
+        "batch_id": 22,
+        "size": 2,
+        "request_ids": [
+          25,
+          26
+        ],
+        "service_ms": 212.2192084789276
+      },
+      {
+        "batch_id": 23,
+        "size": 1,
+        "request_ids": [
+          27
+        ],
+        "service_ms": 112.77860030531883
+      },
+      {
+        "batch_id": 24,
+        "size": 1,
+        "request_ids": [
+          28
+        ],
+        "service_ms": 112.70049307495356
+      },
+      {
+        "batch_id": 25,
+        "size": 1,
+        "request_ids": [
+          29
+        ],
+        "service_ms": 112.67461720854044
+      },
+      {
+        "batch_id": 26,
+        "size": 1,
+        "request_ids": [
+          30
+        ],
+        "service_ms": 112.76887636631727
+      },
+      {
+        "batch_id": 27,
+        "size": 1,
+        "request_ids": [
+          31
+        ],
+        "service_ms": 112.79995273798704
+      },
+      {
+        "batch_id": 28,
+        "size": 2,
+        "request_ids": [
+          32,
+          33
+        ],
+        "service_ms": 212.01314125210047
+      },
+      {
+        "batch_id": 29,
+        "size": 1,
+        "request_ids": [
+          34
+        ],
+        "service_ms": 112.84494772553444
+      },
+      {
+        "batch_id": 30,
+        "size": 1,
+        "request_ids": [
+          35
+        ],
+        "service_ms": 112.78819665312767
+      },
+      {
+        "batch_id": 31,
+        "size": 1,
+        "request_ids": [
+          36
+        ],
+        "service_ms": 112.70500253885984
+      },
+      {
+        "batch_id": 32,
+        "size": 2,
+        "request_ids": [
+          37,
+          38
+        ],
+        "service_ms": 209.0633548796177
+      },
+      {
+        "batch_id": 33,
+        "size": 1,
+        "request_ids": [
+          39
+        ],
+        "service_ms": 112.82106582075357
+      },
+      {
+        "batch_id": 34,
+        "size": 3,
+        "request_ids": [
+          40,
+          41,
+          42
+        ],
+        "service_ms": 323.01954831928015
+      },
+      {
+        "batch_id": 35,
+        "size": 4,
+        "request_ids": [
+          43,
+          44,
+          45,
+          46
+        ],
+        "service_ms": 421.0166307166219
+      },
+      {
+        "batch_id": 36,
+        "size": 7,
+        "request_ids": [
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53
+        ],
+        "service_ms": 741.6556961834431
+      },
+      {
+        "batch_id": 37,
+        "size": 7,
+        "request_ids": [
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60
+        ],
+        "service_ms": 740.8576440066099
+      },
+      {
+        "batch_id": 38,
+        "size": 5,
+        "request_ids": [
+          61,
+          62,
+          63,
+          64,
+          65
+        ],
+        "service_ms": 531.638465821743
+      },
+      {
+        "batch_id": 39,
+        "size": 8,
+        "request_ids": [
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        "service_ms": 838.3280718699098
+      },
+      {
+        "batch_id": 40,
+        "size": 5,
+        "request_ids": [
+          74,
+          75,
+          76,
+          77,
+          78
+        ],
+        "service_ms": 531.6905668005347
+      },
+      {
+        "batch_id": 41,
+        "size": 8,
+        "request_ids": [
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86
+        ],
+        "service_ms": 837.3967818915844
+      },
+      {
+        "batch_id": 42,
+        "size": 5,
+        "request_ids": [
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        "service_ms": 531.7779202014208
+      },
+      {
+        "batch_id": 43,
+        "size": 7,
+        "request_ids": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98
+        ],
+        "service_ms": 741.120065562427
+      },
+      {
+        "batch_id": 44,
+        "size": 1,
+        "request_ids": [
+          99
+        ],
+        "service_ms": 112.78902180492878
+      }
+    ]
+  },
+  "requests": [
+    {
+      "request_id": 0,
+      "arrival_offset_s": 0.0,
+      "batch_id": 0,
+      "queue_ms": 0.007098540663719177,
+      "ttft_ms": 113.1224175915122
+    },
+    {
+      "request_id": 1,
+      "arrival_offset_s": 0.11555339670272963,
+      "batch_id": 1,
+      "queue_ms": 0.06511253771884773,
+      "ttft_ms": 112.87167859730823
+    },
+    {
+      "request_id": 2,
+      "arrival_offset_s": 0.16765670831584223,
+      "batch_id": 2,
+      "queue_ms": 60.77803597516529,
+      "ttft_ms": 173.59547708845847
+    },
+    {
+      "request_id": 3,
+      "arrival_offset_s": 0.5178745142058157,
+      "batch_id": 3,
+      "queue_ms": 0.056446076867722184,
+      "ttft_ms": 112.40222352885976
+    },
+    {
+      "request_id": 4,
+      "arrival_offset_s": 0.6502651967538547,
+      "batch_id": 4,
+      "queue_ms": 0.05922518092871254,
+      "ttft_ms": 112.67666384000063
+    },
+    {
+      "request_id": 5,
+      "arrival_offset_s": 0.6593288868146517,
+      "batch_id": 5,
+      "queue_ms": 103.62073821550821,
+      "ttft_ms": 216.35065922117448
+    },
+    {
+      "request_id": 6,
+      "arrival_offset_s": 1.054064463484964,
+      "batch_id": 6,
+      "queue_ms": 0.055987726965245344,
+      "ttft_ms": 112.61732165149718
+    },
+    {
+      "request_id": 7,
+      "arrival_offset_s": 1.0735687867589732,
+      "batch_id": 7,
+      "queue_ms": 93.12040052931114,
+      "ttft_ms": 205.9786987639527
+    },
+    {
+      "request_id": 8,
+      "arrival_offset_s": 1.2436305805303225,
+      "batch_id": 8,
+      "queue_ms": 35.924471988522114,
+      "ttft_ms": 248.34015786572604
+    },
+    {
+      "request_id": 9,
+      "arrival_offset_s": 1.2479657946476397,
+      "batch_id": 8,
+      "queue_ms": 31.58925787120492,
+      "ttft_ms": 244.00494374840886
+    },
+    {
+      "request_id": 10,
+      "arrival_offset_s": 1.664838883310915,
+      "batch_id": 9,
+      "queue_ms": 0.05871408396873612,
+      "ttft_ms": 112.40317557716284
+    },
+    {
+      "request_id": 11,
+      "arrival_offset_s": 1.7785484712415862,
+      "batch_id": 10,
+      "queue_ms": 0.06057453960894854,
+      "ttft_ms": 112.8184855139327
+    },
+    {
+      "request_id": 12,
+      "arrival_offset_s": 1.800909509396331,
+      "batch_id": 11,
+      "queue_ms": 90.46540085397514,
+      "ttft_ms": 299.94798872791085
+    },
+    {
+      "request_id": 13,
+      "arrival_offset_s": 1.8732160964933706,
+      "batch_id": 11,
+      "queue_ms": 18.15881375693551,
+      "ttft_ms": 227.6414016308712
+    },
+    {
+      "request_id": 14,
+      "arrival_offset_s": 1.9747484115027012,
+      "batch_id": 12,
+      "queue_ms": 126.12492096795424,
+      "ttft_ms": 239.12772135062798
+    },
+    {
+      "request_id": 15,
+      "arrival_offset_s": 2.5733325523973685,
+      "batch_id": 13,
+      "queue_ms": 0.05997198659368763,
+      "ttft_ms": 112.58804651934096
+    },
+    {
+      "request_id": 16,
+      "arrival_offset_s": 2.595927794877413,
+      "batch_id": 14,
+      "queue_ms": 90.00465325641338,
+      "ttft_ms": 202.80016172307435
+    },
+    {
+      "request_id": 17,
+      "arrival_offset_s": 2.700482083511768,
+      "batch_id": 15,
+      "queue_ms": 98.25300888228571,
+      "ttft_ms": 211.06480059284127
+    },
+    {
+      "request_id": 18,
+      "arrival_offset_s": 2.961092275481652,
+      "batch_id": 16,
+      "queue_ms": 0.05859424548271264,
+      "ttft_ms": 112.72742235289934
+    },
+    {
+      "request_id": 19,
+      "arrival_offset_s": 3.267836241112988,
+      "batch_id": 17,
+      "queue_ms": 0.05663645829656616,
+      "ttft_ms": 112.59924614246586
+    },
+    {
+      "request_id": 20,
+      "arrival_offset_s": 3.4223675957184394,
+      "batch_id": 18,
+      "queue_ms": 0.05646736807030095,
+      "ttft_ms": 112.44480998701256
+    },
+    {
+      "request_id": 21,
+      "arrival_offset_s": 3.595391236782279,
+      "batch_id": 19,
+      "queue_ms": 0.055001511964913874,
+      "ttft_ms": 112.76359616199505
+    },
+    {
+      "request_id": 22,
+      "arrival_offset_s": 3.5978184707651133,
+      "batch_id": 20,
+      "queue_ms": 110.34411916488463,
+      "ttft_ms": 223.1459894960528
+    },
+    {
+      "request_id": 23,
+      "arrival_offset_s": 3.7711884991477036,
+      "batch_id": 21,
+      "queue_ms": 49.78310622025495,
+      "ttft_ms": 259.63842056442263
+    },
+    {
+      "request_id": 24,
+      "arrival_offset_s": 3.809632552043993,
+      "batch_id": 21,
+      "queue_ms": 11.339053323965675,
+      "ttft_ms": 221.1943676681334
+    },
+    {
+      "request_id": 25,
+      "arrival_offset_s": 3.8579586841651268,
+      "batch_id": 22,
+      "queue_ms": 172.87645353739788,
+      "ttft_ms": 385.0956620163255
+    },
+    {
+      "request_id": 26,
+      "arrival_offset_s": 3.926367623204797,
+      "batch_id": 22,
+      "queue_ms": 104.46751449772762,
+      "ttft_ms": 316.68672297665523
+    },
+    {
+      "request_id": 27,
+      "arrival_offset_s": 4.278314360574003,
+      "batch_id": 23,
+      "queue_ms": 0.05585964012588818,
+      "ttft_ms": 112.83445994544472
+    },
+    {
+      "request_id": 28,
+      "arrival_offset_s": 4.35090404221607,
+      "batch_id": 24,
+      "queue_ms": 40.252147858910625,
+      "ttft_ms": 152.9526409338642
+    },
+    {
+      "request_id": 29,
+      "arrival_offset_s": 4.606456977005244,
+      "batch_id": 25,
+      "queue_ms": 0.055702713190441955,
+      "ttft_ms": 112.73031992173088
+    },
+    {
+      "request_id": 30,
+      "arrival_offset_s": 4.661367327870336,
+      "batch_id": 26,
+      "queue_ms": 57.82745502749442,
+      "ttft_ms": 170.59633139381168
+    },
+    {
+      "request_id": 31,
+      "arrival_offset_s": 4.777386364749995,
+      "batch_id": 27,
+      "queue_ms": 54.58480656203957,
+      "ttft_ms": 167.38475930002662
+    },
+    {
+      "request_id": 32,
+      "arrival_offset_s": 4.866303379472938,
+      "batch_id": 28,
+      "queue_ms": 78.47510295674542,
+      "ttft_ms": 290.4882442088459
+    },
+    {
+      "request_id": 33,
+      "arrival_offset_s": 4.913578019956002,
+      "batch_id": 28,
+      "queue_ms": 31.2004624736808,
+      "ttft_ms": 243.21360372578127
+    },
+    {
+      "request_id": 34,
+      "arrival_offset_s": 5.095513730050287,
+      "batch_id": 29,
+      "queue_ms": 61.285697183349086,
+      "ttft_ms": 174.13064490888354
+    },
+    {
+      "request_id": 35,
+      "arrival_offset_s": 5.222329603758131,
+      "batch_id": 30,
+      "queue_ms": 47.32651797267362,
+      "ttft_ms": 160.1147146258013
+    },
+    {
+      "request_id": 36,
+      "arrival_offset_s": 5.50574419804282,
+      "batch_id": 31,
+      "queue_ms": 0.05808315806543618,
+      "ttft_ms": 112.76308569692529
+    },
+    {
+      "request_id": 37,
+      "arrival_offset_s": 5.507246202732958,
+      "batch_id": 32,
+      "queue_ms": 111.26856511499739,
+      "ttft_ms": 320.3319199946151
+    },
+    {
+      "request_id": 38,
+      "arrival_offset_s": 5.515953929070992,
+      "batch_id": 32,
+      "queue_ms": 102.56083877696298,
+      "ttft_ms": 311.6241936565807
+    },
+    {
+      "request_id": 39,
+      "arrival_offset_s": 5.882026229583409,
+      "batch_id": 33,
+      "queue_ms": 0.060685380611325,
+      "ttft_ms": 112.88175120136489
+    },
+    {
+      "request_id": 40,
+      "arrival_offset_s": 5.893876871796218,
+      "batch_id": 34,
+      "queue_ms": 101.0387011301841,
+      "ttft_ms": 424.05824944946426
+    },
+    {
+      "request_id": 41,
+      "arrival_offset_s": 5.955417556008555,
+      "batch_id": 34,
+      "queue_ms": 39.49801691784671,
+      "ttft_ms": 362.51756523712686
+    },
+    {
+      "request_id": 42,
+      "arrival_offset_s": 5.966090957979689,
+      "batch_id": 34,
+      "queue_ms": 28.82461494671329,
+      "ttft_ms": 351.8441632659934
+    },
+    {
+      "request_id": 43,
+      "arrival_offset_s": 6.0483106401984905,
+      "batch_id": 35,
+      "queue_ms": 269.63479916999586,
+      "ttft_ms": 690.6514298866177
+    },
+    {
+      "request_id": 44,
+      "arrival_offset_s": 6.0552888188970675,
+      "batch_id": 35,
+      "queue_ms": 262.65662047141893,
+      "ttft_ms": 683.6732511880408
+    },
+    {
+      "request_id": 45,
+      "arrival_offset_s": 6.155957598798539,
+      "batch_id": 35,
+      "queue_ms": 161.98784056994776,
+      "ttft_ms": 583.0044712865696
+    },
+    {
+      "request_id": 46,
+      "arrival_offset_s": 6.237090257964309,
+      "batch_id": 35,
+      "queue_ms": 80.85518140417759,
+      "ttft_ms": 501.87181212079946
+    },
+    {
+      "request_id": 47,
+      "arrival_offset_s": 6.346201866584764,
+      "batch_id": 36,
+      "queue_ms": 392.771523726239,
+      "ttft_ms": 1134.4272199096822
+    },
+    {
+      "request_id": 48,
+      "arrival_offset_s": 6.442444563774053,
+      "batch_id": 36,
+      "queue_ms": 296.52882653694945,
+      "ttft_ms": 1038.1845227203926
+    },
+    {
+      "request_id": 49,
+      "arrival_offset_s": 6.4454651958848945,
+      "batch_id": 36,
+      "queue_ms": 293.5081944261082,
+      "ttft_ms": 1035.1638906095513
+    },
+    {
+      "request_id": 50,
+      "arrival_offset_s": 6.452252703335552,
+      "batch_id": 36,
+      "queue_ms": 286.72068697545063,
+      "ttft_ms": 1028.3763831588938
+    },
+    {
+      "request_id": 51,
+      "arrival_offset_s": 6.537353495865196,
+      "batch_id": 36,
+      "queue_ms": 201.6198944458063,
+      "ttft_ms": 943.2755906292493
+    },
+    {
+      "request_id": 52,
+      "arrival_offset_s": 6.545519372525552,
+      "batch_id": 36,
+      "queue_ms": 193.45401778545045,
+      "ttft_ms": 935.1097139688935
+    },
+    {
+      "request_id": 53,
+      "arrival_offset_s": 6.731542093782445,
+      "batch_id": 36,
+      "queue_ms": 7.431296528557674,
+      "ttft_ms": 749.0869927120008
+    },
+    {
+      "request_id": 54,
+      "arrival_offset_s": 6.886753652057541,
+      "batch_id": 37,
+      "queue_ms": 593.8892543325895,
+      "ttft_ms": 1334.7468983391996
+    },
+    {
+      "request_id": 55,
+      "arrival_offset_s": 6.933059628146387,
+      "batch_id": 37,
+      "queue_ms": 547.583278243743,
+      "ttft_ms": 1288.440922250353
+    },
+    {
+      "request_id": 56,
+      "arrival_offset_s": 7.00855443489288,
+      "batch_id": 37,
+      "queue_ms": 472.0884714972504,
+      "ttft_ms": 1212.9461155038603
+    },
+    {
+      "request_id": 57,
+      "arrival_offset_s": 7.050830439080744,
+      "batch_id": 37,
+      "queue_ms": 429.8124673093868,
+      "ttft_ms": 1170.6701113159968
+    },
+    {
+      "request_id": 58,
+      "arrival_offset_s": 7.19239277716251,
+      "batch_id": 37,
+      "queue_ms": 288.2501292276203,
+      "ttft_ms": 1029.10777323423
+    },
+    {
+      "request_id": 59,
+      "arrival_offset_s": 7.288805187522572,
+      "batch_id": 37,
+      "queue_ms": 191.83771886755886,
+      "ttft_ms": 932.6953628741687
+    },
+    {
+      "request_id": 60,
+      "arrival_offset_s": 7.293590605376798,
+      "batch_id": 37,
+      "queue_ms": 187.0523010133329,
+      "ttft_ms": 927.9099450199428
+    },
+    {
+      "request_id": 61,
+      "arrival_offset_s": 7.559822033351006,
+      "batch_id": 38,
+      "queue_ms": 661.6884691587668,
+      "ttft_ms": 1193.3269349805098
+    },
+    {
+      "request_id": 62,
+      "arrival_offset_s": 7.627766181465504,
+      "batch_id": 38,
+      "queue_ms": 593.7443210442685,
+      "ttft_ms": 1125.3827868660117
+    },
+    {
+      "request_id": 63,
+      "arrival_offset_s": 7.926750077206158,
+      "batch_id": 38,
+      "queue_ms": 294.7604253036147,
+      "ttft_ms": 826.3988911253577
+    },
+    {
+      "request_id": 64,
+      "arrival_offset_s": 8.171362771060073,
+      "batch_id": 38,
+      "queue_ms": 50.14773144969986,
+      "ttft_ms": 581.7861972714429
+    },
+    {
+      "request_id": 65,
+      "arrival_offset_s": 8.203551046844806,
+      "batch_id": 38,
+      "queue_ms": 17.959455664966484,
+      "ttft_ms": 549.5979214867095
+    },
+    {
+      "request_id": 66,
+      "arrival_offset_s": 8.23655893595903,
+      "batch_id": 39,
+      "queue_ms": 516.6016431710236,
+      "ttft_ms": 1354.9297150409334
+    },
+    {
+      "request_id": 67,
+      "arrival_offset_s": 8.276702973938896,
+      "batch_id": 39,
+      "queue_ms": 476.45760519115754,
+      "ttft_ms": 1314.7856770610674
+    },
+    {
+      "request_id": 68,
+      "arrival_offset_s": 8.38658399647544,
+      "batch_id": 39,
+      "queue_ms": 366.5765826546128,
+      "ttft_ms": 1204.9046545245226
+    },
+    {
+      "request_id": 69,
+      "arrival_offset_s": 8.389804114572728,
+      "batch_id": 39,
+      "queue_ms": 363.3564645573255,
+      "ttft_ms": 1201.6845364272353
+    },
+    {
+      "request_id": 70,
+      "arrival_offset_s": 8.509773715234362,
+      "batch_id": 39,
+      "queue_ms": 243.386863895692,
+      "ttft_ms": 1081.7149357656017
+    },
+    {
+      "request_id": 71,
+      "arrival_offset_s": 8.530439866244079,
+      "batch_id": 39,
+      "queue_ms": 222.72071288597493,
+      "ttft_ms": 1061.0487847558848
+    },
+    {
+      "request_id": 72,
+      "arrival_offset_s": 8.577734793105009,
+      "batch_id": 39,
+      "queue_ms": 175.42578602504477,
+      "ttft_ms": 1013.7538578949545
+    },
+    {
+      "request_id": 73,
+      "arrival_offset_s": 8.615736520695453,
+      "batch_id": 39,
+      "queue_ms": 137.42405843460048,
+      "ttft_ms": 975.7521303045103
+    },
+    {
+      "request_id": 74,
+      "arrival_offset_s": 8.623068946156263,
+      "batch_id": 40,
+      "queue_ms": 968.4345668893463,
+      "ttft_ms": 1500.125133689881
+    },
+    {
+      "request_id": 75,
+      "arrival_offset_s": 8.717986382528972,
+      "batch_id": 40,
+      "queue_ms": 873.5171305166372,
+      "ttft_ms": 1405.2076973171718
+    },
+    {
+      "request_id": 76,
+      "arrival_offset_s": 9.084142747223986,
+      "batch_id": 40,
+      "queue_ms": 507.36076582162326,
+      "ttft_ms": 1039.051332622158
+    },
+    {
+      "request_id": 77,
+      "arrival_offset_s": 9.342010956520172,
+      "batch_id": 40,
+      "queue_ms": 249.49255652543735,
+      "ttft_ms": 781.183123325972
+    },
+    {
+      "request_id": 78,
+      "arrival_offset_s": 9.380727045928735,
+      "batch_id": 40,
+      "queue_ms": 210.77646711687413,
+      "ttft_ms": 742.4670339174089
+    },
+    {
+      "request_id": 79,
+      "arrival_offset_s": 9.670626449232177,
+      "batch_id": 41,
+      "queue_ms": 452.57729494832336,
+      "ttft_ms": 1289.9740768399076
+    },
+    {
+      "request_id": 80,
+      "arrival_offset_s": 9.744374337240123,
+      "batch_id": 41,
+      "queue_ms": 378.8294069403779,
+      "ttft_ms": 1216.2261888319624
+    },
+    {
+      "request_id": 81,
+      "arrival_offset_s": 9.772758000586808,
+      "batch_id": 41,
+      "queue_ms": 350.4457435936921,
+      "ttft_ms": 1187.8425254852764
+    },
+    {
+      "request_id": 82,
+      "arrival_offset_s": 9.79622380862204,
+      "batch_id": 41,
+      "queue_ms": 326.9799355584606,
+      "ttft_ms": 1164.376717450045
+    },
+    {
+      "request_id": 83,
+      "arrival_offset_s": 9.867996640496443,
+      "batch_id": 41,
+      "queue_ms": 255.2071036840573,
+      "ttft_ms": 1092.6038855756417
+    },
+    {
+      "request_id": 84,
+      "arrival_offset_s": 9.934319223802742,
+      "batch_id": 41,
+      "queue_ms": 188.8845203777585,
+      "ttft_ms": 1026.2813022693429
+    },
+    {
+      "request_id": 85,
+      "arrival_offset_s": 9.984680500827974,
+      "batch_id": 41,
+      "queue_ms": 138.52324335252675,
+      "ttft_ms": 975.9200252441111
+    },
+    {
+      "request_id": 86,
+      "arrival_offset_s": 10.067281367085302,
+      "batch_id": 41,
+      "queue_ms": 55.92237709519843,
+      "ttft_ms": 893.3191589867828
+    },
+    {
+      "request_id": 87,
+      "arrival_offset_s": 10.229023444321397,
+      "batch_id": 42,
+      "queue_ms": 731.5876466739742,
+      "ttft_ms": 1263.365566875395
+    },
+    {
+      "request_id": 88,
+      "arrival_offset_s": 10.48569040940393,
+      "batch_id": 42,
+      "queue_ms": 474.92068159144196,
+      "ttft_ms": 1006.6986017928627
+    },
+    {
+      "request_id": 89,
+      "arrival_offset_s": 10.488436208077465,
+      "batch_id": 42,
+      "queue_ms": 472.17488291790664,
+      "ttft_ms": 1003.9528031193274
+    },
+    {
+      "request_id": 90,
+      "arrival_offset_s": 10.764135786241622,
+      "batch_id": 42,
+      "queue_ms": 196.47530475374884,
+      "ttft_ms": 728.2532249551697
+    },
+    {
+      "request_id": 91,
+      "arrival_offset_s": 10.949215685698565,
+      "batch_id": 42,
+      "queue_ms": 11.39540529680616,
+      "ttft_ms": 543.173325498227
+    },
+    {
+      "request_id": 92,
+      "arrival_offset_s": 10.97516791786664,
+      "batch_id": 43,
+      "queue_ms": 517.2307278621862,
+      "ttft_ms": 1258.3507934246131
+    },
+    {
+      "request_id": 93,
+      "arrival_offset_s": 11.03077968601137,
+      "batch_id": 43,
+      "queue_ms": 461.61895971745713,
+      "ttft_ms": 1202.7390252798841
+    },
+    {
+      "request_id": 94,
+      "arrival_offset_s": 11.08341754386168,
+      "batch_id": 43,
+      "queue_ms": 408.98110186714655,
+      "ttft_ms": 1150.1011674295735
+    },
+    {
+      "request_id": 95,
+      "arrival_offset_s": 11.257181280049634,
+      "batch_id": 43,
+      "queue_ms": 235.21736567919226,
+      "ttft_ms": 976.3374312416194
+    },
+    {
+      "request_id": 96,
+      "arrival_offset_s": 11.301788528853214,
+      "batch_id": 43,
+      "queue_ms": 190.61011687561268,
+      "ttft_ms": 931.7301824380397
+    },
+    {
+      "request_id": 97,
+      "arrival_offset_s": 11.334323728448338,
+      "batch_id": 43,
+      "queue_ms": 158.07491728048893,
+      "ttft_ms": 899.194982842916
+    },
+    {
+      "request_id": 98,
+      "arrival_offset_s": 11.423641364327471,
+      "batch_id": 43,
+      "queue_ms": 68.75728140135529,
+      "ttft_ms": 809.8773469637823
+    },
+    {
+      "request_id": 99,
+      "arrival_offset_s": 11.564602088138484,
+      "batch_id": 44,
+      "queue_ms": 668.9262027367722,
+      "ttft_ms": 781.715224541701
+    }
+  ]
+}

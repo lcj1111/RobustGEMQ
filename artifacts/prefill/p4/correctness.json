@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "candidate_backend": "chunked",
+  "chunk_tokens": 512,
+  "code_revision": "992e53b736a6691bc492566a06a540266ec4becc",
+  "block_index": 7,
+  "atol": 0.002,
+  "rtol": 0.002,
+  "cases": {
+    "128": {
+      "allclose": true,
+      "router_exact": true,
+      "max_abs_error": 6.103515625e-05,
+      "mean_abs_error": 1.9592341686802683e-06
+    },
+    "512": {
+      "allclose": true,
+      "router_exact": true,
+      "max_abs_error": 0.0001220703125,
+      "mean_abs_error": 1.7464201391703682e-06
+    }
+  }
+}

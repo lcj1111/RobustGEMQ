@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import torch
@@ -33,12 +34,17 @@ def main() -> None:
         default="fused",
     )
     parser.add_argument("--chunk-tokens", type=int, default=512)
+    parser.add_argument("--code-revision")
     parser.add_argument("--atol", type=float, default=2e-2)
     parser.add_argument("--rtol", type=float, default=2e-3)
     parser.add_argument("--min-argmax-agreement", type=float, default=0.95)
     parser.add_argument("--max-mean-abs-error", type=float, default=0.05)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.code_revision is not None and not re.fullmatch(
+        r"[0-9a-f]{40}", args.code_revision
+    ):
+        raise ValueError("code-revision 必须是 40 位小写 Git SHA")
 
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
@@ -96,6 +102,7 @@ def main() -> None:
         "reference_backend": "sorted",
         "candidate_backend": args.candidate_backend,
         "chunk_tokens": args.chunk_tokens,
+        "code_revision": args.code_revision,
         "checkpoint": str(args.checkpoint.resolve()),
         "atol": args.atol,
         "rtol": args.rtol,
