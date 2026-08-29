@@ -28,8 +28,11 @@ def main() -> None:
     parser.add_argument("--lengths", default="128,512")
     parser.add_argument("--seed", type=int, default=20260829)
     parser.add_argument(
-        "--candidate-backend", choices=("grouped", "fused"), default="fused"
+        "--candidate-backend",
+        choices=("grouped", "fused", "chunked"),
+        default="fused",
     )
+    parser.add_argument("--chunk-tokens", type=int, default=512)
     parser.add_argument("--atol", type=float, default=2e-2)
     parser.add_argument("--rtol", type=float, default=2e-3)
     parser.add_argument("--min-argmax-agreement", type=float, default=0.95)
@@ -47,6 +50,10 @@ def main() -> None:
     ).eval()
     prepare_for_inference(model, args.model_name, is_fp=False)
     blocks = get_blocks(model, args.model_name)
+    if args.chunk_tokens <= 0:
+        raise ValueError("chunk-tokens 必须为正整数")
+    for block in blocks:
+        block.mlp.prefill_chunk_tokens = args.chunk_tokens
     cases = {}
 
     for length in [int(value) for value in args.lengths.split(",")]:
@@ -88,6 +95,7 @@ def main() -> None:
         "schema_version": 1,
         "reference_backend": "sorted",
         "candidate_backend": args.candidate_backend,
+        "chunk_tokens": args.chunk_tokens,
         "checkpoint": str(args.checkpoint.resolve()),
         "atol": args.atol,
         "rtol": args.rtol,
