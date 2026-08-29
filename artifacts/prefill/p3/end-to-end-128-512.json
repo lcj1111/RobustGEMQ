@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "reference_backend": "sorted",
+  "candidate_backend": "fused",
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "atol": 0.02,
+  "rtol": 0.002,
+  "min_argmax_agreement": 0.95,
+  "max_mean_abs_error": 0.05,
+  "cases": {
+    "128": {
+      "allclose": false,
+      "argmax_agreement": 0.9765625,
+      "max_abs_error": 1.90625,
+      "mean_abs_error": 0.027992650866508484
+    },
+    "512": {
+      "allclose": false,
+      "argmax_agreement": 0.96875,
+      "max_abs_error": 1.22265625,
+      "mean_abs_error": 0.01890023611485958
+    }
+  }
+}

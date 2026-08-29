@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "README.md"
+      - "artifacts/prefill/**"
       - "docs/**"
       - "gemq/**"
       - "scripts/**"
@@ -15,6 +16,7 @@ on:
     branches: [main]
     paths:
       - "README.md"
+      - "artifacts/prefill/**"
       - "docs/**"
       - "gemq/**"
       - "scripts/**"
@@ -30,6 +32,8 @@ concurrency:
 jobs:
   offline-release-contract:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,6 +47,7 @@ jobs:
         run: |
           python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
           python scripts/phase10/verify_public_evidence.py --evidence docs/08-independent-confirmation/evidence.json
+          python scripts/prefill/verify_evidence.py --evidence artifacts/prefill/evidence.json
       - name: Compile Python sources
         run: python -m compileall -q gemq scripts tests
       - name: Run CPU reliability tests
@@ -59,4 +64,5 @@ jobs:
             tests/test_phase10_independent_test.py \
             tests/test_phase10_public_evidence.py \
             tests/test_h6_summary.py \
-            tests/test_phase9_public_evidence.py
+            tests/test_phase9_public_evidence.py \
+            tests/test_prefill_evidence.py

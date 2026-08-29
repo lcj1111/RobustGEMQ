@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "block_index": 7,
+  "atol": 0.002,
+  "rtol": 0.002,
+  "cases": {
+    "512": {
+      "allclose": true,
+      "router_exact": true,
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    }
+  }
+}
