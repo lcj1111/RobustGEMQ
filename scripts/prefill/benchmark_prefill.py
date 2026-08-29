@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 import platform
+import re
 import statistics
 import subprocess
 import time
@@ -212,6 +213,10 @@ def main() -> None:
     parser.add_argument("--trace-dir", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--seed", type=int, default=20260829)
+    parser.add_argument(
+        "--code-revision",
+        help="源码提交 SHA；服务器 checkout 与被测源码不一致时必须显式传入",
+    )
     args = parser.parse_args()
     if args.warmup < 1 or args.repeats < 3:
         raise ValueError("warmup 至少为 1，repeats 至少为 3")
@@ -219,6 +224,10 @@ def main() -> None:
         raise ValueError("profile-length 必须包含在 lengths 中")
     if not torch.cuda.is_available():
         raise RuntimeError("prefill benchmark 需要 CUDA")
+    if args.code_revision is not None and not re.fullmatch(
+        r"[0-9a-f]{40}", args.code_revision
+    ):
+        raise ValueError("code-revision 必须是 40 位小写 Git SHA")
 
     repo = Path(__file__).resolve().parents[2]
     torch.manual_seed(args.seed)
@@ -238,7 +247,8 @@ def main() -> None:
         "benchmark": "mixed-bit-moe-prefill-baseline",
         "checkpoint": str(args.checkpoint.resolve()),
         "model_name": args.model_name,
-        "git_revision": git_revision(repo),
+        "code_revision": args.code_revision or git_revision(repo),
+        "runtime_checkout_revision": git_revision(repo),
         "seed": args.seed,
         "warmup": args.warmup,
         "repeats": args.repeats,

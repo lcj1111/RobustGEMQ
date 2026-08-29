@@ -48,6 +48,7 @@ jobs:
           python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
           python scripts/phase10/verify_public_evidence.py --evidence docs/08-independent-confirmation/evidence.json
           python scripts/prefill/verify_evidence.py --evidence artifacts/prefill/evidence.json
+          python scripts/prefill/verify_chunked_evidence.py --evidence artifacts/prefill/p4/evidence.json
       - name: Compile Python sources
         run: python -m compileall -q gemq scripts tests
       - name: Run CPU reliability tests
@@ -65,4 +66,6 @@ jobs:
             tests/test_phase10_public_evidence.py \
             tests/test_h6_summary.py \
             tests/test_phase9_public_evidence.py \
-            tests/test_prefill_evidence.py
+            tests/test_prefill_evidence.py \
+            tests/test_chunked_prefill_evidence.py \
+            tests/test_concurrent_prefill_contract.py

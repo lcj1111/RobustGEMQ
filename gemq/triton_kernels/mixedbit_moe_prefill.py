@@ -394,6 +394,62 @@ def deterministic_unpermute_reduce_kernel(
     )
 
 
+@triton.jit
+def deterministic_chunk_reduce_kernel(
+    expert_output_ptr,
+    inverse_order_ptr,
+    routing_weights_ptr,
+    output_accumulator_ptr,
+    hidden_dim,
+    chunk_start,
+    chunk_end,
+    stride_em,
+    stride_ed,
+    stride_wt,
+    stride_ws,
+    stride_ot,
+    stride_od,
+    TOP_K: tl.constexpr,
+    BLOCK_SIZE_D: tl.constexpr,
+):
+    """把一个 assignment 分块按固定 slot 顺序累加到 FP32 输出。"""
+    token = tl.program_id(0)
+    column_tile = tl.program_id(1)
+    columns = column_tile * BLOCK_SIZE_D + tl.arange(0, BLOCK_SIZE_D)
+    column_mask = columns < hidden_dim
+    output_offsets = token * stride_ot + columns * stride_od
+    accumulator = tl.load(
+        output_accumulator_ptr + output_offsets,
+        mask=column_mask,
+        other=0.0,
+    ).to(tl.float32)
+
+    # inverse_order 给出原始 [token, slot] assignment 在全局排序结果中的位置。
+    # 只有落入当前分块的 slot 才参与本轮累加，因此无需保留全量 expert 输出。
+    for slot in range(TOP_K):
+        flat_assignment = token * TOP_K + slot
+        sorted_assignment = tl.load(inverse_order_ptr + flat_assignment)
+        in_chunk = (sorted_assignment >= chunk_start) & (sorted_assignment < chunk_end)
+        local_assignment = sorted_assignment - chunk_start
+        weight = tl.load(
+            routing_weights_ptr + token * stride_wt + slot * stride_ws
+        )
+        value = tl.load(
+            expert_output_ptr
+            + local_assignment * stride_em
+            + columns * stride_ed,
+            mask=column_mask & in_chunk,
+            other=0.0,
+        )
+        accumulator += value.to(tl.float32) * weight.to(tl.float32)
+
+    tl.store(
+        output_accumulator_ptr + output_offsets,
+        accumulator,
+        mask=column_mask,
+    )
+
+
 def mixedbit_variable_m_grouped_gemm(
     x: Tensor,
     expert_offsets: Tensor,
@@ -510,12 +566,7 @@ def deterministic_unpermute_reduce(
     """恢复 token 顺序，并按 top-k slot 的固定顺序求和。"""
     tokens, top_k = routing_weights.shape
     hidden_dim = expert_output.shape[1]
-    inverse_order = torch.empty_like(assignment_order)
-    inverse_order.scatter_(
-        0,
-        assignment_order,
-        torch.arange(assignment_order.numel(), device=assignment_order.device),
-    )
+    inverse_order = build_inverse_assignment_order(assignment_order)
     output = torch.empty(
         (tokens, hidden_dim), device=expert_output.device, dtype=expert_output.dtype
     )
@@ -538,3 +589,56 @@ def deterministic_unpermute_reduce(
         BLOCK_SIZE_D=block_size_d,
     )
     return output
+
+
+def build_inverse_assignment_order(assignment_order: Tensor) -> Tensor:
+    """把排序位置映射回原始的 [token, top-k slot] assignment。"""
+    inverse_order = torch.empty_like(assignment_order)
+    inverse_order.scatter_(
+        0,
+        assignment_order,
+        torch.arange(assignment_order.numel(), device=assignment_order.device),
+    )
+    return inverse_order
+
+
+def deterministic_chunk_reduce(
+    expert_output: Tensor,
+    inverse_order: Tensor,
+    routing_weights: Tensor,
+    output_accumulator: Tensor,
+    chunk_start: int,
+    chunk_end: int,
+) -> None:
+    """原地归并一个分块；输出使用 FP32，跨分块累加顺序固定。"""
+    if chunk_end <= chunk_start:
+        raise ValueError("chunk_end 必须大于 chunk_start")
+    if expert_output.shape[0] != chunk_end - chunk_start:
+        raise ValueError("expert_output 行数必须与当前 assignment 分块长度一致")
+    tokens, top_k = routing_weights.shape
+    hidden_dim = expert_output.shape[1]
+    if output_accumulator.shape != (tokens, hidden_dim):
+        raise ValueError("output_accumulator 形状不匹配")
+    if output_accumulator.dtype != torch.float32:
+        raise ValueError("output_accumulator 必须使用 FP32")
+
+    block_size_d = 128
+    deterministic_chunk_reduce_kernel[
+        (tokens, triton.cdiv(hidden_dim, block_size_d))
+    ](
+        expert_output,
+        inverse_order,
+        routing_weights,
+        output_accumulator,
+        hidden_dim,
+        chunk_start,
+        chunk_end,
+        expert_output.stride(0),
+        expert_output.stride(1),
+        routing_weights.stride(0),
+        routing_weights.stride(1),
+        output_accumulator.stride(0),
+        output_accumulator.stride(1),
+        TOP_K=top_k,
+        BLOCK_SIZE_D=block_size_d,
+    )

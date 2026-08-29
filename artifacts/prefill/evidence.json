@@ -67,11 +67,11 @@
     {"path": "artifacts/prefill/traces/p3/moe-block-2048.json.tar.gz", "sha256": "72f3cecc03e2d09992c554410a53959e35c9a406e16643bdcf38b4fce1ed2ec9"}
   ],
   "source_snapshot": [
-    {"path": "gemq/inference/moe_block.py", "sha256": "21338840c5b9c550f97745688b4128ee0d731180c8d86b6eafb933b30b66f86a"},
+    {"path": "gemq/inference/moe_block.py", "sha256": "824a5934a7f89069dbe63e966bf7ef1ac654b407080eb656008e0fa0c6c7a286"},
     {"path": "gemq/triton_kernels/dequant_group_gemm.py", "sha256": "c7b949caa552688502ef19b803e2be7d42ba99f469b29163382097649d17cbd3"},
-    {"path": "gemq/triton_kernels/mixedbit_moe_prefill.py", "sha256": "7fa0b21a1533eea847339ed2672599e65ce06fb0e218646578e3513570164350"},
-    {"path": "scripts/prefill/benchmark_prefill.py", "sha256": "689025094ca1b79980bc62cb14bf8f9bc5c10efe4ac241311ce94a070a7bec6f"},
-    {"path": "scripts/prefill/check_prefill_correctness.py", "sha256": "449d49618e1d5067c27b09bfb34c34c5288ad5be2e8d9a4502cea069ebbb84e6"},
-    {"path": "scripts/prefill/check_prefill_end_to_end.py", "sha256": "1d04a75aa6b2d6225a1a93ae859f9cd8559b3ef4d63d940c990a1e98bebe01d9"}
+    {"path": "gemq/triton_kernels/mixedbit_moe_prefill.py", "sha256": "b7a40c03fdffae0880eca5c8e5efd1815242ab3dff74a5f0a8722ed6d645bdb3"},
+    {"path": "scripts/prefill/benchmark_prefill.py", "sha256": "6b2423d5696b4b613e83a6d7ae84aba11e6603f565aded9861440cb31bf4ed91"},
+    {"path": "scripts/prefill/check_prefill_correctness.py", "sha256": "b05439b5c34ff5d6fbb266549b4ff6f89a94260fbd08d288ad085114aef8ee9c"},
+    {"path": "scripts/prefill/check_prefill_end_to_end.py", "sha256": "7c94398b0f61688238e2fd29d4d3b65dfd59ea8b57694a88795788e3663304c6"}
   ]
 }

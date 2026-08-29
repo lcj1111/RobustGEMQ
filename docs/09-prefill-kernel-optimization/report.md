@@ -182,4 +182,4 @@ python scripts/prefill/verify_evidence.py \
 - grouped workspace 在显存受限场景中优于逐 expert 路径。
 - 最终 fused 后端与原实现的 logits 逐元素等价；当前只通过 argmax≥95% 与平均误差门槛。
 
-下一步若继续做 infra 扩展，优先增加 workspace-bounded chunked grouped 模式，并在 vLLM 风格的并发请求负载下报告 TTFT、吞吐、显存和 p95/p99，而不是继续只优化单 kernel 峰值。
+上述边界已在[阶段十](../10-concurrent-prefill/report.md)继续验证：新增 workspace-bounded chunked grouped 模式，并在真实模型的开放环并发负载下报告 TTFT、吞吐、显存和 p95/p99。结果表明该模式适合显存压力场景，但不能无条件替代 fused 默认后端。

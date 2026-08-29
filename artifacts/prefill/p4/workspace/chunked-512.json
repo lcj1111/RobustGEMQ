@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "benchmark": "mixed-bit-moe-prefill-baseline",
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "model_name": "allenai/OLMoE-1B-7B-0924",
+  "code_revision": "992e53b736a6691bc492566a06a540266ec4becc",
+  "runtime_checkout_revision": "ed4227412a2a26d0497c43e3e99f06e4132105b7",
+  "seed": 20260829,
+  "warmup": 2,
+  "repeats": 5,
+  "block_index": 7,
+  "device": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "compute_capability": [
+      12,
+      0
+    ],
+    "sm_count": 170,
+    "total_memory_bytes": 33711521792,
+    "torch_version": "2.13.0+cu130",
+    "cuda_version": "13.0",
+    "python": "3.12.3"
+  },
+  "cases": {
+    "512": {
+      "tokens": 512,
+      "full_model": {
+        "samples_ms": [
+          38.36332702636719,
+          38.37481689453125,
+          39.25436782836914,
+          38.52924728393555,
+          38.42230224609375
+        ],
+        "median_ms": 38.42230224609375,
+        "p95_ms": 39.10934371948242,
+        "min_ms": 38.36332702636719,
+        "max_ms": 39.25436782836914,
+        "median_tokens_per_second": 13325.593992797585,
+        "peak_allocated_bytes": 3067005440,
+        "peak_workspace_delta_bytes": 57652736
+      },
+      "moe_block": {
+        "samples_ms": [
+          2.1379520893096924,
+          2.1164801120758057,
+          2.2613120079040527,
+          2.127392053604126,
+          2.1187520027160645
+        ],
+        "median_ms": 2.127392053604126,
+        "p95_ms": 2.2366400241851805,
+        "min_ms": 2.1164801120758057,
+        "max_ms": 2.2613120079040527,
+        "median_tokens_per_second": 240670.26062854473,
+        "peak_allocated_bytes": 3057826304,
+        "peak_workspace_delta_bytes": 48473600
+      }
+    },
+    "2048": {
+      "tokens": 2048,
+      "full_model": {
+        "samples_ms": [
+          128.85690307617188,
+          130.060546875,
+          128.8421173095703,
+          128.7644805908203,
+          128.7788848876953
+        ],
+        "median_ms": 128.8421173095703,
+        "p95_ms": 129.81981811523437,
+        "min_ms": 128.7644805908203,
+        "max_ms": 130.060546875,
+        "median_tokens_per_second": 15895.423350419247,
+        "peak_allocated_bytes": 3431433216,
+        "peak_workspace_delta_bytes": 214450176
+      },
+      "moe_block": {
+        "samples_ms": [
+          6.774975776672363,
+          6.77894401550293,
+          6.824031829833984,
+          6.741568088531494,
+          6.7639360427856445
+        ],
+        "median_ms": 6.774975776672363,
+        "p95_ms": 6.815014266967774,
+        "min_ms": 6.741568088531494,
+        "max_ms": 6.824031829833984,
+        "median_tokens_per_second": 302288.90368164645,
+        "peak_allocated_bytes": 3293432320,
+        "peak_workspace_delta_bytes": 76449280
+      }
+    },
+    "4096": {
+      "tokens": 4096,
+      "full_model": {
+        "samples_ms": [
+          266.3956604003906,
+          266.69549560546875,
+          266.59063720703125,
+          266.6004333496094,
+          266.3758850097656
+        ],
+        "median_ms": 266.59063720703125,
+        "p95_ms": 266.6764831542969,
+        "min_ms": 266.3758850097656,
+        "max_ms": 266.69549560546875,
+        "median_tokens_per_second": 15364.380545814493,
+        "peak_allocated_bytes": 3923772416,
+        "peak_workspace_delta_bytes": 429948928
+      },
+      "moe_block": {
+        "samples_ms": [
+          13.242783546447754,
+          13.199199676513672,
+          13.205375671386719,
+          13.491616249084473,
+          13.215519905090332
+        ],
+        "median_ms": 13.215519905090332,
+        "p95_ms": 13.441849708557129,
+        "min_ms": 13.199199676513672,
+        "max_ms": 13.491616249084473,
+        "median_tokens_per_second": 309938.6198512182,
+        "peak_allocated_bytes": 3588000256,
+        "peak_workspace_delta_bytes": 94176768
+      }
+    }
+  },
+  "wall_time_seconds": 18.53018093109131
+}

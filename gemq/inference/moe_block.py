@@ -16,6 +16,8 @@ from gemq.triton_kernels.dequant_gemm import dequant_gemm_triton
 from gemq.triton_kernels.dequant_gemv import dequant_splitk_gemv_triton
 from gemq.triton_kernels.fused_dequant_bmm import fused_dequant_up_proj_triton, fused_dequant_down_proj_triton
 from gemq.triton_kernels.mixedbit_moe_prefill import (
+    build_inverse_assignment_order,
+    deterministic_chunk_reduce,
     deterministic_unpermute_reduce,
     mixedbit_fused_up_activation,
     mixedbit_variable_m_grouped_gemm,
@@ -716,11 +718,19 @@ class QuantFusedOlmoeMoEBlock(nn.Module):
         self.top_k = config.num_experts_per_tok
         self.norm_topk_prob = config.norm_topk_prob
         self.prefill_backend = os.environ.get("GEMQ_PREFILL_BACKEND", "fused")
-        if self.prefill_backend not in {"fused", "grouped", "sorted"}:
+        if self.prefill_backend not in {"fused", "grouped", "sorted", "chunked"}:
             raise ValueError(
-                "GEMQ_PREFILL_BACKEND 仅支持 fused、grouped 或 sorted，"
+                "GEMQ_PREFILL_BACKEND 仅支持 fused、grouped、sorted 或 chunked，"
                 f"实际为 {self.prefill_backend!r}"
             )
+        try:
+            self.prefill_chunk_tokens = int(
+                os.environ.get("GEMQ_PREFILL_CHUNK_TOKENS", "512")
+            )
+        except ValueError as exc:
+            raise ValueError("GEMQ_PREFILL_CHUNK_TOKENS 必须为正整数") from exc
+        if self.prefill_chunk_tokens <= 0:
+            raise ValueError("GEMQ_PREFILL_CHUNK_TOKENS 必须为正整数")
 
         # gating
         self.gate = nn.Linear(self.hidden_dim, self.num_experts, bias=False)
@@ -984,11 +994,97 @@ class QuantFusedOlmoeMoEBlock(nn.Module):
         )
         return final_hidden_states, router_logits
 
+    def forward_n_tokens_chunked(self, hidden_states: Tensor) -> Tensor:
+        """在固定 workspace 上限内执行 grouped prefill。
+
+        排序结果按 ``prefill_chunk_tokens * top_k`` 个 assignment 分块。每块仅
+        物化 fused-up/activation 与 down 输出；FP32 输出缓冲按固定 top-k slot
+        顺序累加，因此峰值中间显存不再随完整 prompt 的 assignment 数线性增长。
+        """
+        batch_size, sequence_length, hidden_dim = hidden_states.shape
+        hidden_states = hidden_states.view(-1, hidden_dim)
+        router_logits = self.gate(hidden_states)
+        routing_weights = F.softmax(router_logits, dim=1, dtype=torch.float)
+        routing_weights, selected_experts = torch.topk(
+            routing_weights, self.top_k, dim=-1
+        )
+        if self.norm_topk_prob:
+            routing_weights /= routing_weights.sum(dim=-1, keepdim=True)
+        routing_weights = routing_weights.to(hidden_states.dtype)
+
+        flat_experts = selected_experts.reshape(-1)
+        assignment_order = torch.argsort(flat_experts, stable=True)
+        sorted_experts = flat_experts[assignment_order]
+        sorted_tokens = torch.div(
+            assignment_order, self.top_k, rounding_mode="floor"
+        )
+        inverse_order = build_inverse_assignment_order(assignment_order)
+        output_accumulator = torch.zeros(
+            (hidden_states.shape[0], hidden_dim),
+            dtype=torch.float32,
+            device=hidden_states.device,
+        )
+
+        assignment_limit = self.prefill_chunk_tokens * self.top_k
+        total_assignments = assignment_order.numel()
+        for chunk_start in range(0, total_assignments, assignment_limit):
+            chunk_end = min(chunk_start + assignment_limit, total_assignments)
+            chunk_experts = sorted_experts[chunk_start:chunk_end]
+            counts = torch.bincount(
+                chunk_experts, minlength=self.num_experts
+            ).to(torch.int32)
+            expert_offsets = torch.cat(
+                (counts.new_zeros(1), counts.cumsum(dim=0))
+            )
+            expert_input = hidden_states.index_select(
+                0, sorted_tokens[chunk_start:chunk_end]
+            )
+            activated = mixedbit_fused_up_activation(
+                expert_input,
+                expert_offsets,
+                self.w1_wq,
+                self.w3_wq,
+                self.w1_scales,
+                self.w1_zeros,
+                self.w3_scales,
+                self.w3_zeros,
+                self.w1_nbits,
+                self.w1_group_sizes,
+                self.w1_wq_strides,
+                self.w1_zs_strides,
+            )
+            expert_output = mixedbit_variable_m_grouped_gemm(
+                activated,
+                expert_offsets,
+                self.w2_wq,
+                self.w2_scales,
+                self.w2_zeros,
+                self.w2_nbits,
+                self.w2_group_sizes,
+                self.w2_wq_strides,
+                self.w2_zs_strides,
+            )
+            deterministic_chunk_reduce(
+                expert_output,
+                inverse_order,
+                routing_weights,
+                output_accumulator,
+                chunk_start,
+                chunk_end,
+            )
+
+        final_hidden_states = output_accumulator.to(hidden_states.dtype).reshape(
+            batch_size, sequence_length, hidden_dim
+        )
+        return final_hidden_states, router_logits
+
     def forward_n_tokens(self, hidden_states: Tensor) -> Tensor:
         if self.prefill_backend == "sorted":
             return self.forward_n_tokens_sorted(hidden_states)
         if self.prefill_backend == "grouped":
             return self.forward_n_tokens_grouped(hidden_states)
+        if self.prefill_backend == "chunked":
+            return self.forward_n_tokens_chunked(hidden_states)
         return self.forward_n_tokens_fused(hidden_states)
 
     def forward_one_token(self, hidden_states: Tensor) -> Tensor:
