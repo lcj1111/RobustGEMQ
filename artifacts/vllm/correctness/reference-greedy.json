@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "engine": "transformers-robustgemq",
+  "checkpoint": "/data/models/RobustGEMQ/results/phase10/checkpoints/concat/seed-101",
+  "dtype": "float16",
+  "backend": "chunked",
+  "prompt": "The purpose of expert routing is",
+  "prompt_token_ids": [
+    510,
+    4096,
+    273,
+    6485,
+    24749,
+    310
+  ],
+  "token_ids": [
+    281,
+    2085,
+    247,
+    5122,
+    323,
+    247,
+    23093,
+    281
+  ],
+  "text": " to provide a mechanism for a router to"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "engine": "vllm",
+  "label": "concat-seed101-gemq",
+  "model": "/data/models/RobustGEMQ/results/vllm/checkpoints/concat-seed101",
+  "dtype": "float16",
+  "enforce_eager": true,
+  "max_model_len": 2048,
+  "load_seconds": 19.07743263244629,
+  "generation_seconds": 4.2054102420806885,
+  "prompt": "The purpose of expert routing is",
+  "text": " to provide a mechanism for a router to",
+  "token_ids": [
+    281,
+    2085,
+    247,
+    5122,
+    323,
+    247,
+    23093,
+    281
+  ]
+}
