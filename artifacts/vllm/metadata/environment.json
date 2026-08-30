@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "captured_utc": "2026-08-30T05:26:12.369854+00:00",
+  "base_revision": "9b174060192e89fa64444c75929333981afe9bdd",
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "compute_capability": "12.0",
+    "memory_total_mib": 32607,
+    "driver": "610.43.03",
+    "physical_gpu_index": 0
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "cuda_runtime": "13.0",
+    "packages": {
+      "gemq": "0.1.0",
+      "vllm": "0.28.0",
+      "torch": "2.13.0",
+      "triton": "3.7.1",
+      "transformers": "5.16.1",
+      "gemlite": "0.6.0.post1",
+      "aiohttp": "3.14.3"
+    }
+  },
+  "serving_protocol": {
+    "api": "OpenAI-compatible /v1/completions streaming",
+    "dtype_bf16_baseline": "bfloat16",
+    "dtype_robustgemq": "float16",
+    "max_model_len": 2048,
+    "max_num_seqs": 16,
+    "kv_cache_memory_bytes": 4294967296,
+    "enforce_eager": true,
+    "gemq_prefill_chunk_tokens": 128
+  }
+}

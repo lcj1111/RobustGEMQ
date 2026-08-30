@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "checkpoint": "/data/models/RobustGEMQ/results/vllm/checkpoints/concat-seed101",
+  "seed": 20260830,
+  "reference": "independent-dense-dequantization",
+  "attention": {
+    "max_abs_error": 0.00390625,
+    "mean_abs_error": 0.00010945818939944729,
+    "finite": true,
+    "pass": true
+  },
+  "moe": {
+    "max_abs_error": 3.814697265625e-06,
+    "mean_abs_error": 2.1097366698086262e-07,
+    "finite": true,
+    "pass": true
+  },
+  "thresholds": {
+    "attention_max_abs": 0.04,
+    "moe_max_abs": 0.08,
+    "mean_abs": 0.005
+  }
+}

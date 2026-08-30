@@ -110,9 +110,11 @@ python scripts/prefill/benchmark_prefill.py ...
 
 ## 5. 并发请求负载
 
+> 本节保留阶段十当时的受控调度实验。阶段十一已完成真实 vLLM Engine 接入，生产引擎相关结论请以[阶段十一报告](../11-vllm-serving-integration/report.md)为准；本节仍用于解释 chunked workspace 和开放环排队机制。
+
 ### 5.1 评测协议
 
-本仓库没有把 GEMQ 接入 vLLM engine，因此报告使用“vLLM 风格”而不是“vLLM 实测”。脚本借鉴 vLLM serving benchmark 和 scheduler 的关键语义：开放环请求到达、FCFS、`max_num_seqs`、`max_num_batched_tokens` 和 chunked prefill。每轮执行真实量化模型，不使用由单请求曲线推导的离线模拟值。
+在阶段十执行时，GEMQ 尚未接入 vLLM engine，因此本节使用“vLLM 风格”而不是“vLLM 实测”。脚本借鉴 vLLM serving benchmark 和 scheduler 的关键语义：开放环请求到达、FCFS、`max_num_seqs`、`max_num_batched_tokens` 和 chunked prefill。每轮执行真实量化模型，不使用由单请求曲线推导的离线模拟值。
 
 | 项目 | 固定值 |
 | --- | --- |

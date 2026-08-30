@@ -6,7 +6,7 @@
 
 </div>
 
-RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大语言模型的低比特混合精度量化。GEMQ 负责专家级 bit 分配、量化和 Router 微调；RobustGEMQ 补足跨域校准、真实检查点验证、可复现的决策流程，以及 OLMoE 的混合精度 prefill grouped/fused kernel。完整结构见[文档导航](docs/README.md)。
+RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大语言模型的低比特混合精度量化。GEMQ 负责专家级 bit 分配、量化和 Router 微调；RobustGEMQ 补足跨域校准、真实检查点验证、可复现的决策流程、OLMoE 混合精度 prefill kernel，以及 vLLM 真实服务接入。完整结构见[文档导航](docs/README.md)。
 
 ## 项目结论
 
@@ -18,6 +18,7 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
                        → HQQ 实际打包检查点 → H6 fake/real 验证
                        → 固定场景 Bootstrap 与 G6 决策
                        → 记录级隔离 validation/test 的独立复核
+                       → 可审计检查点导出与 vLLM 真实服务验证
 ```
 
 在 OLMoE 的真实检查点实验中，`Scenario-Normalized-Mean` 没有超过同预算基线；随后在记录级隔离的独立 test 上复核得到相同结论：`Concat` 的平均质量更好，`GEMQ-C4` 的最坏领域表现更好。G6 因而继续停止第二模型扩展。历史脚本、配置和产物继续使用键 `domain-mean`，仅作为兼容标识。项目最终交付的是一套量化实验可靠性机制及其负结果边界，而非一个“更优算法”的宣称。
@@ -38,6 +39,8 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 构建，研究 MoE 大
 - [Prefill 可审计证据](artifacts/prefill/evidence.json)：原始样本、trace 与核心源码的 SHA-256 清单。
 - [并发 Prefill 评测](docs/10-concurrent-prefill/report.md)：受限显存分块、真实模型开放环负载、TTFT 与 p95/p99。
 - [并发 Prefill 证据](artifacts/prefill/p4/evidence.json)：请求级记录、workspace 扫描和跨后端 workload identity。
+- [vLLM 服务集成报告](docs/11-vllm-serving-integration/report.md)：真实 Engine 接入、正确性链路与并发 1/4/8 的服务结果。
+- [vLLM 可审计证据](artifacts/vllm/evidence.json)：144 条请求记录、显存采样、环境、检查点 manifest 和源码哈希。
 
 可在本地运行无需 GPU 的发布契约检查：
 
@@ -52,6 +55,8 @@ python scripts/prefill/verify_evidence.py \
   --evidence artifacts/prefill/evidence.json
 python scripts/prefill/verify_chunked_evidence.py \
   --evidence artifacts/prefill/p4/evidence.json
+python scripts/vllm/verify_evidence.py \
+  --evidence artifacts/vllm/evidence.json
 ```
 
 ## 仓库包含的内容
@@ -71,6 +76,7 @@ python scripts/prefill/verify_chunked_evidence.py \
 - 使用记录级互斥的 calibration、validation、test 重新执行固定方法选择和 3×3 checkpoint 独立测试，确认平均质量与最坏领域鲁棒性的权衡；详见[独立复核报告](docs/08-independent-confirmation/report.md)。
 - 将 OLMoE prefill 从 one-hot + 逐 expert 三 GEMM 改为 variable-M mixed-bit grouped/fused kernel；固定检查点上完整模型中位延迟降低 7.90–10.86 倍，同时保留逐项数值证据与 workspace 权衡；详见[Prefill 内核优化报告](docs/09-prefill-kernel-optimization/report.md)。
 - 增加 workspace-bounded chunked 后端，并用真实模型执行开放环并发请求：4096-token 单层 MoE workspace 降低 73.4%；同时报告吞吐、显存与 TTFT p50/p95/p99，明确长 prompt 接近饱和时的尾延迟代价；详见[并发 Prefill 评测](docs/10-concurrent-prefill/report.md)。
+- 将 `Concat/seed-101` 的混合位宽检查点接入 vLLM 0.28，打通真实流式服务；固定 4 GiB KV Cache 后峰值显存较原生 BF16 下降 54.4%，同时如实记录约 50% 的吞吐保留率和约 2 倍 p95 TTFT；详见[vLLM 服务集成报告](docs/11-vllm-serving-integration/report.md)。
 
 ## 安装
 
@@ -84,6 +90,14 @@ pip install -c requirements/phase0-constraints.txt -e .
 # 可选：仅在需要使用 Gurobi 而非默认 HiGHS 求解器时安装；此项需要 Gurobi 许可证
 pip install -c requirements/phase0-constraints.txt -e ".[gurobi]"
 ```
+
+若需要导出检查点并运行真实 vLLM 服务，使用单独冻结的服务环境：
+
+```bash
+pip install -c requirements/vllm-constraints.txt -e ".[vllm]"
+```
+
+该约束对应本仓库形成正式证据的 vLLM 0.28、PyTorch 2.13、Triton 3.7.1 与 Transformers 5.16.1。升级任一核心依赖后，应重新执行阶段十一的正确性和服务基准。
 
 > [!NOTE]
 >
@@ -122,6 +136,8 @@ pip install -c requirements/phase0-constraints.txt -e ".[gurobi]"
 > [!NOTE]
 >
 > OLMoE decode 使用原有单 token 融合路径；多 token prefill 默认使用 `fused` 后端：W1/W3/SiLU 融合、variable-M grouped down 与确定性归并。可通过 `GEMQ_PREFILL_BACKEND=grouped` 或 `sorted` 切换到 P2/P1 参考后端。显存受限时可设置 `GEMQ_PREFILL_BACKEND=chunked` 与 `GEMQ_PREFILL_CHUNK_TOKENS=512`；该模式会增加尾延迟，应根据[并发 Prefill 评测](docs/10-concurrent-prefill/report.md)按实际负载选择，不能无条件替换默认后端。
+
+真实服务路径先使用 `scripts/vllm/export_checkpoint.py` 导出检查点，再由 `vllm serve` 自动发现 GEMQ 插件。首版只支持 OLMoE、FP16 和单卡 TP=1；完整命令、正确性门槛和性能边界见[vLLM 服务集成报告](docs/11-vllm-serving-integration/report.md)。
 
 ## 许可证
 

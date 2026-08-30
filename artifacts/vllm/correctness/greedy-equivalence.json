@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "reference_engine": "transformers-robustgemq",
+  "candidate_engine": "vllm",
+  "prompt": "The purpose of expert routing is",
+  "token_count": 8,
+  "exact_match": true,
+  "agreement": 1.0,
+  "reference_token_ids": [
+    281,
+    2085,
+    247,
+    5122,
+    323,
+    247,
+    23093,
+    281
+  ],
+  "candidate_token_ids": [
+    281,
+    2085,
+    247,
+    5122,
+    323,
+    247,
+    23093,
+    281
+  ]
+}
