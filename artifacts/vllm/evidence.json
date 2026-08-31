@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "pass",
-  "subject": "RobustGEMQ vLLM 0.28 单卡推理集成",
+  "subject": "RobustGEMQ vLLM 服务路径 dispatch/reduce 融合优化",
   "protocol": {
     "requests_per_case": 24,
     "concurrency": [
@@ -15,9 +15,16 @@
     ],
     "output_tokens": 16,
     "streaming": true,
-    "warmup_rounds_at_target_concurrency": 2,
+    "warmup_rounds_at_target_concurrency": 4,
+    "warmup_shapes": [
+      "128-only",
+      "512-only",
+      "mixed",
+      "mixed"
+    ],
     "kv_cache_memory_bytes": 4294967296,
     "percentile": "nearest-rank",
+    "prefix_caching": false,
     "scope": "fixed-checkpoint descriptive serving benchmark"
   },
   "checkpoint_artifact": {
@@ -25,86 +32,187 @@
     "sha256": "c3e70317e66cde54cebb679387676a6e40ddaf4ee859269e5c1278370a2cb0db",
     "size_bytes": 2898237544
   },
-  "comparisons": [
-    {
-      "concurrency": 1,
-      "bf16_output_tokens_per_second": 83.91758342774135,
-      "robustgemq_output_tokens_per_second": 42.48997779401328,
-      "output_throughput_ratio": 0.5063298543457223,
-      "bf16_ttft_p95_seconds": 0.026227095164358616,
-      "robustgemq_ttft_p95_seconds": 0.05596039444208145,
-      "ttft_p95_ratio": 2.133686330544489,
-      "bf16_peak_memory_mib": 18915.0,
-      "robustgemq_peak_memory_mib": 8627.0,
-      "peak_memory_reduction": 0.5439069521543749
-    },
-    {
-      "concurrency": 4,
-      "bf16_output_tokens_per_second": 301.19685939134894,
-      "robustgemq_output_tokens_per_second": 149.3186716307893,
-      "output_throughput_ratio": 0.49575109093942327,
-      "bf16_ttft_p95_seconds": 0.04127480834722519,
-      "robustgemq_ttft_p95_seconds": 0.08851639367640018,
-      "ttft_p95_ratio": 2.1445621971579896,
-      "bf16_peak_memory_mib": 18915.0,
-      "robustgemq_peak_memory_mib": 8629.0,
-      "peak_memory_reduction": 0.5438012159661645
-    },
-    {
-      "concurrency": 8,
-      "bf16_output_tokens_per_second": 578.7577611705657,
-      "robustgemq_output_tokens_per_second": 289.0788671718084,
-      "output_throughput_ratio": 0.4994816252435774,
-      "bf16_ttft_p95_seconds": 0.04541971255093813,
-      "robustgemq_ttft_p95_seconds": 0.09173057228326797,
-      "ttft_p95_ratio": 2.019620273474701,
-      "bf16_peak_memory_mib": 18915.0,
-      "robustgemq_peak_memory_mib": 8629.0,
-      "peak_memory_reduction": 0.5438012159661645
+  "comparisons": {
+    "bf16_vs_optimized": [
+      {
+        "concurrency": 1,
+        "bf16_output_tokens_per_second": 80.89752905668719,
+        "robustgemq_output_tokens_per_second": 48.71047697114433,
+        "output_throughput_ratio": 0.6021256463471402,
+        "bf16_ttft_p95_seconds": 0.03086453303694725,
+        "robustgemq_ttft_p95_seconds": 0.06777233444154263,
+        "ttft_p95_ratio": 2.195799766690585,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      },
+      {
+        "concurrency": 4,
+        "bf16_output_tokens_per_second": 293.17061274564463,
+        "robustgemq_output_tokens_per_second": 152.74182665286563,
+        "output_throughput_ratio": 0.5209997865147034,
+        "bf16_ttft_p95_seconds": 0.04236000496894121,
+        "robustgemq_ttft_p95_seconds": 0.1369800427928567,
+        "ttft_p95_ratio": 3.2337116790541423,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      },
+      {
+        "concurrency": 8,
+        "bf16_output_tokens_per_second": 529.3620097682671,
+        "robustgemq_output_tokens_per_second": 242.0723321146888,
+        "output_throughput_ratio": 0.45729071532854826,
+        "bf16_ttft_p95_seconds": 0.056098309345543385,
+        "robustgemq_ttft_p95_seconds": 0.20491680968552828,
+        "ttft_p95_ratio": 3.652816137886114,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      }
+    ],
+    "baseline_vs_optimized": [
+      {
+        "concurrency": 1,
+        "baseline_output_tokens_per_second": 42.07549324526672,
+        "optimized_output_tokens_per_second": 48.71047697114433,
+        "output_throughput_improvement": 0.15769235757263544,
+        "baseline_ttft_p95_seconds": 0.08389216754585505,
+        "optimized_ttft_p95_seconds": 0.06777233444154263,
+        "ttft_p95_reduction": 0.19214944107268894,
+        "baseline_e2e_p95_seconds": 0.4012922989204526,
+        "optimized_e2e_p95_seconds": 0.3442485062405467,
+        "e2e_p95_reduction": 0.14215023022710327,
+        "optimized_peak_memory_mib": 8629.0
+      },
+      {
+        "concurrency": 4,
+        "baseline_output_tokens_per_second": 129.94282065367145,
+        "optimized_output_tokens_per_second": 152.74182665286563,
+        "output_throughput_improvement": 0.17545414117151537,
+        "baseline_ttft_p95_seconds": 0.17213672399520874,
+        "optimized_ttft_p95_seconds": 0.1369800427928567,
+        "ttft_p95_reduction": 0.20423695993732638,
+        "baseline_e2e_p95_seconds": 0.49524999037384987,
+        "optimized_e2e_p95_seconds": 0.42290102038532495,
+        "e2e_p95_reduction": 0.14608575748565034,
+        "optimized_peak_memory_mib": 8629.0
+      },
+      {
+        "concurrency": 8,
+        "baseline_output_tokens_per_second": 199.76372411749875,
+        "optimized_output_tokens_per_second": 242.0723321146888,
+        "output_throughput_improvement": 0.211793248169045,
+        "baseline_ttft_p95_seconds": 0.2714074719697237,
+        "optimized_ttft_p95_seconds": 0.20491680968552828,
+        "ttft_p95_reduction": 0.24498464173312318,
+        "baseline_e2e_p95_seconds": 0.6499363584443927,
+        "optimized_e2e_p95_seconds": 0.5325802573934197,
+        "e2e_p95_reduction": 0.1805655269569193,
+        "optimized_peak_memory_mib": 8629.0
+      }
+    ],
+    "profiler": {
+      "prefill": {
+        "moe_cpu_total_reduction": 0.6589301057859752,
+        "moe_cuda_total_reduction": 0.07880113941295463,
+        "ttft_p95_reduction": 0.36314956055499126,
+        "removed_eager_dispatch_ops": [
+          "aten::sort",
+          "aten::bincount",
+          "aten::cumsum",
+          "aten::cat",
+          "aten::div",
+          "aten::arange"
+        ]
+      },
+      "decode": {
+        "moe_cpu_total_reduction": 0.4412560073405386,
+        "moe_cuda_total_reduction": 0.06663933855661175,
+        "ttft_p95_reduction": 0.25018943792040527,
+        "removed_eager_dispatch_ops": [
+          "aten::sort",
+          "aten::bincount",
+          "aten::cumsum",
+          "aten::cat",
+          "aten::div",
+          "aten::arange"
+        ]
+      }
     }
-  ],
+  },
   "files": [
     {
       "name": "bf16_c1",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/bf16-c1.json",
-      "sha256": "d5dcdf4d0bdf066abe927db24b083de88f488dbde34b734d3a0a45e1a3c24f02"
+      "sha256": "45767b32f1a1d2d8a99f4065b406a8c6522754d12f4d3cecf5c06b350c73e682"
     },
     {
       "name": "bf16_c4",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/bf16-c4.json",
-      "sha256": "9f5f223fdfe12b566479a5e99078c6b7e646976be655cb0353872338bf57e10f"
+      "sha256": "3dd3e7ed7d63e62bc520eb9425b4ea64c3ea2dd388167d56a3495a63e0aca631"
     },
     {
       "name": "bf16_c8",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/bf16-c8.json",
-      "sha256": "976a2619c019833e10ef8218e8f988bccd7df7e44bc814073b0d98d9588c85d3"
+      "sha256": "fcf2121dbfbc21cfb69b773944c7ba68cc1ba4422c0b64ee12dc06f88a8ae46e"
     },
     {
       "name": "robustgemq_c1",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/robustgemq-c1.json",
-      "sha256": "e3ae4c796969f8b18cc84b52f1d9a7a87d6683cf28d4da39d1b523a0ac8fe106"
+      "sha256": "ab57970b1d2b6ed084b42f16b8cee14dea40bc0651038dac9ac9228f251d3e7b"
     },
     {
       "name": "robustgemq_c4",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/robustgemq-c4.json",
-      "sha256": "eaf0545d737a240f7ad572f18b478b5db7e89cb109a5ba514bfed378b57a6026"
+      "sha256": "82b476f4cbf37203b3af9a3a23b2c2e0b416101f00e99bdac5d028fe6adbcc28"
     },
     {
       "name": "robustgemq_c8",
       "kind": "benchmark",
       "path": "artifacts/vllm/benchmarks/robustgemq-c8.json",
-      "sha256": "940ad70ffe2639aadb8525d22e599e57e826897f1ec81cebfc6d6f9c94c45509"
+      "sha256": "d162d1118abb081847fd099604d9a3653ec2e0e28f2201e3cfd18e8995a56a31"
+    },
+    {
+      "name": "baseline_gemq_c1",
+      "kind": "benchmark",
+      "path": "artifacts/vllm/benchmarks/baseline-gemq-c1.json",
+      "sha256": "0712c42efd3450317462625b47458f53a4b0a83b1d0073eaf31a1da3ee70702b"
+    },
+    {
+      "name": "baseline_gemq_c4",
+      "kind": "benchmark",
+      "path": "artifacts/vllm/benchmarks/baseline-gemq-c4.json",
+      "sha256": "b996cf2f95899f50b59e42018726906c3b8a33e4d9e88382c3ad5805fad91294"
+    },
+    {
+      "name": "baseline_gemq_c8",
+      "kind": "benchmark",
+      "path": "artifacts/vllm/benchmarks/baseline-gemq-c8.json",
+      "sha256": "5a0436c242abb503b52ac1fc3ddc57ee68bd9dbc4214bff9edbbb208ada0a691"
+    },
+    {
+      "name": "profile_summary",
+      "kind": "profile",
+      "path": "artifacts/vllm/profiles/summary.json",
+      "sha256": "9cff8cb9236c1ad5e4e59083b025d42ebb86c68ee26ebd06f2e094c171702c5a"
+    },
+    {
+      "name": "dispatch_correctness",
+      "kind": "correctness",
+      "path": "artifacts/vllm/correctness/dispatch-fusion.json",
+      "sha256": "ce127f6ccf8097642fd41073b0a8443811bb8697cb934e5d0f3ddea787b7f581"
     },
     {
       "name": "offline_smoke",
       "kind": "correctness",
       "path": "artifacts/vllm/correctness/offline-smoke.json",
-      "sha256": "f76b357c71130639be7c42cfa575a01f3cc814e029e3edeb1abc723b6c52b786"
+      "sha256": "a02f52e65637e2cac0c48dd7da1582011b763d6d69296a6bf798edd0e60ca6a8"
     },
     {
       "name": "reference_greedy",
@@ -128,7 +236,7 @@
       "name": "environment",
       "kind": "metadata",
       "path": "artifacts/vllm/metadata/environment.json",
-      "sha256": "8b66d56b1db44c02b77fae61d445e4d03aefc639a5c7ce7cc344ebfd63f17021"
+      "sha256": "7bf7c44eedbdce6abd98861f7b853a592054cc44a56f64ce392a544579dcff7c"
     },
     {
       "name": "checkpoint_manifest",
@@ -152,7 +260,7 @@
       "name": "quantization.py",
       "kind": "source",
       "path": "gemq/vllm_plugin/quantization.py",
-      "sha256": "c49b5923efe839a40bcbf031aa77b219fac5e44dac32d5ae5b75fc764fa3344a"
+      "sha256": "78ae32bf7abe728f100b141f05b7890887080fefbf50abbe63db200cd3a8570e"
     },
     {
       "name": "export_checkpoint.py",
@@ -164,7 +272,7 @@
       "name": "benchmark_service.py",
       "kind": "source",
       "path": "scripts/vllm/benchmark_service.py",
-      "sha256": "99a5c2db365dedb7c4bf96de80e410f66370bc6b0d268dc047567a744a5a3a2d"
+      "sha256": "3e156c4de7a308a06257aa015ea396a19728b7d8cc81186c1cd7f90f373fed5f"
     },
     {
       "name": "smoke_offline.py",
@@ -191,10 +299,52 @@
       "sha256": "984727f95299ef2a2854f6246dce88bcd89af8c1d8f56a492604e289048f806c"
     },
     {
+      "name": "check_dispatch_correctness.py",
+      "kind": "source",
+      "path": "scripts/vllm/check_dispatch_correctness.py",
+      "sha256": "d18b617ebcb380dd750b18cc08c66a6702754efd0380c467634002877431be5d"
+    },
+    {
       "name": "collect_environment.py",
       "kind": "source",
       "path": "scripts/vllm/collect_environment.py",
-      "sha256": "b3455721eda0266e5aac8f51e578d411ae6702b5a19b2742454cb26fe763ecfb"
+      "sha256": "e8175c10e7b597a04412b4cb0f7f5e793ef98810bd018a20731425171625d670"
+    },
+    {
+      "name": "profile_service.py",
+      "kind": "source",
+      "path": "scripts/vllm/profile_service.py",
+      "sha256": "b754c182bdce8c847af553166ef91189cb176727b4cdfe6c1170988c318dca56"
+    },
+    {
+      "name": "summarize_profiles.py",
+      "kind": "source",
+      "path": "scripts/vllm/summarize_profiles.py",
+      "sha256": "ceb5976cd3933b3bdf0707c6b837296b5b16c48d94c16af7ab26079fe35905fe"
+    },
+    {
+      "name": "build_evidence.py",
+      "kind": "source",
+      "path": "scripts/vllm/build_evidence.py",
+      "sha256": "38adb91a0873700dd3c98e5f2cde6888c435d1e26a399b881b1d12dcc3b1e0c3"
+    },
+    {
+      "name": "verify_evidence.py",
+      "kind": "source",
+      "path": "scripts/vllm/verify_evidence.py",
+      "sha256": "8ddab112201c499926c7c1c6f03b526a8397637eaa9b9524b573f9cdc536cabe"
+    },
+    {
+      "name": "mixedbit_moe_prefill.py",
+      "kind": "source",
+      "path": "gemq/triton_kernels/mixedbit_moe_prefill.py",
+      "sha256": "b7a40c03fdffae0880eca5c8e5efd1815242ab3dff74a5f0a8722ed6d645bdb3"
+    },
+    {
+      "name": "vllm_moe_dispatch.py",
+      "kind": "source",
+      "path": "gemq/triton_kernels/vllm_moe_dispatch.py",
+      "sha256": "9b3840ce6d572bff6471de21d27e98c50577796c1cb46af6c94c3e7c73b1a8d6"
     },
     {
       "name": "vllm-constraints.txt",
@@ -207,12 +357,60 @@
       "kind": "source",
       "path": "pyproject.toml",
       "sha256": "01a29f0c26a43f3f7b066987dbca854d87ff5f0187409f1470afebdeae4aeeab"
+    },
+    {
+      "name": "baseline-prefill.txt",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill.txt",
+      "sha256": "a0d0c955ca03c599bd6b25bc24f9d0f3dd9ad87ced153680a9e7f157f7e6adfa"
+    },
+    {
+      "name": "baseline-prefill-requests.json",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill-requests.json",
+      "sha256": "343aa21d13409939406d90c43c3f9064c32ee449ff9a0ad6f98e165608d3f7eb"
+    },
+    {
+      "name": "baseline-decode.txt",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/baseline-decode.txt",
+      "sha256": "824eed4197f864a36ecc16ed1c4cecdb7632a1abef40919817e2502ab67ecb16"
+    },
+    {
+      "name": "baseline-decode-requests.json",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/baseline-decode-requests.json",
+      "sha256": "f8fc8d05ccdb4a1d07e249a4e9ec9536077599cd88731711e308851358b20abf"
+    },
+    {
+      "name": "optimized-prefill.txt",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill.txt",
+      "sha256": "7e7a0a4a4738d86d3d4a79352ca8f38b293c5325b2c922960b339120fc8e548b"
+    },
+    {
+      "name": "optimized-prefill-requests.json",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill-requests.json",
+      "sha256": "abde4673e7b7b8e40c748dbd82183239f9e9191c8278c0b60cdf87c20246bbdc"
+    },
+    {
+      "name": "optimized-decode.txt",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/optimized-decode.txt",
+      "sha256": "9d811bd8c4448fbdd21073faa599780548c56706f77eb6c210f35ff808c4fca3"
+    },
+    {
+      "name": "optimized-decode-requests.json",
+      "kind": "profile_raw",
+      "path": "artifacts/vllm/profiles/raw/optimized-decode-requests.json",
+      "sha256": "4c672ae43f5f80af377503506a42f0350e15996452b0e217dd69af175dcbf652"
     }
   ],
   "claim_boundary": [
-    "已验证 OLMoE Concat/seed-101 检查点可由 vLLM Engine 真实加载和推理",
-    "已验证原 RobustGEMQ 与 vLLM greedy 生成的 8 个 token 完全一致",
-    "已报告固定请求集上的 TTFT、吞吐和 GPU 总显存，不外推到其他模型或硬件",
-    "首版只支持 FP16、单卡 TP=1，不宣称量化吞吐超过 BF16"
+    "已验证融合 dispatch/reduce 后 greedy 生成的 8 个 token 与原 RobustGEMQ 完全一致",
+    "相对原始 GEMQ 报告固定 uncached 请求集上的 TTFT、E2E、吞吐和 GPU 总显存",
+    "c8 输出吞吐提高 21.2%，未达到预设 25% 门槛，不宣称服务优化阶段全部达标",
+    "首版只支持 OLMoE、FP16、单卡 TP=1；不宣称量化吞吐超过 BF16"
   ]
 }

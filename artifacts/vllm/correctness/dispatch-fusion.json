@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "subject": "vLLM stable dispatch 与融合归并 CUDA 正确性",
+  "device": "NVIDIA GeForce RTX 5090",
+  "torch": "2.13.0+cu130",
+  "dispatch_token_cases": [
+    1,
+    17,
+    128,
+    513
+  ],
+  "chunk_cases": [
+    {
+      "start": 0,
+      "end": 64
+    },
+    {
+      "start": 31,
+      "end": 193
+    },
+    {
+      "start": 128,
+      "end": 512
+    },
+    {
+      "start": 511,
+      "end": 700
+    }
+  ],
+  "reduce": {
+    "tokens": 19,
+    "top_k": 8,
+    "hidden_dim": 256,
+    "chunks": [
+      [
+        0,
+        67
+      ],
+      [
+        67,
+        152
+      ]
+    ],
+    "comparison": "exact FP16 equality after fixed-order FP32 accumulation"
+  }
+}

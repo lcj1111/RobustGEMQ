@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "pass",
-  "captured_utc": "2026-08-30T05:26:12.369854+00:00",
-  "base_revision": "9b174060192e89fa64444c75929333981afe9bdd",
+  "captured_utc": "2026-08-31T03:08:42.430839+00:00",
+  "base_revision": "7ade27c",
   "hardware": {
     "gpu": "NVIDIA GeForce RTX 5090",
     "compute_capability": "12.0",
@@ -31,6 +31,7 @@
     "max_num_seqs": 16,
     "kv_cache_memory_bytes": 4294967296,
     "enforce_eager": true,
-    "gemq_prefill_chunk_tokens": 128
+    "gemq_prefill_chunk_tokens": 128,
+    "prefix_caching": false
   }
 }
