@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "title": "OLMoE 受限显存分块与并发 Prefill 实验清单",
+  "code_revision": "992e53b736a6691bc492566a06a540266ec4becc",
+  "checkpoint": "results/phase10/checkpoints/concat/seed-101",
+  "protocol": {
+    "seed": 20260829,
+    "device": "NVIDIA GeForce RTX 5090",
+    "workspace": {
+      "lengths": [
+        512,
+        2048,
+        4096
+      ],
+      "warmup": 2,
+      "repeats": 5,
+      "block_index": 7
+    },
+    "concurrent": {
+      "requests_per_case": 100,
+      "arrival_process": "poisson",
+      "policy": "fcfs",
+      "max_num_seqs": 8,
+      "max_num_batched_tokens": 4096,
+      "prompt_lengths": [
+        512,
+        2048
+      ],
+      "request_rates": [
+        20.0,
+        8.0
+      ]
+    }
+  },
+  "results": {
+    "correctness": "artifacts/prefill/p4/correctness.json",
+    "end_to_end": "artifacts/prefill/p4/end-to-end.json",
+    "workspace_fused": "artifacts/prefill/p4/workspace/fused.json",
+    "workspace_chunk128": "artifacts/prefill/p4/workspace/chunked-128.json",
+    "workspace_chunk256": "artifacts/prefill/p4/workspace/chunked-256.json",
+    "workspace_chunk512": "artifacts/prefill/p4/workspace/chunked-512.json",
+    "concurrent_fused_512": "artifacts/prefill/p4/concurrent/fused-512.json",
+    "concurrent_chunked_512": "artifacts/prefill/p4/concurrent/chunked-512.json",
+    "concurrent_fused_2048": "artifacts/prefill/p4/concurrent/fused-2048.json",
+    "concurrent_chunked_2048": "artifacts/prefill/p4/concurrent/chunked-2048.json"
+  },
+  "implementation": [
+    "gemq/inference/moe_block.py",
+    "gemq/triton_kernels/mixedbit_moe_prefill.py",
+    "scripts/prefill/benchmark_prefill.py",
+    "scripts/prefill/benchmark_concurrent_prefill.py",
+    "scripts/prefill/check_prefill_correctness.py",
+    "scripts/prefill/check_prefill_end_to_end.py",
+    "scripts/prefill/verify_chunked_evidence.py"
+  ]
+}

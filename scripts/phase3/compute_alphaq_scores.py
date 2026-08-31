@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""Build a calibration-free AlphaQ-style expert cost tensor for OLMoE.
+"""为 OLMoE 构建无需校准数据的 AlphaQ-style 专家代价张量。
 
-The score follows AlphaQ's public no-calibration objective:
+评分沿用 AlphaQ 公开的无校准目标：
     sensitivity = (median(alpha) / alpha) ** gamma
     cost(bit) = sensitivity * weight_variance * 2 ** (-2 * bit)
 
-To keep the OLMoE pilot bounded, the heavy-tail exponent is estimated from a
-deterministic 128x128 spectral sketch of each expert linear.  This is deliberately
-reported as "AlphaQ-style", not as an exact reproduction of AlphaQ.
+为控制 OLMoE 试验开销，每个专家线性层使用确定性的 128×128 频谱草图估计
+重尾指数。该方法仅作为 AlphaQ-style 对照，不宣称精确复现 AlphaQ。
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -30,16 +28,8 @@ BITS = (1, 2, 3)
 ALPHAQ_COMMIT = "3624976cfd800034156d4a39a3e5c04d23a02291"
 
 
-def file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def spectral_alpha(weights: torch.Tensor, sketch_size: int, tail_fraction: float) -> torch.Tensor:
-    """Compute Hill exponents for a batch of [out, in] matrices on CUDA."""
+    """在 CUDA 上批量计算 `[out, in]` 权重矩阵的 Hill 指数。"""
     rows = torch.linspace(0, weights.shape[1] - 1, min(sketch_size, weights.shape[1]), device=weights.device).long()
     cols = torch.linspace(0, weights.shape[2] - 1, min(sketch_size, weights.shape[2]), device=weights.device).long()
     sketches = weights.index_select(1, rows).index_select(2, cols).float()
@@ -98,14 +88,11 @@ def main() -> None:
         expert_scores[row["layer"], row["expert"]] += contribution
         row["sensitivity"] = sensitivity
         row["score_contribution"] = contribution
-    stats_payload = json.dumps(linear_stats, sort_keys=True, separators=(",", ":"))
-
-    index_path = args.model / "model.safetensors.index.json"
     result = {
         "schema_version": 1,
         "method": "AlphaQ-style deterministic spectral-sketch baseline",
         "model_id": MODEL_ID,
-        "model_index_sha256": file_sha256(index_path),
+        "model_source": str(args.model),
         "upstream": {
             "repository": "https://github.com/Superone77/AlphaQ",
             "commit": ALPHAQ_COMMIT,
@@ -125,7 +112,6 @@ def main() -> None:
             "max": float(alpha_values.max()),
         },
         "linear_stats_count": len(linear_stats),
-        "linear_stats_sha256": hashlib.sha256(stats_payload.encode("utf-8")).hexdigest(),
         "candidate_bits": list(BITS),
         "expert_scores": expert_scores.tolist(),
     }

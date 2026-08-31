@@ -203,12 +203,7 @@ def main() -> None:
         },
         "single_domain_transfer": transfer,
         "seed_config_stability": seed_stability,
-        "scenario_token_hashes": {
-            f"{domain}:seed-{seed}": manifests[(domain, seed)]["token_sha256"]
-            for domain in DOMAINS
-            for seed in (0, 1)
-        },
-        "configs_dir": str(configs_dir.resolve()),
+        "configs_dir": str(configs_dir),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")

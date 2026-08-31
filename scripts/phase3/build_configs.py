@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Build and audit the frozen Phase 3 OLMoE bit-allocation matrix."""
+"""构建并审计阶段三 OLMoE 混合位宽分配矩阵。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import pickle
 from pathlib import Path
@@ -18,14 +17,6 @@ from gemq.allocation.robust_solvers import RobustGEMQSolver, empirical_cvar
 DOMAINS = ("general", "math", "code", "instruction")
 BITS = (1, 2, 3)
 MODEL_ID = "allenai/OLMoE-1B-7B-0924"
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def load_tensor(path: Path) -> np.ndarray:
@@ -98,7 +89,6 @@ def save_method(output_dir: Path, name: str, config: dict, audit: dict) -> dict:
     audit_path.write_text(json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
         "config": str(config_path),
-        "config_sha256": sha256(config_path),
         "audit": str(audit_path),
         "used_bits": audit["common"]["used_bits"],
     }
@@ -124,8 +114,6 @@ def main() -> None:
             normalized[(domain, seed)], median = normalize(raw, scenario["effective_tokens"])
             per_token[(domain, seed)] = raw / float(scenario["effective_tokens"])
             source_manifest[f"{domain}:seed-{seed}"] = {
-                "layer_re_sha256": sha256(source),
-                "token_sha256": scenario["token_sha256"],
                 "effective_tokens": scenario["effective_tokens"],
                 "median_bit2_per_token": median,
             }
@@ -145,15 +133,19 @@ def main() -> None:
         raise ValueError(f"Unexpected AlphaQ tensor shape {alphaq_tensor.shape}")
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "phase": 3,
+        "inputs": {
+            "scenario_root": str(args.scenario_root),
+            "alphaq_scores": str(args.alphaq_scores),
+            "gemq_c4_config_root": str(args.gemq_c4_config_root),
+        },
         "risk_hierarchy": "domain is the scenario; seed is averaged within domain",
         "normalization": "per-token then each seed tensor divided by its own median bit-2 coefficient",
         "concat_definition": (
             "equal-token pool of all eight per-token coefficient tensors, followed by one pooled bit-2 median scale"
         ),
         "source_scenarios": source_manifest,
-        "alphaq_scores_sha256": sha256(args.alphaq_scores),
         "budgets": {},
     }
     for bpe in (2.5, 2.0):
@@ -165,7 +157,7 @@ def main() -> None:
         c4_source = args.gemq_c4_config_root / f"C4-Seed0_E{bpe:.1f}_B1,2,3_c2c3.pkl"
         with c4_source.open("rb") as handle:
             c4_config = pickle.load(handle)
-        methods["gemq-c4"] = (c4_config, {"source_config_sha256": sha256(c4_source)})
+        methods["gemq-c4"] = (c4_config, {"source": str(c4_source)})
 
         solve_specs = {
             "concat": ({"concat": concat_tensor}, "mean", 0.5),

@@ -2,13 +2,11 @@
   "artifacts": [
     {
       "path": "model.safetensors",
-      "sha256": "c3e70317e66cde54cebb679387676a6e40ddaf4ee859269e5c1278370a2cb0db",
       "size_bytes": 2898237544
     }
   ],
   "base_model": {
     "architecture": "OlmoeForCausalLM",
-    "config_sha256": "ec552de1ff4c231758923ea60c10adbc147fb1d7d3f7681811636e1abaddbec8",
     "source": "allenai/OLMoE-1B-7B-0924"
   },
   "format": "gemq-vllm",

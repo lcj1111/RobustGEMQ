@@ -1071,10 +1071,8 @@
   ],
   "gamma": 1.0,
   "linear_stats_count": 3072,
-  "linear_stats_sha256": "ea7dc0f17d67e0d27dec5c9f147b29ae5877e99ad7176a03536970626bd08583",
   "method": "AlphaQ-style deterministic spectral-sketch baseline",
   "model_id": "allenai/OLMoE-1B-7B-0924",
-  "model_index_sha256": "0e2e1e0d8d357ac7af817cff28410c3dbad398f060c517a433e4076b2aae5579",
   "schema_version": 1,
   "sketch_size": 128,
   "tail_fraction": 0.1,
@@ -1082,5 +1080,6 @@
     "commit": "3624976cfd800034156d4a39a3e5c04d23a02291",
     "formula": "sum_module((median_alpha/alpha)^gamma * variance) * 2^(-2*bit)",
     "repository": "https://github.com/Superone77/AlphaQ"
-  }
+  },
+  "model_source": "allenai/OLMoE-1B-7B-0924"
 }

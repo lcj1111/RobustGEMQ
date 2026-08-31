@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Validate the near-boundary proxy against actual downstream Top-k changes."""
+"""用真实下游 Top-k 变化验证近边界路由代理。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import pickle
 from pathlib import Path
@@ -24,14 +23,6 @@ from gemq.routing.margin_proxy import (
 
 DOMAINS = ("general", "math", "code", "instruction")
 SEEDS = (0, 1)
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def route_metrics(fp_path: Path, quant_path: Path) -> dict:
@@ -87,8 +78,6 @@ def main() -> None:
                 raw = nested_to_tensor(pickle.load(handle))
             tensors[(domain, seed)], scale = normalize_scenario_tensor(raw, scenario["effective_tokens"])
             sources[f"{domain}:seed-{seed}"] = {
-                "route_re_sha256": sha256(source),
-                "token_sha256": scenario["token_sha256"],
                 "median_bit2_per_token": scale,
             }
 

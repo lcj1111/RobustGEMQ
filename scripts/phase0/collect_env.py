@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect a reproducible, secret-free environment snapshot for Phase 0."""
+"""采集阶段零所需的精简环境快照，不记录仓库状态和本机路径。"""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ import importlib.metadata
 import json
 import os
 import platform
-import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -29,7 +28,12 @@ PACKAGES = (
 )
 
 
-def run(command: list[str], cwd: Path) -> dict[str, object]:
+def nvidia_runtime(repo: Path) -> dict[str, object]:
+    command = [
+        "nvidia-smi",
+        "--query-gpu=name,memory.total,driver_version",
+        "--format=csv,noheader,nounits",
+    ]
     try:
         completed = subprocess.run(
             command,
@@ -39,14 +43,21 @@ def run(command: list[str], cwd: Path) -> dict[str, object]:
             timeout=30,
             check=False,
         )
+        if completed.returncode != 0:
+            return {"available": False, "error": completed.stderr.strip()}
+        devices = [line.split(", ") for line in completed.stdout.splitlines() if line.strip()]
+        if not devices:
+            return {"available": False, "error": "nvidia-smi 未返回设备"}
+        first = devices[0]
         return {
-            "command": command,
-            "returncode": completed.returncode,
-            "stdout": completed.stdout.strip(),
-            "stderr": completed.stderr.strip(),
+            "available": True,
+            "device_count": len(devices),
+            "device_name": first[0],
+            "memory_mib": int(first[1]),
+            "driver_version": first[2],
         }
     except (OSError, subprocess.TimeoutExpired) as exc:
-        return {"command": command, "error": str(exc)}
+        return {"available": False, "error": str(exc)}
 
 
 def package_versions() -> dict[str, str | None]:
@@ -63,27 +74,22 @@ def torch_runtime() -> dict[str, object]:
     try:
         import torch
 
-        devices = []
+        device = None
         if torch.cuda.is_available():
-            for index in range(torch.cuda.device_count()):
-                props = torch.cuda.get_device_properties(index)
-                devices.append(
-                    {
-                        "index": index,
-                        "name": props.name,
-                        "total_memory_bytes": props.total_memory,
-                        "compute_capability": f"{props.major}.{props.minor}",
-                    }
-                )
+            props = torch.cuda.get_device_properties(0)
+            device = {
+                "name": props.name,
+                "total_memory_bytes": props.total_memory,
+                "compute_capability": f"{props.major}.{props.minor}",
+            }
         return {
             "import_ok": True,
             "version": torch.__version__,
             "cuda_build": torch.version.cuda,
             "cuda_available": torch.cuda.is_available(),
-            "device_count": torch.cuda.device_count(),
-            "devices": devices,
+            "device": device,
         }
-    except Exception as exc:  # diagnostics must survive broken binary installs
+    except Exception as exc:  # 二进制依赖损坏时也必须生成诊断结果
         return {"import_ok": False, "error": repr(exc)}
 
 
@@ -93,41 +99,20 @@ def main() -> int:
     args = parser.parse_args()
 
     repo = Path(__file__).resolve().parents[2]
-    disk = shutil.disk_usage(repo)
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "collected_at_utc": datetime.now(timezone.utc).isoformat(),
-        "repo": str(repo),
         "host": {
-            "hostname": platform.node(),
             "platform": platform.platform(),
             "machine": platform.machine(),
             "cpu_count": os.cpu_count(),
         },
         "python": {
-            "executable": sys.executable,
             "version": sys.version,
         },
         "packages": package_versions(),
         "torch_runtime": torch_runtime(),
-        "disk": {
-            "total_bytes": disk.total,
-            "used_bytes": disk.used,
-            "free_bytes": disk.free,
-        },
-        "git": {
-            "head": run(["git", "rev-parse", "HEAD"], repo),
-            "status": run(["git", "status", "--short"], repo),
-            "remotes": run(["git", "remote", "-v"], repo),
-        },
-        "nvidia_smi": run(
-            [
-                "nvidia-smi",
-                "--query-gpu=index,name,memory.total,driver_version",
-                "--format=csv,noheader,nounits",
-            ],
-            repo,
-        ),
+        "nvidia_runtime": nvidia_runtime(repo),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")

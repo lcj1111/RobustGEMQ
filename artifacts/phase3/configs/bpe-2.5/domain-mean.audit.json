@@ -31,7 +31,6 @@
       2,
       3
     ],
-    "coefficient_schema_sha256": "bc61654ac0ad9790be7d84859041de513dbd1ac74fa85f65c50dc96985c3c55d",
     "extra_constraint": "c2c3",
     "fixed_assignment_violations": 0,
     "fixed_assignments": {},

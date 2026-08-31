@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""将 Phase 10 私有评测产物导出为可提交 Git 的轻量证据包。"""
+"""将阶段八私有评测产物导出为只含输入输出与结论的 manifest。"""
 
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def main() -> None:
             raise ValueError(f"missing point metrics for {method}")
 
     evidence = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project": "RobustGEMQ",
         "phase": 10,
         "phase_label": "independent-confirmation",
@@ -85,22 +85,22 @@ def main() -> None:
             "selection_split": selection["selection_split"],
             "selection_rule": selection["selection_rule"],
             "selected_methods": methods,
-            "validation_item_identity_sha256": selection["validation_item_identity_sha256"],
             "validation_cross_method_item_identity_match": selection[
                 "cross_method_item_identity_match"
             ],
             "test_checkpoint_seeds": statistics["checkpoint_seeds"],
             "test_items_per_checkpoint": statistics["items_per_checkpoint"],
-            "test_item_identity_sha256": statistics["item_identity_sha256"],
             "test_cross_method_and_checkpoint_item_identity_match": statistics[
                 "cross_method_and_checkpoint_item_identity_match"
             ],
         },
-        "integrity": {
-            "selection_sha256": selection["selection_sha256"],
-            "test_unlock_sha256": statistics["test_unlock_sha256"],
+        "execution_order": {
             "test_unlocked_only_after_all_h6_passed": True,
-            "h6_summary_sha256": unlock["h6_summary_sha256"],
+        },
+        "inputs": {
+            "experiment": "configs/phase10/experiment.json",
+            "data_manifest": "results/phase10/data/manifest.json",
+            "checkpoint_root": "results/phase10/checkpoints",
         },
         "independent_test": {
             "seed_mean_point_metrics": point_metrics,
@@ -121,10 +121,9 @@ def main() -> None:
             "paired bootstrap averages each item across three checkpoint seeds and then resamples "
             "within domains. This confirms the OLMoE protocol only, not universal superiority."
         ),
-        "source_file_sha256": {
-            "selection": sha256(args.selection),
-            "test_unlock": sha256(args.unlock),
-            "independent_statistics": sha256(args.statistics),
+        "outputs": {
+            "report": "docs/08-independent-confirmation/report.md",
+            "statistics": "results/phase10/independent-test/statistics.json",
         },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

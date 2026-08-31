@@ -17,129 +17,8 @@
     "prefix_caching": "disabled",
     "temperature": 0.0,
     "ignore_eos": true,
-    "sha256": "0451c43cc0076f8a8f7f868db80af1ed84ce46638897c664c526788629a6b29f",
-    "requests": [
-      {
-        "request_id": 0,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 1,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 2,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 3,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 4,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 5,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 6,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 7,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 8,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 9,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 10,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 11,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 12,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 13,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 14,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 15,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 16,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 17,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 18,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 19,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 20,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 21,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 22,
-        "prompt_tokens": 128,
-        "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-      },
-      {
-        "request_id": 23,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      }
-    ]
+    "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+    "request_order": "按 request_id 在 prompt_lengths 中轮转"
   },
   "summary": {
     "benchmark_seconds": 7.883314306847751,
@@ -180,7 +59,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.050308309495449066,
       "e2e_seconds": 0.3158029643818736,
       "inter_token_seconds": 0.01769964365909497
@@ -190,7 +68,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06704092212021351,
       "e2e_seconds": 0.34780549816787243,
       "inter_token_seconds": 0.01871763840317726
@@ -200,7 +77,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.04945513140410185,
       "e2e_seconds": 0.3146205609664321,
       "inter_token_seconds": 0.01767769530415535
@@ -210,7 +86,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06706144846975803,
       "e2e_seconds": 0.33313792757689953,
       "inter_token_seconds": 0.0177384319404761
@@ -220,7 +95,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.05038275755941868,
       "e2e_seconds": 0.31600265484303236,
       "inter_token_seconds": 0.017707993152240913
@@ -230,7 +104,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06748940050601959,
       "e2e_seconds": 0.3333354936912656,
       "inter_token_seconds": 0.0177230728790164
@@ -240,7 +113,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.04962779860943556,
       "e2e_seconds": 0.3151947297155857,
       "inter_token_seconds": 0.017704462073743342
@@ -250,7 +122,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.0670295087620616,
       "e2e_seconds": 0.3325363527983427,
       "inter_token_seconds": 0.017700456269085407
@@ -260,7 +131,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.049394913017749786,
       "e2e_seconds": 0.31575753912329674,
       "inter_token_seconds": 0.017757508407036462
@@ -270,7 +140,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06676712166517973,
       "e2e_seconds": 0.3442485062405467,
       "inter_token_seconds": 0.01849875897169113
@@ -280,7 +149,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.0541237648576498,
       "e2e_seconds": 0.31916138250380754,
       "inter_token_seconds": 0.01766917450974385
@@ -290,7 +158,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.0671958914026618,
       "e2e_seconds": 0.33704338502138853,
       "inter_token_seconds": 0.017989832907915115
@@ -300,7 +167,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.04945645574480295,
       "e2e_seconds": 0.32251774054020643,
       "inter_token_seconds": 0.018204085653026898
@@ -310,7 +176,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06696788314729929,
       "e2e_seconds": 0.33945734333246946,
       "inter_token_seconds": 0.018165964012344677
@@ -320,7 +185,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.049388596788048744,
       "e2e_seconds": 0.3303974671289325,
       "inter_token_seconds": 0.018733924689392247
@@ -330,7 +194,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06847131997346878,
       "e2e_seconds": 0.33769116271287203,
       "inter_token_seconds": 0.017947989515960217
@@ -340,7 +203,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.04958103783428669,
       "e2e_seconds": 0.323020676150918,
       "inter_token_seconds": 0.018229309221108755
@@ -350,7 +212,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06777233444154263,
       "e2e_seconds": 0.3371588047593832,
       "inter_token_seconds": 0.017959098021189373
@@ -360,7 +221,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.05099542811512947,
       "e2e_seconds": 0.3173746429383755,
       "inter_token_seconds": 0.017758614321549734
@@ -370,7 +230,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06768769398331642,
       "e2e_seconds": 0.34024045895785093,
       "inter_token_seconds": 0.018170184331635635
@@ -380,7 +239,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.05102583486586809,
       "e2e_seconds": 0.3192897420376539,
       "inter_token_seconds": 0.017884260478119054
@@ -390,7 +248,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.06699582282453775,
       "e2e_seconds": 0.33527550008147955,
       "inter_token_seconds": 0.017885311817129452
@@ -400,7 +257,6 @@
       "prompt_tokens": 128,
       "completion_tokens": 16,
       "total_tokens": 144,
-      "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845",
       "ttft_seconds": 0.04947621189057827,
       "e2e_seconds": 0.31773047894239426,
       "inter_token_seconds": 0.017883617803454398
@@ -410,7 +266,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 16,
       "total_tokens": 528,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.0671420767903328,
       "e2e_seconds": 0.33412686083465815,
       "inter_token_seconds": 0.017798985602955023

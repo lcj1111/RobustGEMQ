@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import os
@@ -50,14 +49,6 @@ OPERATIONS = (
     "deterministic_chunk_reduce_kernel",
     "fused_weighted_unpermute_reduce_kernel",
 )
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def time_ms(value: str) -> float:
@@ -139,9 +130,7 @@ def build_summary(repo: Path) -> dict[str, Any]:
         }
         for relative, kind in ((table_relative, "torch_cupti_table"),
                                (request_relative, "request_records")):
-            source_files.append(
-                {"kind": kind, "path": relative, "sha256": sha256(repo / relative)}
-            )
+            source_files.append({"kind": kind, "path": relative})
 
     for phase in ("prefill", "decode"):
         baseline = raw_requests[f"baseline_{phase}"]["workload"]

@@ -165,10 +165,10 @@ CUDA_VISIBLE_DEVICES=0 python scripts/prefill/check_prefill_end_to_end.py \
 
 ```bash
 python scripts/prefill/verify_evidence.py \
-  --evidence artifacts/prefill/evidence.json
+  --manifest artifacts/prefill/manifest.json
 ```
 
-原始样本、结构化 profiler 摘要、Chrome trace、正确性结果和核心源码哈希均由 `artifacts/prefill/evidence.json` 冻结。JSON 中的 `git_revision` 是服务器运行时的基础 checkout；实际测试源码由 `source_snapshot` 的 SHA-256 唯一标识。
+`artifacts/prefill/manifest.json` 记录运行协议、各优化阶段、结果文件、正确性输出、Chrome trace 和实现入口。结果 JSON 中的 `git_revision` 记录服务器运行时的基础 checkout。
 
 ## 8. 结论边界与后续工作
 

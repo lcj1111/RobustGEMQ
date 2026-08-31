@@ -34,7 +34,7 @@ vLLM 0.28 默认启用 prefix caching。固定负载会重复 128/512-token prom
 3. 128/512-token 混合请求；
 4. 再次覆盖混合请求。
 
-这四轮不进入统计。正式测量仍为每档 24 个请求，所有方法逐请求使用相同 token 数、prompt SHA-256 和请求顺序。
+这四轮不进入统计。正式测量仍为每档 24 个请求，所有方法使用相同 prompt 构造规则、token 数和请求顺序。
 
 ## 3. profiler 分解
 
@@ -195,7 +195,7 @@ python scripts/vllm/profile_service.py \
 
 python scripts/vllm/summarize_profiles.py
 python scripts/vllm/build_evidence.py
-python scripts/vllm/verify_evidence.py --evidence artifacts/vllm/evidence.json
+python scripts/vllm/verify_evidence.py --manifest artifacts/vllm/manifest.json
 ```
 
 ## 9. 后续研究边界

@@ -9,48 +9,8 @@
     "prompt_length": 512,
     "max_tokens": 1,
     "warmup_rounds": 2,
-    "request_identity": [
-      {
-        "request_id": 0,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 1,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 2,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 3,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 4,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 5,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 6,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      },
-      {
-        "request_id": 7,
-        "prompt_tokens": 512,
-        "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-      }
-    ]
+    "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+    "request_order": "request_id 从 0 到 concurrency-1"
   },
   "requests": [
     {
@@ -58,7 +18,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.29981208872050047,
       "e2e_seconds": 0.29985066037625074,
       "inter_token_seconds": null
@@ -68,7 +27,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.4716116664931178,
       "e2e_seconds": 0.4716375293210149,
       "inter_token_seconds": null
@@ -78,7 +36,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.47158072236925364,
       "e2e_seconds": 0.47160038724541664,
       "inter_token_seconds": null
@@ -88,7 +45,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.47155057825148106,
       "e2e_seconds": 0.4715690203011036,
       "inter_token_seconds": null
@@ -98,7 +54,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.4711287673562765,
       "e2e_seconds": 0.47116572223603725,
       "inter_token_seconds": null
@@ -108,7 +63,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.47237035259604454,
       "e2e_seconds": 0.4723925171419978,
       "inter_token_seconds": null
@@ -118,7 +72,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.47237230837345123,
       "e2e_seconds": 0.4723923057317734,
       "inter_token_seconds": null
@@ -128,7 +81,6 @@
       "prompt_tokens": 512,
       "completion_tokens": 1,
       "total_tokens": 513,
-      "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c",
       "ttft_seconds": 0.47237537521868944,
       "e2e_seconds": 0.47239578515291214,
       "inter_token_seconds": null

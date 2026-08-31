@@ -96,14 +96,8 @@ async def run(args: argparse.Namespace) -> dict:
             "max_tokens": args.max_tokens,
             "warmup_rounds": args.warmup_rounds,
             "prefix_caching": args.prefix_caching,
-            "request_identity": [
-                {
-                    "request_id": spec.request_id,
-                    "prompt_tokens": len(spec.prompt_tokens),
-                    "prompt_sha256": spec.prompt_sha256,
-                }
-                for spec in workload
-            ],
+            "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+            "request_order": "request_id 从 0 到 concurrency-1",
         },
         "requests": [asdict(result) for result in results],
     }

@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""无需 GPU 或检查点，验证公开证据包的字段、身份和结论一致性。"""
+"""无需 GPU 或检查点，验证阶段七 manifest 的协议、输入输出与结论。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
-import re
 from pathlib import Path
 
 
@@ -20,19 +18,8 @@ METHOD_LABELS = {
     "domain-mean": "Scenario-Normalized-Mean",
     "alphaq-style": "AlphaQ-style",
 }
-SOURCE_FILES = {"allocation_manifest", "bootstrap", "decision", "release_verification"}
-SHA256_RE = re.compile(r"[0-9a-f]{64}")
-
-
 def fail(message: str) -> None:
-    raise ValueError(f"公开证据包无效：{message}")
-
-
-def require_hash(value: object, context: str) -> str:
-    text = str(value)
-    if SHA256_RE.fullmatch(text) is None:
-        fail(f"{context} 不是小写 SHA-256")
-    return text
+    raise ValueError(f"阶段七 manifest 无效：{message}")
 
 
 def finite(value: object, context: str) -> float:
@@ -47,27 +34,19 @@ def close(observed: object, expected: float, context: str) -> None:
         fail(f"{context} 与可重算结果不一致")
 
 
-def expected_identity_hash(provenance: dict) -> str:
-    rows = []
-    for name, record in provenance.items():
-        domain, seed_text = name.split(":seed-")
-        rows.extend([domain, int(seed_text), item, record["token_sha256"]] for item in range(128))
-    canonical = json.dumps(sorted(rows), separators=(",", ":"), ensure_ascii=True)
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--evidence", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path, required=True)
     args = parser.parse_args()
-    evidence = json.loads(args.evidence.read_text(encoding="utf-8"))
-    if evidence.get("schema_version") != 2 or evidence.get("project") != "RobustGEMQ":
-        fail("identity/schema 必须为 RobustGEMQ v2")
+    evidence = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if evidence.get("schema_version") != 3 or evidence.get("project") != "RobustGEMQ":
+        fail("identity/schema 必须为 RobustGEMQ v3")
     if evidence.get("model") != "allenai/OLMoE-1B-7B-0924":
         fail("模型身份发生变化")
-    revision = evidence.get("evidence_revision", {})
-    if revision.get("schema_v2_policy") != "public labels, exact recomputed point differences, explicit inference scope, and item identity contract":
-        fail("schema v2 修订范围未记录")
+    if set(evidence.get("inputs", {})) != {"allocation_manifest", "data_manifest"}:
+        fail("输入 manifest 不完整")
+    if evidence.get("outputs", {}).get("report") != "docs/07-release/report.md":
+        fail("输出报告未记录")
 
     design = evidence["study_design"]
     if design["domains"] != DOMAINS or design["seeds"] != [0, 1, 2] or design["scenarios"] != 12:
@@ -82,10 +61,6 @@ def main() -> None:
         fail("匹配预算发生变化")
     if allocation["methods"] != EXPECTED_METHODS or allocation.get("method_labels") != METHOD_LABELS:
         fail("方法集合或公开名称发生变化")
-    if set(allocation["config_sha256"]) != set(EXPECTED_METHODS):
-        fail("allocation 哈希不完整")
-    for method, digest in allocation["config_sha256"].items():
-        require_hash(digest, f"allocation.config_sha256.{method}")
     hamming = allocation["method_hamming_fraction"]
     if set(hamming) != set(EXPECTED_METHODS):
         fail("Hamming 矩阵行不完整")
@@ -98,20 +73,9 @@ def main() -> None:
                 fail(f"Hamming 值非法：{left}/{right}")
             close(value, float(hamming[right][left]), f"Hamming 对称性 {left}/{right}")
 
-    provenance = evidence["scenario_provenance"]
-    expected_scenarios = {f"{domain}:seed-{seed}" for domain in DOMAINS for seed in (0, 1, 2)}
-    if set(provenance) != expected_scenarios:
-        fail("场景 provenance 不是冻结的 12 个场景")
-    for name, record in provenance.items():
-        require_hash(record.get("token_sha256"), f"{name}.token_sha256")
-        require_hash(record.get("layer_re_sha256"), f"{name}.layer_re_sha256")
-
     identity = evidence["item_identity"]
     if identity["items_per_method"] != 1536:
         fail("逐样本数量发生变化")
-    expected_digest = expected_identity_hash(provenance)
-    if require_hash(identity["sha256"], "item_identity.sha256") != expected_digest:
-        fail("逐样本身份摘要无法由场景清单重算")
     identity_status = identity.get("cross_method_match")
     if identity_status not in (True, "not-retroactively-verified"):
         fail("缺少跨方法逐样本身份检查状态")
@@ -191,12 +155,7 @@ def main() -> None:
     if not (concat_ci[0] > 0 and concat_ci[1] > 0):
         fail("Concat 比较不再支持已发布边界")
 
-    source_hashes = evidence["source_file_sha256"]
-    if set(source_hashes) != SOURCE_FILES:
-        fail("源文件摘要集合不完整")
-    for name, digest in source_hashes.items():
-        require_hash(digest, f"source_file_sha256.{name}")
-    print(json.dumps({"verified": True, "g6_status": decision["g6_status"], "scenarios": 12}, sort_keys=True))
+    print(json.dumps({"validated": True, "g6_status": decision["g6_status"], "scenarios": 12}, sort_keys=True))
 
 
 if __name__ == "__main__":

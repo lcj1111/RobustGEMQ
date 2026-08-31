@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
 import json
 import math
 import os
@@ -32,11 +31,6 @@ class RequestSpec:
     request_id: int
     prompt_tokens: list[int]
 
-    @property
-    def prompt_sha256(self) -> str:
-        payload = json.dumps(self.prompt_tokens, separators=(",", ":")).encode()
-        return hashlib.sha256(payload).hexdigest()
-
 
 @dataclass(frozen=True)
 class RequestResult:
@@ -44,7 +38,6 @@ class RequestResult:
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int
-    prompt_sha256: str
     ttft_seconds: float
     e2e_seconds: float
     inter_token_seconds: float | None
@@ -206,7 +199,6 @@ async def request_once(
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
-        prompt_sha256=spec.prompt_sha256,
         ttft_seconds=ttft,
         e2e_seconds=e2e,
         inter_token_seconds=inter_token,
@@ -314,18 +306,6 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         for item in results
         if item.inter_token_seconds is not None
     ]
-    workload_payload = [
-        {
-            "request_id": spec.request_id,
-            "prompt_tokens": len(spec.prompt_tokens),
-            "prompt_sha256": spec.prompt_sha256,
-        }
-        for spec in workload
-    ]
-    workload_sha256 = hashlib.sha256(
-        json.dumps(workload_payload, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
-
     return {
         "schema_version": 1,
         "status": "pass",
@@ -342,8 +322,8 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
             "prefix_caching": args.prefix_caching,
             "temperature": 0.0,
             "ignore_eos": True,
-            "sha256": workload_sha256,
-            "requests": workload_payload,
+            "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+            "request_order": "按 request_id 在 prompt_lengths 中轮转",
         },
         "summary": {
             "benchmark_seconds": benchmark_seconds,

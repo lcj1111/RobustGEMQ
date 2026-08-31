@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify held-out sources and materialize the pinned SuperGLUE BoolQ archive."""
+"""校验独立测试数据，并准备固定版本的 SuperGLUE BoolQ 数据。"""
 
 from __future__ import annotations
 
@@ -25,13 +25,15 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def verify(path: Path, expected: str | None = None) -> dict:
+def verify(path: Path, expected: str | None = None, root: Path | None = None) -> dict:
+    """校验下载内容；公开清单仅记录路径和大小。"""
     if not path.is_file() or path.stat().st_size == 0:
         raise FileNotFoundError(path)
     actual = sha256(path)
     if expected and actual != expected:
         raise ValueError(f"Checksum mismatch for {path}: {actual} != {expected}")
-    return {"path": str(path.resolve()), "bytes": path.stat().st_size, "sha256": actual}
+    display_path = path.relative_to(root) if root is not None else path
+    return {"path": str(display_path), "bytes": path.stat().st_size}
 
 
 def main() -> None:
@@ -55,14 +57,14 @@ def main() -> None:
             source.extract("BoolQ/val.jsonl", archive.parent)
 
     sources = {
-        "general": verify(args.data_root / "c4/en/c4-validation.00000-of-00008.json.gz"),
-        "math": verify(args.data_root / "gsm8k/test.jsonl"),
-        "code": verify(args.data_root / "mbpp/test.jsonl"),
-        "instruction": verify(boolq_val, BOOLQ_VAL_SHA256),
-        "boolq_archive": verify(archive, BOOLQ_SHA256),
+        "general": verify(args.data_root / "c4/en/c4-validation.00000-of-00008.json.gz", root=args.data_root),
+        "math": verify(args.data_root / "gsm8k/test.jsonl", root=args.data_root),
+        "code": verify(args.data_root / "mbpp/test.jsonl", root=args.data_root),
+        "instruction": verify(boolq_val, BOOLQ_VAL_SHA256, args.data_root),
+        "boolq_archive": verify(archive, BOOLQ_SHA256, args.data_root),
     }
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "split_role": "held-out evaluation only",
         "boolq_url": BOOLQ_URL,
         "sources": sources,

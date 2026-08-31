@@ -9,7 +9,6 @@ scheduler chunk 执行，TTFT 从请求到达到最后一个 prompt chunk 完成
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import platform
@@ -56,10 +55,6 @@ def poisson_arrivals(num_requests: int, request_rate: float, seed: int) -> list[
     for _ in range(1, num_requests):
         arrivals.append(arrivals[-1] + generator.expovariate(request_rate))
     return arrivals
-
-
-def sha256_bytes(value: bytes) -> str:
-    return hashlib.sha256(value).hexdigest()
 
 
 def git_revision(repo: Path) -> str | None:
@@ -205,10 +200,6 @@ def main() -> None:
     arrival_offsets = poisson_arrivals(
         args.num_requests, args.request_rate, args.seed
     )
-    prompt_sha256 = sha256_bytes(prompts.contiguous().numpy().tobytes())
-    arrival_sha256 = sha256_bytes(
-        json.dumps(arrival_offsets, separators=(",", ":")).encode("utf-8")
-    )
     records = [
         {
             "request_id": request_id,
@@ -314,8 +305,8 @@ def main() -> None:
             "num_requests": args.num_requests,
             "prompt_length": args.prompt_length,
             "output_tokens_per_request": 1,
-            "prompt_token_ids_sha256": prompt_sha256,
-            "arrival_schedule_sha256": arrival_sha256,
+            "prompt_generation": "torch.randint 使用实验 seed 生成固定 token 序列",
+            "arrival_generation": "random.Random(seed) 生成 Poisson 到达序列",
         },
         "device": device_metadata(),
         "duration_s": duration_s,

@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "title": "OLMoE 混合精度量化 prefill 实验清单",
+  "checkpoint": "results/phase10/checkpoints/concat/seed-101",
+  "protocol": {
+    "seed": 20260829,
+    "warmup": 2,
+    "repeats": 5,
+    "lengths": [
+      128,
+      512,
+      2048,
+      4096
+    ],
+    "profile_length": 2048,
+    "block_index": 7,
+    "device": "NVIDIA GeForce RTX 5090",
+    "sm_count": 170,
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0"
+  },
+  "stages": {
+    "baseline": {
+      "backend": "GEMQ 原始 one-hot + 逐 expert GEMM",
+      "result": "artifacts/prefill/baseline/concat-seed101.json",
+      "wall_time_seconds": 1535.30694079399
+    },
+    "p1": {
+      "backend": "排序式 dispatch + M 分桶 autotune + 动态 SM",
+      "result": "artifacts/prefill/p1/concat-seed101.json",
+      "wall_time_seconds": 63.4339566230774
+    },
+    "p2": {
+      "backend": "variable-M mixed-bit grouped GEMM",
+      "result": "artifacts/prefill/p2/concat-seed101.json",
+      "wall_time_seconds": 32.9658005237579
+    },
+    "p3": {
+      "backend": "融合 W1/W3/SiLU + grouped down + 确定性归并",
+      "result": "artifacts/prefill/p3/concat-seed101.json",
+      "wall_time_seconds": 35.4489231109619
+    }
+  },
+  "expected_medians_ms": {
+    "128": {
+      "baseline_full": 263.870666503906,
+      "p3_full": 27.9631996154785,
+      "baseline_block": 11.0120964050293,
+      "p3_block": 0.993247985839844
+    },
+    "512": {
+      "baseline_full": 410.678070068359,
+      "p3_full": 37.8143348693848,
+      "baseline_block": 23.3744964599609,
+      "p3_block": 2.01164793968201
+    },
+    "2048": {
+      "baseline_full": 998.18408203125,
+      "p3_full": 113.761505126953,
+      "baseline_block": 60.2879371643066,
+      "p3_block": 5.79731178283691
+    },
+    "4096": {
+      "baseline_full": 1796.80017089844,
+      "p3_full": 227.417953491211,
+      "baseline_block": 106.438110351562,
+      "p3_block": 10.7134084701538
+    }
+  },
+  "correctness": [
+    "artifacts/prefill/p1/correctness-128.json",
+    "artifacts/prefill/p1/correctness-512.json",
+    "artifacts/prefill/p2/correctness-128.json",
+    "artifacts/prefill/p2/correctness-512.json",
+    "artifacts/prefill/p3/correctness-128.json",
+    "artifacts/prefill/p3/correctness-512.json",
+    "artifacts/prefill/p3/correctness-block0-128.json",
+    "artifacts/prefill/p3/correctness-block15-128.json"
+  ],
+  "end_to_end": [
+    "artifacts/prefill/p2/end-to-end-128-512.json",
+    "artifacts/prefill/p3/end-to-end-128-512.json"
+  ],
+  "traces": [
+    "artifacts/prefill/traces/baseline/moe-block-2048.json.tar.gz",
+    "artifacts/prefill/traces/p1/moe-block-2048.json.tar.gz",
+    "artifacts/prefill/traces/p2/moe-block-2048.json.tar.gz",
+    "artifacts/prefill/traces/p3/moe-block-2048.json.tar.gz"
+  ],
+  "implementation": [
+    "gemq/inference/moe_block.py",
+    "gemq/triton_kernels/dequant_group_gemm.py",
+    "gemq/triton_kernels/mixedbit_moe_prefill.py",
+    "scripts/prefill/benchmark_prefill.py",
+    "scripts/prefill/check_prefill_correctness.py",
+    "scripts/prefill/check_prefill_end_to_end.py"
+  ]
+}

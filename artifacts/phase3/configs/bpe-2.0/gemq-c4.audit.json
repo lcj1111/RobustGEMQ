@@ -22,6 +22,5 @@
     "invalid_bit_count": 0,
     "one_hot_valid": true,
     "used_bits": 2048
-  },
-  "source_config_sha256": "e6dc8a87d5cd5963bce1f991efad52846f11804af2b7eed5f53cbc6bb5b67743"
+  }
 }

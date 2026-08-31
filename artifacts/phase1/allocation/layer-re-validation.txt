@@ -1,7 +1,0 @@
-path: cache/allenai/OLMoE-1B-7B-0924/LayerRE_c4-N128-L2048-Seed0_B1,2,3_fast.pkl
-bytes: 40048
-coefficients: 3072
-finite_nonnegative: True
-min: 5.632438068018446e-07
-max: 0.009993040862363748
-zero_count: 0

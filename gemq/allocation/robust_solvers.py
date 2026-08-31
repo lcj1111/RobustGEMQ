@@ -6,8 +6,6 @@ Domain-CVaR 仅风险目标不同，使用相同的重构误差张量与可行�
 
 from __future__ import annotations
 
-import hashlib
-import json
 from dataclasses import dataclass
 from typing import Mapping
 
@@ -271,12 +269,6 @@ class RobustGEMQSolver:
             return float(values.max())
         return empirical_cvar(values, self.alpha, self.weights)
 
-    def _schema_hash(self) -> str:
-        digest = hashlib.sha256()
-        digest.update(json.dumps({"names": self.names, "bits": self.bits}).encode())
-        digest.update(self.tensor.tobytes(order="C"))
-        return digest.hexdigest()
-
     def solve(self, total_bits: float) -> RobustSolveResult:
         minimum = self.num_layers * self.num_experts * min(self.bits)
         fixed_minimum = minimum + sum(
@@ -319,7 +311,6 @@ class RobustGEMQSolver:
             "alpha": self.alpha if self.objective == "cvar" else None,
             "scenario_names": list(self.names),
             "scenario_weights": {name: float(self.weights[i]) for i, name in enumerate(self.names)},
-            "coefficient_schema_sha256": self._schema_hash(),
             "optimization_scale": self.optimization_scale,
             "shape": list(self.tensor.shape),
             "candidate_bits": list(self.bits),

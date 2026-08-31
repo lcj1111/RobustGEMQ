@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Materialize pinned Phase 2 sources without touching held-out evaluation data."""
+"""下载固定版本的数据源，并记录训练/留出文件及数据划分。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import time
@@ -34,14 +33,6 @@ SOURCES = {
         "split": "allocation",
     },
 }
-
-
-def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(chunk_size), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def download(url: str, target: Path, retries: int = 4) -> None:
@@ -119,11 +110,9 @@ def main() -> None:
         if path.is_file() and not path.name.endswith(".partial"):
             files[str(path.relative_to(args.data_root))] = {
                 "bytes": path.stat().st_size,
-                "sha256": sha256_file(path),
             }
-    # pathlib does not recurse through the intentional C4 directory symlink.
-    # Record the two externally pinned files explicitly so the source manifest
-    # still covers every allocation and local held-out file.
+    # pathlib 不会递归主动创建的 C4 目录软链接，因此显式记录两个固定文件，
+    # 保证清单覆盖分配数据与本地留出数据。
     for relative in (
         Path("c4/en/c4-train.00000-of-01024.json"),
         Path("c4/en/c4-validation.00000-of-00008.json.gz"),
@@ -131,7 +120,7 @@ def main() -> None:
         path = args.data_root / relative
         if not path.is_file():
             raise FileNotFoundError(f"Missing pinned C4 file: {path}")
-        files[str(relative)] = {"bytes": path.stat().st_size, "sha256": sha256_file(path)}
+        files[str(relative)] = {"bytes": path.stat().st_size}
     allocation = {
         "general": "c4/en/c4-train.00000-of-01024.json",
         "math": "gsm8k/train.jsonl",
@@ -144,8 +133,7 @@ def main() -> None:
         "code": "mbpp/test.jsonl",
     }
     manifest = {
-        "schema_version": 1,
-        "data_root": str(args.data_root.resolve()),
+        "schema_version": 2,
         "sources": SOURCES,
         "files": files,
         "mbpp_counts": mbpp_counts,
