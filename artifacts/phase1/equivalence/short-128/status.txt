@@ -1,4 +1,0 @@
-started_utc=2026-08-13T04:53:27Z
-finished_utc=2026-08-13T04:56:55Z
-exit_code=0
-checkpoint=/data/models/RobustGEMQ/results/real_quant_models/allenai/OLMoE-1B-7B-0924/GEMQ/C4-Seed0-WT2_A4-G16-D4-E2.0_RFT

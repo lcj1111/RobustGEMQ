@@ -6,11 +6,11 @@
 
 复核结果与阶段六一致：
 
-- `Concat` 的平均 Domain NLL 最低；
+- `Concat` 的平均领域 NLL 最低；
 - `GEMQ-C4` 的最坏领域 NLL 最低；
 - `Scenario-Normalized-Mean` 没有严格支配任一基线，不能表述为通用质量提升。
 
-因此，项目定位保持为面向 MoE 混合精度量化的可审计评测与可靠性验证平台。阶段八增强了这一结论的证据边界，而没有改变结论本身。
+因此，量化研究主线定位为面向 MoE 混合精度量化的可审计评测与可靠性验证框架。阶段八增强了证据边界，但没有改变阶段六的结论。
 
 ## 为什么需要独立复核
 
@@ -29,9 +29,9 @@
 
 ## Validation 筛选：先固定规则，再打开 test
 
-在五个候选中，所有方法均使用相同的 192 条 validation 样本（4 个领域 × 48 条），并通过跨方法 identity 校验。筛选规则在运行前固定：保留 `GEMQ-C4`；从其余方法中选平均 Domain NLL 最低者；再从剩余方法中选最坏领域 NLL 最低者。
+在五个候选中，所有方法均使用相同的 192 条 validation 样本（4 个领域 × 48 条），并通过跨方法 identity 校验。筛选规则在运行前固定：保留 `GEMQ-C4`；从其余方法中选平均领域 NLL 最低者；再从剩余方法中选最坏领域 NLL 最低者。
 
-| 方法 | 平均 Domain NLL | 最坏领域 NLL | 是否进入 test |
+| 方法 | 平均领域 NLL | 最坏领域 NLL | 是否进入 test |
 | --- | ---: | ---: | --- |
 | GEMQ-C4 | 1.897071 | **2.770727** | 是：预注册基线 |
 | Layer-Balanced | 1.921564 | 2.851458 | 否 |
@@ -43,27 +43,27 @@
 
 ## 真实检查点与完整性门槛
 
-三个入选方法均使用 checkpoint seed `101 / 202 / 303`。其中 seed 101 来自 validation screen；新增的 6 个 checkpoint 均完成真实量化和 Router 微调。总计 9 个 checkpoint 全部通过 H6，之后才生成 test unlock 凭据。
+三个入选方法均使用检查点种子 `101 / 202 / 303`。其中 seed 101 来自 validation screen；新增的 6 个检查点均完成真实量化和 Router 微调。总计 9 个检查点全部通过 H6，之后才生成 test unlock 凭据。
 
-每个新增 checkpoint 的 Router 更新审计均显示：96/96 优化步出现非零 Router 梯度、16/16 Router 张量发生更新、更新元素比例为 90.7%–91.1%。H6 均为 7/7 通过，无 failure、无 error。test 因而不依赖未经验证的 fake-quant 代理。
+每个新增检查点的 Router 更新审计均显示：96/96 优化步出现非零 Router 梯度、16/16 Router 张量发生更新、更新元素比例为 90.7%–91.1%。H6 均为 7/7 通过，没有失败或错误。test 因而不依赖未经验证的模拟量化代理。
 
 ## 独立 test 结果
 
-独立 test 每个 checkpoint 使用 384 条样本（4 个领域 × 96 条）。下表为三个 checkpoint 的逐 item 平均后再聚合的点估计。
+独立 test 的每个检查点使用 384 条样本（4 个领域 × 96 条）。下表先对三个检查点的同一 item 求均值，再按领域聚合。
 
-| 方法 | 平均 Domain NLL | 最坏领域 NLL | 最坏领域 |
+| 方法 | 平均领域 NLL | 最坏领域 NLL | 最坏领域 |
 | --- | ---: | ---: | --- |
 | GEMQ-C4 | 1.906089 | **2.701475** | general |
 | Concat | **1.856058** | 2.728187 | general |
 | Scenario-Normalized-Mean | 1.859290 | 2.733925 | general |
 
-在 checkpoint 之间，Concat 和 Scenario-Normalized-Mean 的平均 Domain NLL 样本方差分别为 `2.58e-7` 与 `5.26e-7`；GEMQ-C4 为 `6.81e-6`。这些是三个已固定 checkpoint 的样本方差，用于描述复现实验中的 checkpoint 波动，不应被外推为总体分布方差。
+在检查点之间，Concat 和 Scenario-Normalized-Mean 的平均领域 NLL 样本方差分别为 `2.58e-7` 与 `5.26e-7`；GEMQ-C4 为 `6.81e-6`。这些是三个固定检查点的样本方差，只描述本次复现实验的检查点波动，不应被外推为总体分布方差。
 
 ## 配对 Bootstrap
 
 Bootstrap 执行 10,000 次。差值均按“左侧方法 − 右侧方法”定义；NLL 差值小于零表示左侧方法更好。
 
-| 对比 | 平均 Domain NLL 差值，95% CI | 最坏领域 NLL 差值，95% CI | 结论 |
+| 对比 | 平均领域 NLL 差值，95% CI | 最坏领域 NLL 差值，95% CI | 结论 |
 | --- | ---: | ---: | --- |
 | Concat − Scenario-Normalized-Mean | `-0.003232`，[-0.004403, -0.002076] | `-0.005739`，[-0.008962, -0.002554] | Concat 在两项上均更好。 |
 | GEMQ-C4 − Concat | `+0.050031`，[+0.046962, +0.053175] | `-0.026712`，[-0.031692, -0.021661] | GEMQ-C4 牺牲平均质量以改善最坏域。 |
@@ -75,7 +75,7 @@ Bootstrap 执行 10,000 次。差值均按“左侧方法 − 右侧方法”定
 
 本阶段不追加下游 benchmark 扫描。阶段六和阶段八已经回答了项目的核心问题；在负结果出现后继续寻找有利任务会破坏已冻结的证据边界。允许的后续工作仅限于工程维护：验证脚本、证据哈希、CI、文档和固定检查点的 profiling。
 
-公开的轻量证据见 [evidence.json](evidence.json)。它不包含 checkpoint、原始评测文本或逐样本 NLL；可离线运行：
+公开的轻量证据见 [evidence.json](evidence.json)。它不包含检查点、原始评测文本或逐样本 NLL；可离线运行：
 
 ```bash
 python scripts/phase10/verify_public_evidence.py \

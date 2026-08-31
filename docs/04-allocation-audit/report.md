@@ -1,8 +1,10 @@
 # 阶段四：鲁棒分配与求解器审计
 
+> [!NOTE]
+> 求解器正确性在本阶段通过，但质量假设没有通过。文中的模拟量化 pilot 只用于筛选候选，不能替代阶段六和阶段八的真实检查点结果。
+
 日期：2026-08-16<br>
 模型：`allenai/OLMoE-1B-7B-0924`<br>
-分支：`agent/phase3-robust-solver`<br>
 阶段状态：**求解器 Gate 通过；H3 完整质量假设未通过；Gate G3 = PIVOT**
 
 ## 1. 结论先行
@@ -69,7 +71,7 @@ H3 的 regret 口径冻结为：每个 held-out 场景的 `fake-RTN NLL - FP NLL
 
 冻结 coefficients 上，鲁棒目标按设计改善了 proxy 风险。例如 `2.5 bpe`：
 
-| 方法 | coefficient domain mean | coefficient domain worst |
+| 方法 | 系数的 Scenario-Normalized-Mean | 系数的最差场景值 |
 | --- | ---: | ---: |
 | GEMQ-C4 | 1192.197 | 2957.304 |
 | Concat | 622.131 | 1092.048 |
@@ -132,7 +134,7 @@ G3 同时考虑 solver correctness 和有限方向性证据。Scenario-Normalize
 6. **BoolQ NLL 不是 BoolQ accuracy。** 这里把 passage/question/label 模板作为语言模型 NLL 场景，用于 distribution-shift Gate；最终 Phase 6/7 仍需正式 downstream accuracy 和模板消融。
 7. **不得在 held-out 上追调 alpha/weights。** 本阶段结果只能触发预注册 PIVOT。根据 Instruction 失败回头改变 domain weights、CVaR alpha 或 normalization，会构成 held-out 泄漏。
 
-## 9. 冻结决策与下一步
+## 9. 冻结决策与后续结果
 
 正式决策位于 `artifacts/phase3/phase3_decision.json`：
 
@@ -142,11 +144,13 @@ G3 同时考虑 solver correctness 和有限方向性证据。Scenario-Normalize
 - 唯一保留的 robust objective 为 `Scenario-Normalized-Mean`；
 - 禁止新增 CVaR alpha 网格；
 - Phase 6 限定四方法：`GEMQ-C4 / Concat / Scenario-Normalized-Mean / AlphaQ-style`；
-- 下一步必须使用冻结 GPTQ/RFT、真实 packed checkpoints 和正式 downstream 指标，判断 fake RTN 的有限方向是否能够复现；若不能，量化主张降级为可复现的 failure-boundary study。
+- 后续确认必须使用冻结 GPTQ/RFT、真实打包检查点和正式指标，判断模拟 RTN 的有限方向是否能够复现；若不能，量化主张降级为可复现的失败边界研究。
 
-Phase 4 route proxy 仍可作为独立增强实验，但不能读取本次 held-out 结果来选择 lambda，也不能绕开 Phase 6 的真实 checkpoint Gate。
+后续阶段六和阶段八已经完成这项确认：`Scenario-Normalized-Mean` 没有超过同预算基线。Phase 4 route proxy 也被独立反证，未进入最终分配目标。详见[阶段八报告](../08-independent-confirmation/report.md)。
 
 ## 10. 复现命令
+
+`fake-quality/` 等逐方法中间评测目录可由下列命令重新生成，不作为公开阅读入口提交；聚合指标保存在 `h3-quality.json`、`diagnostics.json` 和本报告中。
 
 ```bash
 cd /data/models/RobustGEMQ

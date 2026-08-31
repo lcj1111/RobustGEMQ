@@ -1,8 +1,10 @@
 # 阶段五：路由诊断与反证边界
 
+> [!NOTE]
+> Router proxy 在本阶段被反证，未进入正式分配目标。该结果用于限定项目边界，不应被表述为 Router-aware 量化收益。
+
 日期：2026-08-16<br>
 模型：`allenai/OLMoE-1B-7B-0924`<br>
-分支：`agent/phase4-route-proxy`<br>
 阶段状态：**H4 失败；G4 失败；`lambda_route=0`；仅保留 route 诊断**
 
 ## 1. 结论先行
@@ -108,21 +110,23 @@ Phase 3 的 `Scenario-Normalized-Mean` allocation 不变，因此 `lambda=0` 与
 
 对整个项目而言，这个负结果不会阻塞结构约束或真实 checkpoint 主线。它反而明确了贡献边界：RobustGEMQ 当前应定位为 domain-aware allocation 与严格 failure-boundary study，不能包装成 Router-aware quantization 方法。
 
-### 6.1 对后续阶段的具体影响
+### 6.1 后续阶段的实际处理
 
-| 后续阶段 | 是否继续 | Phase 3 PIVOT / H4 FAIL 后的修改 |
+| 原计划阶段 | 最终处理 | 原因 |
 | --- | --- | --- |
-| Phase 5 结构约束 | 继续 | 所有结构 allocation 固定 `lambda_route=0`；只比较相同 S1/S2 约束下的 quality-only 与 Scenario-Normalized-Mean，不再讨论 route-aware structure synergy |
-| Phase 6 OLMoE 主实验 | 优先继续 | 方法集冻结为 `GEMQ-C4 / Concat / Scenario-Normalized-Mean / AlphaQ-style`；使用 GPTQ/RFT、真实 packed checkpoint 和正式 downstream 指标，决定 Scenario-Normalized-Mean 的有限 fake-RTN 信号能否复现 |
-| Phase 7 第二模型 | 条件继续 | 若 Phase 6 有可复现信号，则验证迁移；若 Phase 6 再失败，只做最小规模边界复核，不扩展成大规模调参 |
-| Phase 8 固定执行验证 | 条件继续 | 仅当 Phase 5 的结构 Gate 通过时验证 bit-bucket fragmentation 与固定 prefill；不得声称 Router proxy 带来 runtime 收益 |
-| Phase 9 总结发布 | 继续 | 结论等级由后续证据决定；当前上限是 `Moderate/Diagnostic`，不能提前写成 Router-aware 或 worst-domain 强改进 |
+| Phase 5 结构约束 | 未进入正式主线 | 结构 Gate 未在主实验前通过，不能在观察结果后补做并用于改变结论 |
+| Phase 6 OLMoE 主实验 | 完成 | 固定 `lambda_route=0`，使用真实 GPTQ/Router 微调/HQQ 检查点完成四方法比较 |
+| Phase 7 第二模型 | 未执行 | `G6=STOP_NO_LARGE_MODEL_EXPANSION` 阻止扩展 |
+| 原 Phase 8 固定执行验证 | 未执行 | 依赖未通过的结构 Gate |
+| Phase 9 发布 | 完成 | 发布量化可靠性边界、轻量证据和 CI 契约 |
 
-因此项目仍然可按 Gate 化计划展开，但路线已经收缩：**量化主线的关键判决点从 Router proxy 转移到 Phase 6 的真实 checkpoint 复核**。若 Phase 6 中 Scenario-Normalized-Mean 仍不能在 matched budget 下稳定超过 Concat/GEMQ，则应停止“新量化方法取得质量提升”的叙事，把最终成果定位为可复现的 domain sensitivity、严格 solver/audit 基础设施和 negative-result study。这个结果仍有工程与研究价值，但竞争力会低于具有真实质量提升的量化方法论文式项目。
+后续真实检查点和独立 test 均确认 `Scenario-Normalized-Mean` 没有超过同预算基线。因此最终结论是：Router proxy 只作为被反证的诊断实验保留，不构成 Router-aware 量化方法；量化研究贡献是可复现的敏感度分析、求解器审计和失败边界。
 
 ## 7. 测试与复现
 
 新增 `tests/test_route_proxy.py` 覆盖：nested tensor schema、per-token/median-bit2 normalization、allocation cost、Hamming-controlled partial Spearman 和确定性 bootstrap。
+
+下列命令会重新生成 proxy 配置和逐扰动评测目录；这些中间文件已由 `.gitignore` 排除，公开仓库只保留 H4 验证、失败分析和最终决策。
 
 测试结果：新增 route proxy 单测 `6 passed`；服务器 GPU 全量回归 `123 passed, 6 skipped, 3 xfailed`。三个 xfail 和六个 skip 均为仓库既有边界，不是 Phase 4 新回归。
 

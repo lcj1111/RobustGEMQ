@@ -1,8 +1,11 @@
 # 阶段七：发布与证据边界
 
+> [!NOTE]
+> 本文冻结的是阶段六结束时的量化可靠性结论。阶段八随后增加独立 test，阶段九至阶段十二增加推理内核和真实 vLLM 服务；这些新增工作没有改变本文的量化质量边界。
+
 ## 发布决策
 
-**将项目作为可审计的 MoE 量化可靠性 Harness 发布。**
+**将量化研究主线作为可审计的 MoE 量化可靠性验证框架发布。**
 
 RobustGEMQ 不声称提出了可提升量化质量的新 allocation。真实检查点实验显示，`Scenario-Normalized-Mean` 未进入 OLMoE 的同预算 mean/worst-domain Pareto 前沿；`domain-mean` 仅作为历史产物键保留。实验矩阵、预算、候选集、打包检查和 Bootstrap 规则均在最终决策前冻结。
 
@@ -26,7 +29,7 @@ RobustGEMQ 不声称提出了可提升量化质量的新 allocation。真实检�
 | Phase 6 | H6 通过；`Scenario-Normalized-Mean` 不具 Pareto 竞争力；G6=STOP | 阻止第二模型扩展与事后补救实验。 |
 | Phase 7 | 未执行 | 因 G6 为 STOP 而无资格。 |
 | Phase 8 | 未执行 | 因其结构 Gate 未在 Phase 6 前通过而无资格。 |
-| Phase 9 | 完成 | 发布 Harness、证据边界与复现说明。 |
+| Phase 9 | 完成 | 发布验证手册、证据边界与复现说明。 |
 
 ## 定量结论
 
@@ -47,7 +50,7 @@ cd /data/models/RobustGEMQ
   --output artifacts/phase6/release-verification.json
 ```
 
-该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算；每个打包方法具有完整且唯一的 1,536 条 `(domain, seed, item)` 记录；token 哈希与场景 manifest 一致；方法间样本 identity 完全相同；聚合指标可由逐样本 NLL 重算；H6 记录通过；Bootstrap 至少 10,000 次；G6 STOP 可由指标重新判定。完整执行链路和各 runner 见[阶段六 Harness](../06-real-checkpoint-validation/harness.md)，详细结果见[阶段六报告](../06-real-checkpoint-validation/report.md)。
+该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算；每个打包方法具有完整且唯一的 1,536 条 `(domain, seed, item)` 记录；token 哈希与场景 manifest 一致；方法间样本 identity 完全相同；聚合指标可由逐样本 NLL 重算；H6 记录通过；Bootstrap 至少 10,000 次；G6 STOP 可由指标重新判定。完整执行链路和各 runner 见[阶段六验证手册](../06-real-checkpoint-validation/harness.md)，详细结果见[阶段六报告](../06-real-checkpoint-validation/report.md)。
 
 供公开审阅的 [evidence.json](evidence.json) 是从已完成的私有产物集派生的轻量版本。它不暴露模型权重、prompt、原始逐样本得分或检查点路径；但公开固定协议、allocation 与场景哈希、聚合指标、Bootstrap 区间、样本 identity 摘要以及派生所依据源文件的哈希。历史私有产物没有记录新版跨方法 identity 校验结果，因此证据中明确标为 `not-retroactively-verified`；今后生成发布包时该检查为强制条件。其发布契约无需 GPU：
 
@@ -62,7 +65,7 @@ python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
 
 ## 允许与禁止的后续工作
 
-允许的后续工作是加强可复现性或提升 Harness 可操作性的工程工作：产物 manifest、离线验证、回归测试、固定检查点的 profiling 与文档。
+允许的后续工作是加强可复现性或提升验证框架可操作性的工程工作：产物 manifest、离线验证、回归测试、固定检查点的 profiling 与文档。
 
 本发布不支持、也不得作为结果表述的事项包括：第二模型质量扫参、用于挽救 G6 的事后结构性 H5 实验、Router-aware 收益，或 Scenario-Normalized-Mean 的一般性质量提升主张。
 

@@ -10,7 +10,7 @@
 2. 用 variable-M mixed-bit grouped GEMM 在一次 launch 中处理全部 expert；
 3. 融合 W1/W3 与 SiLU 门控，并用固定 top-k slot 顺序的 gather-reduce 取代原子 `index_add_`。
 
-在固定的 OLMoE `Concat/seed-101` 真实量化检查点上，最终实现相对原始 GEMQ 的完整模型 prefill 中位延迟降低 7.90–10.86 倍，单层 MoE 降低 9.94–11.62 倍。单层检查中 router 完全一致且输出通过容差；整模型 logits 不满足逐元素 `allclose`，但 P2/P3 在 128/512 token 上的 argmax 一致率均高于项目既有的 95% H6 门槛。
+在固定的 OLMoE `Concat/seed-101` 真实量化检查点上，最终实现相对原始 GEMQ 的完整模型 prefill 中位延迟加速 7.90–10.86×，单层 MoE 加速 9.94–11.62×。单层检查中 router 完全一致且输出通过容差；整模型 logits 不满足逐元素 `allclose`，但 P2/P3 在 128/512 token 上的 argmax 一致率均高于项目既有的 95% H6 门槛。
 
 这些数字只描述本文固定的单请求、batch=1、RTX 5090 环境，不外推到其他模型、GPU、并发度或量化配置。
 
@@ -91,7 +91,7 @@ W1、W3、W2 各调用一次 grouped kernel。2048-token 单层的量化 GEMM la
 
 ### 5.3 调优准备时间
 
-同一四档矩阵的进程总 wall time 从原始实现的 1535.3 秒降为 P1 的 63.4 秒。该 24.2 倍差异主要反映 M 分桶减少重复 autotune，不等同于稳态 kernel 加速；因此它与上面基于 CUDA event 的稳态中位延迟分开报告。P2、P3 的 wall time 分别为 33.0 和 35.4 秒。
+同一四档矩阵的进程总 wall time 从原始实现的 1535.3 秒降为 P1 的 63.4 秒，两者相差 24.2×。该差异主要反映 M 分桶减少重复 autotune，不等同于稳态 kernel 加速；因此它与上面基于 CUDA event 的稳态中位延迟分开报告。P2、P3 的 wall time 分别为 33.0 和 35.4 秒。
 
 ### 5.4 Workspace 权衡
 

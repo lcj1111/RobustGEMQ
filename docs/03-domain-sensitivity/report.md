@@ -1,5 +1,8 @@
 # 阶段三：跨校准域敏感度验证
 
+> [!NOTE]
+> 本阶段只验证“校准域差异是否存在”，不证明领域感知 bit 分配能够改善最终质量。候选方法的真实检查点结论见[阶段六报告](../06-real-checkpoint-validation/report.md)和[阶段八独立复核](../08-independent-confirmation/report.md)。
+
 执行日期：2026-08-16
 
 目标机器：`gpu-111`
@@ -157,6 +160,8 @@ H4 pilot 通过，但只能说明 reconstruction risk 与 downstream route shift
 - Phase 4 获准，但在 Phase 3 之后执行；只能选择一次 route lambda。
 
 ## 11. 复现命令
+
+以下命令会重新生成逐场景状态、候选配置和评测明细。这些中间目录已由 `.gitignore` 排除；仓库只保留本报告使用的聚合结果与决策文件。命令需按顺序执行：`analyze_pilot.py` 先生成后续扰动实验所需的 `general.pkl`，`generate_perturbations.py` 再生成扰动配置和清单。
 
 ```bash
 cd /data/models/RobustGEMQ

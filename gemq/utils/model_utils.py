@@ -85,9 +85,10 @@ def dispatch_model_to_all_devices(model):
 
 def get_model_info(model_name):
     """
-    Get basic model info (#layers, #experts, etc.).
+    返回分配器需要的静态模型结构。
 
-    TODO: Try parsing this information directly from the config file instead of hardcoding it
+    这里保留显式白名单：不同模型配置对 shared/routed expert 的字段命名并不统一，
+    未经校验地自动解析可能产生可运行但错误的 bit 预算。
     """
     model_type = NAME_TO_MODEL[model_name]
     if model_type == ModelType.MIXTRAL:

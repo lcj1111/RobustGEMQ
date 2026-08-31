@@ -110,7 +110,7 @@ python scripts/prefill/benchmark_prefill.py ...
 
 ## 5. 并发请求负载
 
-> 本节保留阶段十当时的受控调度实验。阶段十一已完成真实 vLLM Engine 接入，生产引擎相关结论请以[阶段十一报告](../11-vllm-serving-integration/report.md)为准；本节仍用于解释 chunked workspace 和开放环排队机制。
+> 本节保留阶段十当时的受控调度实验。阶段十一完成真实 vLLM Engine 接入，阶段十二进一步给出正式 uncached 服务结果；生产引擎相关结论应以[阶段十一报告](../11-vllm-serving-integration/report.md)和[阶段十二报告](../12-vllm-dispatch-fusion/report.md)为准。本节仅用于解释 chunked workspace 和开放环排队机制。
 
 ### 5.1 评测协议
 
