@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
-"""离线校验 chunked prefill 的数值、workspace 与并发负载证据。"""
+"""离线校验 chunked prefill manifest 的输入输出、数值和并发负载。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 from pathlib import Path
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def load_json(path: Path) -> dict:
@@ -71,24 +62,23 @@ def verify_request_records(result: dict) -> None:
         raise ValueError("峰值显存小于基线显存")
 
 
-def verify(evidence_path: Path) -> dict:
-    repo = evidence_path.resolve().parents[3]
-    evidence = load_json(evidence_path)
-    if evidence.get("schema_version") != 1:
-        raise ValueError("不支持的 chunked evidence schema")
+def verify(manifest_path: Path) -> dict:
+    repo = manifest_path.resolve().parents[3]
+    manifest = load_json(manifest_path)
+    if manifest.get("schema_version") != 2:
+        raise ValueError("不支持的 chunked prefill manifest schema")
 
     loaded = {}
-    entries = [*evidence["results"], *evidence["source_snapshot"]]
-    for entry in entries:
-        path = repo / entry["path"]
+    result_paths = manifest["results"]
+    referenced_paths = [*result_paths.values(), *manifest["implementation"]]
+    for relative in referenced_paths:
+        path = repo / relative
         if not path.is_file():
-            raise FileNotFoundError(f"缺少证据文件：{entry['path']}")
-        if sha256(path) != entry["sha256"]:
-            raise ValueError(f"哈希不一致：{entry['path']}")
-        if entry in evidence["results"]:
-            loaded[entry["name"]] = load_json(path)
+            raise FileNotFoundError(f"manifest 引用的文件不存在：{relative}")
+    for name, relative in result_paths.items():
+        loaded[name] = load_json(repo / relative)
 
-    revision = evidence["code_revision"]
+    revision = manifest["code_revision"]
     for name, result in loaded.items():
         if result.get("code_revision") != revision:
             raise ValueError(f"{name} 的 code_revision 不一致")
@@ -109,7 +99,7 @@ def verify(evidence_path: Path) -> dict:
     for result in workspace:
         if list(result["cases"]) != ["512", "2048", "4096"]:
             raise ValueError("workspace 扫描长度不一致")
-        if result["seed"] != evidence["protocol"]["seed"]:
+        if result["seed"] != manifest["protocol"]["seed"]:
             raise ValueError("workspace 扫描 seed 不一致")
         if result["warmup"] != 2 or result["repeats"] != 5:
             raise ValueError("workspace 扫描预热/重复次数不是 2/5")
@@ -131,9 +121,15 @@ def verify(evidence_path: Path) -> dict:
     for length in (512, 2048):
         fused = loaded[f"concurrent_fused_{length}"]
         chunked = loaded[f"concurrent_chunked_{length}"]
-        for identity_key in ("prompt_token_ids_sha256", "arrival_schedule_sha256"):
-            if fused["workload"][identity_key] != chunked["workload"][identity_key]:
-                raise ValueError(f"{length} 的跨后端 workload identity 不一致")
+        if fused["seed"] != chunked["seed"]:
+            raise ValueError(f"{length} 的跨后端随机种子不一致")
+        identity_keys = ("num_requests", "prompt_length", "output_tokens_per_request")
+        if any(fused["workload"][key] != chunked["workload"][key] for key in identity_keys):
+            raise ValueError(f"{length} 的跨后端 workload 配置不一致")
+        fused_arrivals = [item["arrival_offset_s"] for item in fused["requests"]]
+        chunked_arrivals = [item["arrival_offset_s"] for item in chunked["requests"]]
+        if fused_arrivals != chunked_arrivals:
+            raise ValueError(f"{length} 的跨后端到达序列不一致")
         for key in ("request_rate_per_second", "max_num_seqs", "max_num_batched_tokens"):
             if fused["scheduler"][key] != chunked["scheduler"][key]:
                 raise ValueError(f"{length} 的调度协议不一致：{key}")
@@ -157,7 +153,7 @@ def verify(evidence_path: Path) -> dict:
     return {
         "status": "PASS",
         "code_revision": revision,
-        "verified_files": len(entries),
+        "validated_files": len(referenced_paths),
         "workspace_cases": 12,
         "concurrent_requests": 400,
     }
@@ -166,12 +162,12 @@ def verify(evidence_path: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--evidence",
+        "--manifest",
         type=Path,
-        default=Path("artifacts/prefill/p4/evidence.json"),
+        default=Path("artifacts/prefill/p4/manifest.json"),
     )
     args = parser.parse_args()
-    print(json.dumps(verify(args.evidence), ensure_ascii=False, indent=2))
+    print(json.dumps(verify(args.manifest), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

@@ -128,7 +128,7 @@ python scripts/prefill/benchmark_prefill.py ...
 | 执行 | 单 GPU、四组顺序运行，不并行争用 GPU |
 | 显存 | `torch.cuda.max_memory_allocated - baseline_allocated` |
 
-fused 与 chunked 在同一 prompt 长度下复用完全相同的 token IDs 和到达时间，两者的 SHA-256 identity 由证据校验器逐项检查。TTFT 定义为请求到达到完成整个 prompt prefill、得到首 token logits 的时间，包含排队和实际模型执行。
+fused 与 chunked 使用相同 seed、prompt 长度、token 生成规则和 Poisson 到达序列。校验器直接比较请求编号与到达时间。TTFT 定义为请求到达到完成整个 prompt prefill、得到首 token logits 的时间，包含排队和实际模型执行。
 
 ### 5.2 结果
 
@@ -179,10 +179,10 @@ CUDA_VISIBLE_DEVICES=0 python scripts/prefill/benchmark_concurrent_prefill.py \
 
 ```bash
 python scripts/prefill/verify_chunked_evidence.py \
-  --evidence artifacts/prefill/p4/evidence.json
+  --manifest artifacts/prefill/p4/manifest.json
 ```
 
-校验器会检查文件哈希、源码版本、跨后端 workload identity、请求唯一性、TTFT p50/p95/p99 与吞吐复算、数值门槛及冻结的显存/吞吐结论。
+校验器会检查 manifest 引用路径、源码版本、跨后端 workload 配置、请求唯一性、到达序列、TTFT p50/p95/p99 与吞吐复算、数值门槛及冻结的显存/吞吐结论。
 
 ## 8. 结论边界
 

@@ -14,7 +14,7 @@ RobustGEMQ 基于 [GEMQ](https://github.com/jndeng/GEMQ) 开展后续研究与�
 
 仓库由两条互相衔接的主线组成：
 
-- **量化可靠性**：记录级数据隔离、同预算方法比较、真实 GPTQ/Router 微调/HQQ 检查点、模拟量化与真实打包一致性、配对 Bootstrap、冻结 Gate 和证据哈希。
+- **量化可靠性**：记录级数据隔离、同预算方法比较、真实 GPTQ/Router 微调/HQQ 检查点、模拟量化与真实打包一致性、配对 Bootstrap、冻结 Gate 和结构化实验记录。
 - **推理工程**：mixed-bit grouped/fused Triton kernel、受限显存分块、vLLM 0.28 插件接入、Torch/CUPTI 性能分解、稳定 GPU dispatch 和真实并发服务评测。
 
 完整阶段与历史脚本的对应关系见[文档导航](docs/README.md)。
@@ -78,7 +78,7 @@ scripts/       各实验阶段、prefill 与 vLLM 的执行/校验入口
 tests/         CPU 契约、CUDA 数值和检查点测试
 configs/       上游模型配置、领域协议和独立复核配置
 docs/          按能力链路整理的报告与复现说明
-artifacts/     公开证据、正式样本、profiler 摘要和哈希清单
+artifacts/     实验 manifest、正式样本和 profiler 摘要
 requirements/ 经验证的基础环境与 vLLM 环境约束
 ```
 
@@ -86,19 +86,19 @@ requirements/ 经验证的基础环境与 vLLM 环境约束
 
 ## 快速验证
 
-以下检查不需要 GPU 或模型权重，可验证公开结论的字段、哈希、请求唯一性和跨方法 workload identity：
+以下检查不需要 GPU 或模型权重，用于验证 manifest 的字段完整性、输入输出路径、请求唯一性、聚合指标和跨方法 workload 一致性：
 
 ```bash
 python scripts/phase9/verify_public_evidence.py \
-  --evidence docs/07-release/evidence.json
+  --manifest docs/07-release/manifest.json
 python scripts/phase10/verify_public_evidence.py \
-  --evidence docs/08-independent-confirmation/evidence.json
+  --manifest docs/08-independent-confirmation/manifest.json
 python scripts/prefill/verify_evidence.py \
-  --evidence artifacts/prefill/evidence.json
+  --manifest artifacts/prefill/manifest.json
 python scripts/prefill/verify_chunked_evidence.py \
-  --evidence artifacts/prefill/p4/evidence.json
+  --manifest artifacts/prefill/p4/manifest.json
 python scripts/vllm/verify_evidence.py \
-  --evidence artifacts/vllm/evidence.json
+  --manifest artifacts/vllm/manifest.json
 ```
 
 CI 还会编译 Python 源码并执行与量化决策、数据隔离、H6、prefill 和 vLLM 证据相关的 CPU 测试。
@@ -161,13 +161,13 @@ vllm serve /path/to/exported-gemq \
 
 首版集成仅支持 OLMoE、FP16、单卡 `TP=1`。检查点 schema、正确性边界和正式服务协议分别见[服务集成报告](docs/11-vllm-serving-integration/report.md)与[服务路径优化报告](docs/12-vllm-dispatch-fusion/report.md)。
 
-## 文档与证据
+## 文档与实验记录
 
-| 内容 | 报告 | 机器可核验证据 |
+| 内容 | 报告 | 输入输出清单 |
 | --- | --- | --- |
-| 量化研究最终结论 | [发布边界](docs/07-release/report.md) · [独立 test](docs/08-independent-confirmation/report.md) | [阶段七证据](docs/07-release/evidence.json) · [阶段八证据](docs/08-independent-confirmation/evidence.json) |
-| Mixed-bit prefill | [内核优化](docs/09-prefill-kernel-optimization/report.md) · [并发与显存](docs/10-concurrent-prefill/report.md) | [内核证据](artifacts/prefill/evidence.json) · [并发证据](artifacts/prefill/p4/evidence.json) |
-| vLLM 服务 | [引擎接入](docs/11-vllm-serving-integration/report.md) · [dispatch 优化](docs/12-vllm-dispatch-fusion/report.md) | [vLLM 证据](artifacts/vllm/evidence.json) |
+| 量化研究最终结论 | [发布边界](docs/07-release/report.md) · [独立 test](docs/08-independent-confirmation/report.md) | [阶段七 manifest](docs/07-release/manifest.json) · [阶段八 manifest](docs/08-independent-confirmation/manifest.json) |
+| Mixed-bit prefill | [内核优化](docs/09-prefill-kernel-optimization/report.md) · [并发与显存](docs/10-concurrent-prefill/report.md) | [内核 manifest](artifacts/prefill/manifest.json) · [并发 manifest](artifacts/prefill/p4/manifest.json) |
+| vLLM 服务 | [引擎接入](docs/11-vllm-serving-integration/report.md) · [dispatch 优化](docs/12-vllm-dispatch-fusion/report.md) | [vLLM manifest](artifacts/vllm/manifest.json) |
 
 全部阶段、状态和历史编号映射见[文档导航](docs/README.md)。
 
@@ -177,7 +177,7 @@ vllm serve /path/to/exported-gemq \
 - Prefill kernel 的 7.90–10.86× 来自 batch=1 单请求基准，不能替代服务吞吐结论。
 - 服务 p95/p99 是固定 24 请求样本的描述性统计，不是生产流量的尾延迟保证。
 - 当前 vLLM 路径未验证 tensor parallel、expert parallel、CUDA Graph 或其他 MoE 架构。
-- 仓库未提交模型权重和原始评测文本；公开证据通过哈希与结构化摘要绑定私有大文件。
+- 仓库未提交模型权重和原始评测文本；manifest 记录实验方法、数据划分、运行参数以及输入输出路径。
 
 ## 许可证与致谢
 

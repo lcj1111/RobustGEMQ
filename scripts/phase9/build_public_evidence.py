@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""从完整实验产物导出可提交 Git 的轻量证据包。
+"""从完整实验产物导出可提交 Git 的阶段七 manifest。
 
-输入目录可能包含大检查点和逐样本得分；输出只保留结论、哈希和验证状态，
-避免把权重或原始评测数据提交到仓库。
+输入目录可能包含大检查点和逐样本得分；输出只记录实验协议、输入、输出与结论。
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -17,10 +15,6 @@ def read_json(path: Path) -> dict:
     if not path.is_file():
         raise FileNotFoundError(path)
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 METHOD_LABELS = {
@@ -57,13 +51,13 @@ def main() -> None:
     domains = sorted({name.split(":", 1)[0] for name in source_scenarios})
     seeds = sorted({int(name.split("seed-", 1)[1]) for name in source_scenarios})
     evidence = {
-        "schema_version": 2,
+        "schema_version": 3,
         "project": "RobustGEMQ",
         "phase": 6,
         "model": "allenai/OLMoE-1B-7B-0924",
-        "evidence_revision": {
-            "schema_v2_policy": "public labels, exact recomputed point differences, explicit inference scope, and item identity contract",
-            "historical_source_note": None,
+        "inputs": {
+            "allocation_manifest": "artifacts/phase3/configs/manifest.json",
+            "data_manifest": "artifacts/phase2/data/source-manifest.json",
         },
         "study_design": {
             "domains": domains,
@@ -81,17 +75,6 @@ def main() -> None:
             "methods": config["methods"],
             "method_labels": METHOD_LABELS,
             "method_hamming_fraction": config["method_hamming_fraction"],
-            "config_sha256": {
-                method: entry["config_sha256"]
-                for method, entry in config["methods_manifest"].items()
-            },
-        },
-        "scenario_provenance": {
-            name: {
-                "token_sha256": entry["token_sha256"],
-                "layer_re_sha256": entry["layer_re_sha256"],
-            }
-            for name, entry in sorted(source_scenarios.items())
         },
         "real_checkpoint_validation": {
             "methods": release["methods_with_real_checkpoints"],
@@ -104,9 +87,7 @@ def main() -> None:
             },
         },
         "item_identity": {
-            "definition": "sha256 of canonical sorted [domain, seed, item, token_sha256] rows",
             "items_per_method": release["item_nlls_per_method"],
-            "sha256": release["item_identity_sha256"],
             "cross_method_match": release["cross_method_item_identity_match"],
         },
         "paired_bootstrap": {
@@ -128,8 +109,7 @@ def main() -> None:
             "reason": decision["reason"],
         },
         "result_scope": "descriptive bootstrap on the fixed Phase 6 training scenarios; not an independent validation or test set",
-        # 记录输入摘要，公开证据与服务器产物不一致时可定位发生变化的文件。
-        "source_file_sha256": {name: sha256(path) for name, path in paths.items()},
+        "outputs": {"report": "docs/07-release/report.md"},
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")

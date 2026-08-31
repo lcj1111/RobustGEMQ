@@ -50,12 +50,12 @@ cd /data/models/RobustGEMQ
   --output artifacts/phase6/release-verification.json
 ```
 
-该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算；每个打包方法具有完整且唯一的 1,536 条 `(domain, seed, item)` 记录；token 哈希与场景 manifest 一致；方法间样本 identity 完全相同；聚合指标可由逐样本 NLL 重算；H6 记录通过；Bootstrap 至少 10,000 次；G6 STOP 可由指标重新判定。完整执行链路和各 runner 见[阶段六验证手册](../06-real-checkpoint-validation/harness.md)，详细结果见[阶段六报告](../06-real-checkpoint-validation/report.md)。
+该校验器要求：四个冻结 allocation 方法保持精确 2.5-bpe 预算；每个打包方法具有完整且唯一的 1,536 条 `(domain, seed, item)` 记录；方法间样本 identity 完全相同；聚合指标可由逐样本 NLL 重算；H6 记录通过；Bootstrap 至少 10,000 次；G6 STOP 可由指标重新判定。完整执行链路和各 runner 见[阶段六验证手册](../06-real-checkpoint-validation/harness.md)，详细结果见[阶段六报告](../06-real-checkpoint-validation/report.md)。
 
-供公开审阅的 [evidence.json](evidence.json) 是从已完成的私有产物集派生的轻量版本。它不暴露模型权重、prompt、原始逐样本得分或检查点路径；但公开固定协议、allocation 与场景哈希、聚合指标、Bootstrap 区间、样本 identity 摘要以及派生所依据源文件的哈希。历史私有产物没有记录新版跨方法 identity 校验结果，因此证据中明确标为 `not-retroactively-verified`；今后生成发布包时该检查为强制条件。其发布契约无需 GPU：
+供公开审阅的 [manifest.json](manifest.json) 只记录实验设计、输入输出、allocation、聚合指标、Bootstrap 区间和阶段判定，不重复展示文件校验值。历史私有产物没有记录新版跨方法 identity 校验结果，因此 manifest 中明确标为 `not-retroactively-verified`；今后生成发布记录时该检查为强制条件。其结构和结论无需 GPU 即可复核：
 
 ```bash
-python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
+python scripts/phase9/verify_public_evidence.py --manifest docs/07-release/manifest.json
 python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
   tests/test_phase6_release_evidence.py tests/test_h6_summary.py \
   tests/test_phase9_public_evidence.py

@@ -26,48 +26,8 @@
         "prompt_length": 512,
         "max_tokens": 1,
         "warmup_rounds": 2,
-        "request_identity": [
-          {
-            "request_id": 0,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 1,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 2,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 3,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 4,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 5,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 6,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 7,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          }
-        ]
+        "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+        "request_order": "request_id 从 0 到 concurrency-1"
       },
       "request_metrics": {
         "ttft_p50_ms": 471.58072236925364,
@@ -168,48 +128,8 @@
         "prompt_length": 128,
         "max_tokens": 16,
         "warmup_rounds": 2,
-        "request_identity": [
-          {
-            "request_id": 0,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 1,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 2,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 3,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 4,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 5,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 6,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 7,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          }
-        ]
+        "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+        "request_order": "request_id 从 0 到 concurrency-1"
       },
       "request_metrics": {
         "ttft_p50_ms": 193.10851860791445,
@@ -310,48 +230,8 @@
         "prompt_length": 512,
         "max_tokens": 1,
         "warmup_rounds": 2,
-        "request_identity": [
-          {
-            "request_id": 0,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 1,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 2,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 3,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 4,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 5,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 6,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          },
-          {
-            "request_id": 7,
-            "prompt_tokens": 512,
-            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
-          }
-        ]
+        "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+        "request_order": "request_id 从 0 到 concurrency-1"
       },
       "request_metrics": {
         "ttft_p50_ms": 299.80821069329977,
@@ -424,48 +304,8 @@
         "prompt_length": 128,
         "max_tokens": 16,
         "warmup_rounds": 2,
-        "request_identity": [
-          {
-            "request_id": 0,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 1,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 2,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 3,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 4,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 5,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 6,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          },
-          {
-            "request_id": 7,
-            "prompt_tokens": 128,
-            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
-          }
-        ]
+        "prompt_construction": "将 DEFAULT_SEED_TEXT 分词后循环截取到目标长度",
+        "request_order": "request_id 从 0 到 concurrency-1"
       },
       "request_metrics": {
         "ttft_p50_ms": 144.75200604647398,
@@ -571,43 +411,35 @@
   "source_files": [
     {
       "kind": "torch_cupti_table",
-      "path": "artifacts/vllm/profiles/raw/baseline-prefill.txt",
-      "sha256": "a0d0c955ca03c599bd6b25bc24f9d0f3dd9ad87ced153680a9e7f157f7e6adfa"
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill.txt"
     },
     {
       "kind": "request_records",
-      "path": "artifacts/vllm/profiles/raw/baseline-prefill-requests.json",
-      "sha256": "343aa21d13409939406d90c43c3f9064c32ee449ff9a0ad6f98e165608d3f7eb"
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill-requests.json"
     },
     {
       "kind": "torch_cupti_table",
-      "path": "artifacts/vllm/profiles/raw/baseline-decode.txt",
-      "sha256": "824eed4197f864a36ecc16ed1c4cecdb7632a1abef40919817e2502ab67ecb16"
+      "path": "artifacts/vllm/profiles/raw/baseline-decode.txt"
     },
     {
       "kind": "request_records",
-      "path": "artifacts/vllm/profiles/raw/baseline-decode-requests.json",
-      "sha256": "f8fc8d05ccdb4a1d07e249a4e9ec9536077599cd88731711e308851358b20abf"
+      "path": "artifacts/vllm/profiles/raw/baseline-decode-requests.json"
     },
     {
       "kind": "torch_cupti_table",
-      "path": "artifacts/vllm/profiles/raw/optimized-prefill.txt",
-      "sha256": "7e7a0a4a4738d86d3d4a79352ca8f38b293c5325b2c922960b339120fc8e548b"
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill.txt"
     },
     {
       "kind": "request_records",
-      "path": "artifacts/vllm/profiles/raw/optimized-prefill-requests.json",
-      "sha256": "abde4673e7b7b8e40c748dbd82183239f9e9191c8278c0b60cdf87c20246bbdc"
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill-requests.json"
     },
     {
       "kind": "torch_cupti_table",
-      "path": "artifacts/vllm/profiles/raw/optimized-decode.txt",
-      "sha256": "9d811bd8c4448fbdd21073faa599780548c56706f77eb6c210f35ff808c4fca3"
+      "path": "artifacts/vllm/profiles/raw/optimized-decode.txt"
     },
     {
       "kind": "request_records",
-      "path": "artifacts/vllm/profiles/raw/optimized-decode-requests.json",
-      "sha256": "4c672ae43f5f80af377503506a42f0350e15996452b0e217dd69af175dcbf652"
+      "path": "artifacts/vllm/profiles/raw/optimized-decode-requests.json"
     }
   ],
   "interpretation_boundary": [

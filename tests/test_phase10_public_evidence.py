@@ -13,8 +13,8 @@ def test_committed_phase10_public_evidence_is_valid():
         [
             sys.executable,
             "scripts/phase10/verify_public_evidence.py",
-            "--evidence",
-            "docs/08-independent-confirmation/evidence.json",
+            "--manifest",
+            "docs/08-independent-confirmation/manifest.json",
         ],
         cwd=ROOT,
         check=True,

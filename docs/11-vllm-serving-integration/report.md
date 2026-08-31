@@ -16,13 +16,9 @@
 - 64 个 expert 的 gate/up/down 按实际 1/2/3/4-bit 位宽展平，并保存位宽、group size 与 offset；
 - Router、embedding、norm 和 LM head 保留全精度权重；
 - `config.json` 写入 `quant_method=gemq`，使 vLLM 自动选择插件；
-- `gemq_manifest.json` 固定模型结构、逐层位宽、源检查点和权重文件 SHA-256。
+- `gemq_manifest.json` 固定模型结构、逐层位宽、源检查点和权重文件信息。
 
-正式权重文件大小为 2,898,237,544 bytes，SHA-256 为：
-
-```text
-c3e70317e66cde54cebb679387676a6e40ddaf4ee859269e5c1278370a2cb0db
-```
+正式权重文件大小为 2,898,237,544 bytes。
 
 导出器使用临时目录，全部张量与 manifest 校验成功后才原子替换目标目录，不会留下可误用的半成品。
 
@@ -39,7 +35,7 @@ vLLM 原生 loader 只认识逐 expert 权重名，不能读取融合后的 `gem
 
 | 层级 | 对照 | 结果 |
 | --- | --- | --- |
-| 检查点 | manifest 的结构、大小和 SHA-256 | 通过 |
+| 检查点 | manifest 的结构、逐层位宽和文件大小 | 通过 |
 | attention | 独立 dense dequantization | 最大误差 0.003906 |
 | MoE | 独立 dense dequantization | 最大误差 3.81e-6 |
 | 端到端 | 原 RobustGEMQ 与 vLLM greedy 生成 | 8/8 token 完全一致 |

@@ -45,10 +45,10 @@ c_route[a,l,e,b] = sum_t v[a,l+1,t] * ||delta_h[a,l,e,b,t]||^2 / valid_tokens[a]
 - 使用固定 `eps=1e-6`、`v_max=100`，不根据 H4 结果调节；
 - 逐 expert、逐 `{1,2,3}` bit 执行 fake RTN；
 - 对 block-output squared perturbation 做 token-level vulnerability 加权；
-- route trace、scenario token hash 在启动前核对；
+- route trace 与 scenario 记录在启动前核对；
 - 4 domains × 2 seeds 在 8 张 GPU 上独立运行。
 
-这一步得到 8 个 `16 × 64 × 3` route-cost tensor。大 tensor 与 route trace 保存在服务器缓存，不提交 Git；源 token hash 和 tensor SHA-256 写入 `artifacts/phase4/h4-proxy-validation.json`。
+这一步得到 8 个 `16 × 64 × 3` route-cost tensor。大 tensor 与 route trace 保存在服务器缓存，不提交 Git；公开结果只保留场景、张量形状、评测输入输出和 H4 判定。
 
 ### 3.2 20 个独立验证配置
 

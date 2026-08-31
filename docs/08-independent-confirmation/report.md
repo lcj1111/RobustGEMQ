@@ -21,7 +21,7 @@
 1. 将 calibration-A、calibration-B、validation、test 做记录级互斥切分；
 2. 用 calibration-A 构建候选配置，用同一 calibration-B 张量公平执行 GPTQ 与 Router 微调；
 3. 只允许使用 `seed=101` 的 validation 选择进入 test 的方法；
-4. validation 后冻结选择文件和哈希；test 只有在 3 个方法 × 3 个 checkpoint 的 H6 全部通过后才解锁；
+4. validation 后冻结方法选择；test 只有在 3 个方法 × 3 个 checkpoint 的 H6 全部通过后才解锁；
 5. test 中对每个方法、每个 checkpoint 记录逐样本 identity，并强制跨方法、跨 checkpoint 一致；
 6. 在 test 上报告 checkpoint 方差；对每个 item 先跨 checkpoint 平均，再进行领域内配对 Bootstrap。
 
@@ -39,7 +39,7 @@
 | Concat | **1.847430** | 2.796443 | 是：平均指标胜出 |
 | Scenario-Normalized-Mean | 1.852306 | 2.802725 | 是：剩余方法中最坏域最优 |
 
-筛选结果为 `GEMQ-C4 / Concat / Scenario-Normalized-Mean`。selection 文件、配置 manifest 和 validation 逐样本来源均写入 SHA-256；筛选后不再依据 test 结果改换方法。
+筛选结果为 `GEMQ-C4 / Concat / Scenario-Normalized-Mean`。selection 文件记录候选方法、筛选指标和固定规则；筛选后不再依据 test 结果改换方法。
 
 ## 真实检查点与完整性门槛
 
@@ -73,11 +73,11 @@ Bootstrap 执行 10,000 次。差值均按“左侧方法 − 右侧方法”定
 
 ## 范围与后续维护
 
-本阶段不追加下游 benchmark 扫描。阶段六和阶段八已经回答了项目的核心问题；在负结果出现后继续寻找有利任务会破坏已冻结的证据边界。允许的后续工作仅限于工程维护：验证脚本、证据哈希、CI、文档和固定检查点的 profiling。
+本阶段不追加下游 benchmark 扫描。阶段六和阶段八已经回答了项目的核心问题；在负结果出现后继续寻找有利任务会破坏已冻结的证据边界。允许的后续工作仅限于工程维护：manifest 校验、CI、文档和固定检查点的 profiling。
 
-公开的轻量证据见 [evidence.json](evidence.json)。它不包含检查点、原始评测文本或逐样本 NLL；可离线运行：
+公开实验记录见 [manifest.json](manifest.json)。它列出筛选方法、数据划分、checkpoint seed、聚合输出和结论；可离线运行：
 
 ```bash
 python scripts/phase10/verify_public_evidence.py \
-  --evidence docs/08-independent-confirmation/evidence.json
+  --manifest docs/08-independent-confirmation/manifest.json
 ```

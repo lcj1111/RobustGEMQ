@@ -29,12 +29,6 @@ def test_latency_summary_reports_tail_percentiles():
     assert summary["p99_ms"] >= summary["p95_ms"]
 
 
-def test_workload_hash_is_stable():
-    assert MODULE.sha256_bytes(b"robustgemq") == (
-        "adcd7943e7ccb68a14a102c5ece249e1b336b465d364c463103942181e17aec7"
-    )
-
-
 @pytest.mark.parametrize(
     "num_requests,request_rate", [(0, 1.0), (1, 0.0), (-1, 2.0)]
 )

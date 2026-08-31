@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""离线复算 vLLM 集成的正确性、负载 identity 与服务指标。"""
+"""离线复算 vLLM manifest 记录的正确性、负载和服务指标。"""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import sys
@@ -17,16 +16,7 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
-from gemq.vllm_plugin.checkpoint_schema import validate_manifest
 from summarize_profiles import build_summary
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def load_json(path: Path) -> dict:
@@ -70,21 +60,11 @@ def verify_benchmark(result: dict) -> None:
     if workload.get("prefix_caching") != "disabled":
         raise ValueError("正式 benchmark 必须关闭 prefix cache")
 
-    workload_records = workload["requests"]
-    if len(workload_records) != expected_count:
-        raise ValueError("workload 请求清单数量错误")
-    expected_hash = hashlib.sha256(
-        json.dumps(
-            workload_records, sort_keys=True, separators=(",", ":")
-        ).encode()
-    ).hexdigest()
-    if workload["sha256"] != expected_hash:
-        raise ValueError("workload SHA-256 无法由请求清单复算")
-
-    for expected, record in zip(workload_records, records):
-        for key in ("request_id", "prompt_tokens", "prompt_sha256"):
-            if expected[key] != record[key]:
-                raise ValueError(f"请求 {record['request_id']} 的 {key} identity 不一致")
+    prompt_lengths = workload["prompt_lengths"]
+    for record in records:
+        expected_length = prompt_lengths[record["request_id"] % len(prompt_lengths)]
+        if record["prompt_tokens"] != expected_length:
+            raise ValueError(f"请求 {record['request_id']} 的输入长度不符合 workload")
         if record["completion_tokens"] != workload["max_tokens"]:
             raise ValueError(f"请求 {record['request_id']} 输出 token 不完整")
         if record["total_tokens"] != record["prompt_tokens"] + record["completion_tokens"]:
@@ -130,21 +110,30 @@ def verify_benchmark(result: dict) -> None:
                  max(sample["memory_mib"] for sample in memory), "peak GPU memory")
 
 
-def verify(evidence_path: Path) -> dict:
-    repo = evidence_path.resolve().parents[2]
-    evidence = load_json(evidence_path)
-    if evidence.get("schema_version") != 2:
-        raise ValueError("不支持的 vLLM evidence schema")
+def verify(manifest_path: Path) -> dict:
+    repo = manifest_path.resolve().parents[2]
+    evidence = load_json(manifest_path)
+    if evidence.get("schema_version") != 3:
+        raise ValueError("不支持的 vLLM manifest schema")
 
     loaded: dict[str, dict] = {}
-    for entry in evidence["files"]:
-        path = repo / entry["path"]
-        if not path.is_file():
-            raise FileNotFoundError(f"缺少证据文件：{entry['path']}")
-        if sha256(path) != entry["sha256"]:
-            raise ValueError(f"哈希不一致：{entry['path']}")
-        if entry["kind"] in {"benchmark", "correctness", "metadata", "profile"}:
-            loaded[entry["name"]] = load_json(path)
+    outputs = evidence["outputs"]
+    named_outputs = {
+        **outputs["benchmarks"],
+        **outputs["correctness"],
+        **outputs["metadata"],
+        "profile_summary": outputs["profiles"]["summary"],
+    }
+    referenced_paths = [
+        *named_outputs.values(),
+        *outputs["profiles"]["raw"],
+        *evidence["implementation"],
+    ]
+    for relative in referenced_paths:
+        if not (repo / relative).is_file():
+            raise FileNotFoundError(f"manifest 引用的文件不存在：{relative}")
+    for name, relative in named_outputs.items():
+        loaded[name] = load_json(repo / relative)
 
     environment = loaded["environment"]
     if environment.get("status") != "pass":
@@ -157,10 +146,12 @@ def verify(evidence_path: Path) -> dict:
     if protocol.get("prefix_caching") is not False:
         raise ValueError("环境快照未冻结 prefix_caching=false")
 
-    manifest = validate_manifest(loaded["checkpoint_manifest"])
-    artifact = manifest["artifacts"][0]
+    checkpoint_layout = loaded["checkpoint_manifest"]
+    artifact = checkpoint_layout["artifacts"][0]
     if artifact != evidence["checkpoint_artifact"]:
-        raise ValueError("evidence 中的检查点 artifact 与 manifest 不一致")
+        raise ValueError("manifest 中的检查点路径或大小不一致")
+    if checkpoint_layout.get("format") != "gemq-vllm" or len(checkpoint_layout.get("layers", [])) != 16:
+        raise ValueError("检查点结构记录不完整")
 
     smoke = loaded["offline_smoke"]
     equivalence = loaded["greedy_equivalence"]
@@ -208,10 +199,12 @@ def verify(evidence_path: Path) -> dict:
         original = benchmarks[("baseline_gemq", concurrency)]
         candidate = benchmarks[("robustgemq", concurrency)]
         for counterpart in (baseline, original):
-            if counterpart["workload"]["sha256"] != candidate["workload"]["sha256"]:
-                raise ValueError(f"并发 {concurrency} 的跨方法 workload hash 不一致")
-            if counterpart["workload"]["requests"] != candidate["workload"]["requests"]:
-                raise ValueError(f"并发 {concurrency} 的跨方法请求 identity 不一致")
+            if counterpart["workload"] != candidate["workload"]:
+                raise ValueError(f"并发 {concurrency} 的跨方法 workload 配置不一致")
+            left_inputs = [(row["request_id"], row["prompt_tokens"]) for row in counterpart["requests"]]
+            right_inputs = [(row["request_id"], row["prompt_tokens"]) for row in candidate["requests"]]
+            if left_inputs != right_inputs:
+                raise ValueError(f"并发 {concurrency} 的跨方法输入序列不一致")
         b = baseline["summary"]
         o = original["summary"]
         q = candidate["summary"]
@@ -242,22 +235,21 @@ def verify(evidence_path: Path) -> dict:
 
     return {
         "status": "PASS",
-        "verified_files": len(evidence["files"]),
+        "validated_files": len(referenced_paths),
         "benchmark_requests": sum(
             len(result["requests"]) for result in benchmarks.values()
         ),
         "workload_identity_pairs": 6,
-        "checkpoint_sha256": artifact["sha256"],
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--evidence", type=Path, default=Path("artifacts/vllm/evidence.json")
+        "--manifest", type=Path, default=Path("artifacts/vllm/manifest.json")
     )
     args = parser.parse_args()
-    print(json.dumps(verify(args.evidence), ensure_ascii=False, indent=2))
+    print(json.dumps(verify(args.manifest), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

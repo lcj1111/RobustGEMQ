@@ -5,47 +5,36 @@
     "instruction": "dolly/databricks-dolly-15k.jsonl",
     "math": "gsm8k/train.jsonl"
   },
-  "data_root": "/data/models/datasets/robustgemq-phase2",
   "files": {
     "c4/en/c4-train.00000-of-01024.json": {
-      "bytes": 821282490,
-      "sha256": "de0723fdb55d5b9a5e4e3f1cd7683bac68f8f235314ae423adb1f87ab5926d16"
+      "bytes": 821282490
     },
     "c4/en/c4-validation.00000-of-00008.json.gz": {
-      "bytes": 40471190,
-      "sha256": "1f25b6af12da84115301d4ee93ea5246c8fea5bb4a2008472794d95b917cc97f"
+      "bytes": 40471190
     },
     "dolly/databricks-dolly-15k.jsonl": {
-      "bytes": 13216570,
-      "sha256": "e442d96b320010510c67a6cc0a86ea988a2a6f71c7570d1afbdf4fa631896e58"
+      "bytes": 13216570
     },
     "gsm8k/test.jsonl": {
-      "bytes": 749738,
-      "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14"
+      "bytes": 749738
     },
     "gsm8k/train.jsonl": {
-      "bytes": 4166206,
-      "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465"
+      "bytes": 4166206
     },
     "mbpp/prompt.jsonl": {
-      "bytes": 3940,
-      "sha256": "943edcd3922c3fd2522fd595956b0e8e94bf18f3c2af61de11fb316cf66f6e9f"
+      "bytes": 3940
     },
     "mbpp/test.jsonl": {
-      "bytes": 154022,
-      "sha256": "697e1a467936c2275e002949e7c1f898b41b2314f1139857eed5a2829d896cc0"
+      "bytes": 154022
     },
     "mbpp/train.jsonl": {
-      "bytes": 73099,
-      "sha256": "f761975d0044bef1c52a7df481aff8dc6a37a48695cb58bd4e6b78f49bd9f95e"
+      "bytes": 73099
     },
     "mbpp/validation.jsonl": {
-      "bytes": 23553,
-      "sha256": "9cdfd7d582e83281d6f4a1b7a61d21a0c1446e8cbd413adc5731577925dcd9ca"
+      "bytes": 23553
     },
     "sources/sanitized-mbpp.json": {
-      "bytes": 255053,
-      "sha256": "ca95deaa9a01ef0a6f439f88bcf0dd3db3563d22f22aad6cae04ebb9a8d8c8e9"
+      "bytes": 255053
     }
   },
   "held_out_files": {
@@ -59,7 +48,7 @@
     "train": 120,
     "validation": 43
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "sources": {
     "dolly_train": {
       "path": "dolly/databricks-dolly-15k.jsonl",

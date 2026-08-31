@@ -22,8 +22,8 @@
     "num_requests": 100,
     "prompt_length": 2048,
     "output_tokens_per_request": 1,
-    "prompt_token_ids_sha256": "0065b6640d1fb628302d8121bdd1f8ad59fc150820ea66688a178a38984f8780",
-    "arrival_schedule_sha256": "01180766a763d0ff4b097c98fc42ed534c59cafc6cde6cd4cc6ac94cb4c777e9"
+    "prompt_generation": "torch.randint 使用实验 seed 生成固定 token 序列",
+    "arrival_generation": "random.Random(seed) 生成 Poisson 到达序列"
   },
   "device": {
     "name": "NVIDIA GeForce RTX 5090",

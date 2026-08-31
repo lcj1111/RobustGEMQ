@@ -12,7 +12,7 @@ SPEC.loader.exec_module(MODULE)
 
 
 def test_prefill_evidence_contract():
-    summary = MODULE.verify(ROOT / "artifacts/prefill/evidence.json")
+    summary = MODULE.verify(ROOT / "artifacts/prefill/manifest.json")
     assert summary["status"] == "PASS"
     assert summary["stages"] == ["baseline", "p1", "p2", "p3"]
-    assert summary["verified_files"] == 24
+    assert summary["validated_files"] == 24

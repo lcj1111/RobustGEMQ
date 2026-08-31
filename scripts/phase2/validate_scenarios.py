@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate scenario identity plus complete finite OLMoE coefficient tensors."""
+"""校验场景身份及 OLMoE 系数张量的完整性。"""
 
 import argparse
 import hashlib
@@ -42,7 +42,6 @@ def validate_one(path: Path) -> dict:
     return {
         "domain": manifest["domain"],
         "seed": manifest["seed"],
-        "token_sha256": manifest["token_sha256"],
         "coefficients": len(values),
         "min": min(values),
         "max": max(values),

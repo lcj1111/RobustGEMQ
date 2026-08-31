@@ -37,7 +37,7 @@ Phase 3 已完成正式方案要求的 Mean、Worst、CVaR 求解器、约束审
 
 ### 2.2 完整审计
 
-每个 allocation 均输出 coefficient schema SHA-256、scenario 名称/权重、tensor shape、candidate bits、target/used bits、budget slack、约束违反计数、每域风险、目标重算误差和 HiGHS 求解信息。两档预算的六种方法都使用精确预算：`2.5 bpe = 2560/2560 bits`，`2.0 bpe = 2048/2048 bits`。
+每个 allocation 均输出 scenario 名称/权重、tensor shape、candidate bits、target/used bits、budget slack、约束违反计数、每域风险、目标重算误差和 HiGHS 求解信息。两档预算的六种方法都使用精确预算：`2.5 bpe = 2560/2560 bits`，`2.0 bpe = 2048/2048 bits`。
 
 ### 2.3 对照方法定义
 
@@ -63,7 +63,7 @@ allocation coefficients 仍只来自 Phase 2 的 C4-train、GSM8K-train、MBPP-t
 | Code | Sanitized MBPP test | 16,384 | 2 |
 | Instruction | SuperGLUE v2 BoolQ validation | 16,384 | 2 |
 
-BoolQ 官方 SuperGLUE v2 archive SHA-256 为 `853fbe...2436`，validation file SHA-256 为 `0c86a5...66d9`。所有 scenario manifest 都写入 source hash、selected-record hash、token hash 和 `held-out evaluation only` 标志；评测程序遇到非 held-out manifest 会直接拒绝执行。
+所有 scenario manifest 都记录数据来源、选中样本、规模和 `held-out evaluation only` 标志；评测程序遇到非 held-out manifest 会直接拒绝执行。
 
 H3 的 regret 口径冻结为：每个 held-out 场景的 `fake-RTN NLL - FP NLL`，两个 seed 先在域内平均，再计算四域 mean/worst。held-out 只用于 Gate 和方法筛选，没有反向修改任何 coefficient 或 allocation。
 

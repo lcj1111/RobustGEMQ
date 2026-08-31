@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""从正式原始结果构建轻量 vLLM 证据索引。"""
+"""从正式原始结果构建 vLLM 实验 manifest。"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 
-from verify_evidence import load_json, sha256
+from verify_evidence import load_json
 
 
 RESULT_FILES = {
@@ -80,34 +80,19 @@ PROFILE_RAW_FILES = [
 ]
 
 
-def entry(repo: Path, name: str, kind: str, relative: str) -> dict:
-    path = repo / relative
-    if not path.is_file():
-        raise FileNotFoundError(relative)
-    return {"name": name, "kind": kind, "path": relative, "sha256": sha256(path)}
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("."))
     parser.add_argument(
-        "--output", type=Path, default=Path("artifacts/vllm/evidence.json")
+        "--output", type=Path, default=Path("artifacts/vllm/manifest.json")
     )
     args = parser.parse_args()
     repo = args.repo.resolve()
 
-    files = [
-        entry(repo, name, kind, relative)
-        for name, (kind, relative) in RESULT_FILES.items()
-    ]
-    files.extend(
-        entry(repo, Path(relative).name, "source", relative)
-        for relative in SOURCE_FILES
-    )
-    files.extend(
-        entry(repo, Path(relative).name, "profile_raw", relative)
-        for relative in PROFILE_RAW_FILES
-    )
+    referenced = [relative for _, relative in RESULT_FILES.values()]
+    for relative in [*referenced, *SOURCE_FILES, *PROFILE_RAW_FILES]:
+        if not (repo / relative).is_file():
+            raise FileNotFoundError(relative)
     loaded = {
         name: load_json(repo / relative)
         for name, (_, relative) in RESULT_FILES.items()
@@ -172,7 +157,7 @@ def main() -> None:
 
     manifest = loaded["checkpoint_manifest"]
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "status": "pass",
         "subject": "RobustGEMQ vLLM 服务路径 dispatch/reduce 融合优化",
         "protocol": {
@@ -194,19 +179,40 @@ def main() -> None:
             "baseline_vs_optimized": dispatch_comparisons,
             "profiler": loaded["profile_summary"]["comparisons"],
         },
-        "files": files,
         "claim_boundary": [
             "已验证融合 dispatch/reduce 后 greedy 生成的 8 个 token 与原 RobustGEMQ 完全一致",
             "相对原始 GEMQ 报告固定 uncached 请求集上的 TTFT、E2E、吞吐和 GPU 总显存",
             "c8 输出吞吐提高 21.2%，未达到预设 25% 门槛，不宣称服务优化阶段全部达标",
             "首版只支持 OLMoE、FP16、单卡 TP=1；不宣称量化吞吐超过 BF16",
         ],
+        "outputs": {
+            "benchmarks": {
+                name: relative
+                for name, (kind, relative) in RESULT_FILES.items()
+                if kind == "benchmark"
+            },
+            "correctness": {
+                name: relative
+                for name, (kind, relative) in RESULT_FILES.items()
+                if kind == "correctness"
+            },
+            "metadata": {
+                name: relative
+                for name, (kind, relative) in RESULT_FILES.items()
+                if kind == "metadata"
+            },
+            "profiles": {
+                "summary": RESULT_FILES["profile_summary"][1],
+                "raw": PROFILE_RAW_FILES,
+            },
+        },
+        "implementation": SOURCE_FILES,
     }
     output = repo / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
     try:
-        # 固定 LF，避免 Windows 生成的 evidence 在 Linux CI 中哈希或 diff 漂移。
+        # 固定 LF，避免 Windows 与 Linux 生成的 manifest 出现无意义 diff。
         temporary.write_bytes(
             (json.dumps(payload, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
         )

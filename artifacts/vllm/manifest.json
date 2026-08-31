@@ -1,0 +1,207 @@
+{
+  "schema_version": 3,
+  "status": "pass",
+  "subject": "RobustGEMQ vLLM 服务路径 dispatch/reduce 融合优化",
+  "protocol": {
+    "requests_per_case": 24,
+    "concurrency": [
+      1,
+      4,
+      8
+    ],
+    "prompt_lengths": [
+      128,
+      512
+    ],
+    "output_tokens": 16,
+    "streaming": true,
+    "warmup_rounds_at_target_concurrency": 4,
+    "warmup_shapes": [
+      "128-only",
+      "512-only",
+      "mixed",
+      "mixed"
+    ],
+    "kv_cache_memory_bytes": 4294967296,
+    "percentile": "nearest-rank",
+    "prefix_caching": false,
+    "scope": "fixed-checkpoint descriptive serving benchmark"
+  },
+  "checkpoint_artifact": {
+    "path": "model.safetensors",
+    "size_bytes": 2898237544
+  },
+  "comparisons": {
+    "bf16_vs_optimized": [
+      {
+        "concurrency": 1,
+        "bf16_output_tokens_per_second": 80.89752905668719,
+        "robustgemq_output_tokens_per_second": 48.71047697114433,
+        "output_throughput_ratio": 0.6021256463471402,
+        "bf16_ttft_p95_seconds": 0.03086453303694725,
+        "robustgemq_ttft_p95_seconds": 0.06777233444154263,
+        "ttft_p95_ratio": 2.195799766690585,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      },
+      {
+        "concurrency": 4,
+        "bf16_output_tokens_per_second": 293.17061274564463,
+        "robustgemq_output_tokens_per_second": 152.74182665286563,
+        "output_throughput_ratio": 0.5209997865147034,
+        "bf16_ttft_p95_seconds": 0.04236000496894121,
+        "robustgemq_ttft_p95_seconds": 0.1369800427928567,
+        "ttft_p95_ratio": 3.2337116790541423,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      },
+      {
+        "concurrency": 8,
+        "bf16_output_tokens_per_second": 529.3620097682671,
+        "robustgemq_output_tokens_per_second": 242.0723321146888,
+        "output_throughput_ratio": 0.45729071532854826,
+        "bf16_ttft_p95_seconds": 0.056098309345543385,
+        "robustgemq_ttft_p95_seconds": 0.20491680968552828,
+        "ttft_p95_ratio": 3.652816137886114,
+        "bf16_peak_memory_mib": 18915.0,
+        "robustgemq_peak_memory_mib": 8629.0,
+        "peak_memory_reduction": 0.5438012159661645
+      }
+    ],
+    "baseline_vs_optimized": [
+      {
+        "concurrency": 1,
+        "baseline_output_tokens_per_second": 42.07549324526672,
+        "optimized_output_tokens_per_second": 48.71047697114433,
+        "output_throughput_improvement": 0.15769235757263544,
+        "baseline_ttft_p95_seconds": 0.08389216754585505,
+        "optimized_ttft_p95_seconds": 0.06777233444154263,
+        "ttft_p95_reduction": 0.19214944107268894,
+        "baseline_e2e_p95_seconds": 0.4012922989204526,
+        "optimized_e2e_p95_seconds": 0.3442485062405467,
+        "e2e_p95_reduction": 0.14215023022710327,
+        "optimized_peak_memory_mib": 8629.0
+      },
+      {
+        "concurrency": 4,
+        "baseline_output_tokens_per_second": 129.94282065367145,
+        "optimized_output_tokens_per_second": 152.74182665286563,
+        "output_throughput_improvement": 0.17545414117151537,
+        "baseline_ttft_p95_seconds": 0.17213672399520874,
+        "optimized_ttft_p95_seconds": 0.1369800427928567,
+        "ttft_p95_reduction": 0.20423695993732638,
+        "baseline_e2e_p95_seconds": 0.49524999037384987,
+        "optimized_e2e_p95_seconds": 0.42290102038532495,
+        "e2e_p95_reduction": 0.14608575748565034,
+        "optimized_peak_memory_mib": 8629.0
+      },
+      {
+        "concurrency": 8,
+        "baseline_output_tokens_per_second": 199.76372411749875,
+        "optimized_output_tokens_per_second": 242.0723321146888,
+        "output_throughput_improvement": 0.211793248169045,
+        "baseline_ttft_p95_seconds": 0.2714074719697237,
+        "optimized_ttft_p95_seconds": 0.20491680968552828,
+        "ttft_p95_reduction": 0.24498464173312318,
+        "baseline_e2e_p95_seconds": 0.6499363584443927,
+        "optimized_e2e_p95_seconds": 0.5325802573934197,
+        "e2e_p95_reduction": 0.1805655269569193,
+        "optimized_peak_memory_mib": 8629.0
+      }
+    ],
+    "profiler": {
+      "prefill": {
+        "moe_cpu_total_reduction": 0.6589301057859752,
+        "moe_cuda_total_reduction": 0.07880113941295463,
+        "ttft_p95_reduction": 0.36314956055499126,
+        "removed_eager_dispatch_ops": [
+          "aten::sort",
+          "aten::bincount",
+          "aten::cumsum",
+          "aten::cat",
+          "aten::div",
+          "aten::arange"
+        ]
+      },
+      "decode": {
+        "moe_cpu_total_reduction": 0.4412560073405386,
+        "moe_cuda_total_reduction": 0.06663933855661175,
+        "ttft_p95_reduction": 0.25018943792040527,
+        "removed_eager_dispatch_ops": [
+          "aten::sort",
+          "aten::bincount",
+          "aten::cumsum",
+          "aten::cat",
+          "aten::div",
+          "aten::arange"
+        ]
+      }
+    }
+  },
+  "claim_boundary": [
+    "已验证融合 dispatch/reduce 后 greedy 生成的 8 个 token 与原 RobustGEMQ 完全一致",
+    "相对原始 GEMQ 报告固定 uncached 请求集上的 TTFT、E2E、吞吐和 GPU 总显存",
+    "c8 输出吞吐提高 21.2%，未达到预设 25% 门槛，不宣称服务优化阶段全部达标",
+    "首版只支持 OLMoE、FP16、单卡 TP=1；不宣称量化吞吐超过 BF16"
+  ],
+  "outputs": {
+    "benchmarks": {
+      "bf16_c1": "artifacts/vllm/benchmarks/bf16-c1.json",
+      "bf16_c4": "artifacts/vllm/benchmarks/bf16-c4.json",
+      "bf16_c8": "artifacts/vllm/benchmarks/bf16-c8.json",
+      "robustgemq_c1": "artifacts/vllm/benchmarks/robustgemq-c1.json",
+      "robustgemq_c4": "artifacts/vllm/benchmarks/robustgemq-c4.json",
+      "robustgemq_c8": "artifacts/vllm/benchmarks/robustgemq-c8.json",
+      "baseline_gemq_c1": "artifacts/vllm/benchmarks/baseline-gemq-c1.json",
+      "baseline_gemq_c4": "artifacts/vllm/benchmarks/baseline-gemq-c4.json",
+      "baseline_gemq_c8": "artifacts/vllm/benchmarks/baseline-gemq-c8.json"
+    },
+    "correctness": {
+      "dispatch_correctness": "artifacts/vllm/correctness/dispatch-fusion.json",
+      "offline_smoke": "artifacts/vllm/correctness/offline-smoke.json",
+      "reference_greedy": "artifacts/vllm/correctness/reference-greedy.json",
+      "greedy_equivalence": "artifacts/vllm/correctness/greedy-equivalence.json",
+      "layer_equivalence": "artifacts/vllm/correctness/layer-equivalence.json"
+    },
+    "metadata": {
+      "environment": "artifacts/vllm/metadata/environment.json",
+      "checkpoint_manifest": "artifacts/vllm/metadata/checkpoint-manifest.json"
+    },
+    "profiles": {
+      "summary": "artifacts/vllm/profiles/summary.json",
+      "raw": [
+        "artifacts/vllm/profiles/raw/baseline-prefill.txt",
+        "artifacts/vllm/profiles/raw/baseline-prefill-requests.json",
+        "artifacts/vllm/profiles/raw/baseline-decode.txt",
+        "artifacts/vllm/profiles/raw/baseline-decode-requests.json",
+        "artifacts/vllm/profiles/raw/optimized-prefill.txt",
+        "artifacts/vllm/profiles/raw/optimized-prefill-requests.json",
+        "artifacts/vllm/profiles/raw/optimized-decode.txt",
+        "artifacts/vllm/profiles/raw/optimized-decode-requests.json"
+      ]
+    }
+  },
+  "implementation": [
+    "gemq/vllm_plugin/__init__.py",
+    "gemq/vllm_plugin/checkpoint_schema.py",
+    "gemq/vllm_plugin/quantization.py",
+    "scripts/vllm/export_checkpoint.py",
+    "scripts/vllm/benchmark_service.py",
+    "scripts/vllm/smoke_offline.py",
+    "scripts/vllm/reference_greedy.py",
+    "scripts/vllm/compare_greedy_outputs.py",
+    "scripts/vllm/check_layer_equivalence.py",
+    "scripts/vllm/check_dispatch_correctness.py",
+    "scripts/vllm/collect_environment.py",
+    "scripts/vllm/profile_service.py",
+    "scripts/vllm/summarize_profiles.py",
+    "scripts/vllm/build_evidence.py",
+    "scripts/vllm/verify_evidence.py",
+    "gemq/triton_kernels/mixedbit_moe_prefill.py",
+    "gemq/triton_kernels/vllm_moe_dispatch.py",
+    "requirements/vllm-constraints.txt",
+    "pyproject.toml"
+  ]
+}

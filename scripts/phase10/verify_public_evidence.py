@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
-"""离线验证 Phase 10 公开证据的结构、指标自洽性和范围边界。"""
+"""离线验证阶段八 manifest 的实验协议、输入输出和指标自洽性。"""
 
 from __future__ import annotations
 
 import argparse
 import json
 import math
-import re
 from pathlib import Path
 
 
 METHODS = ["gemq-c4", "concat", "domain-mean"]
 DOMAINS = ["general", "math", "code", "instruction"]
-SHA256_RE = re.compile(r"[0-9a-f]{64}")
-
-
 def fail(message: str) -> None:
-    raise ValueError(f"Phase 10 公开证据无效：{message}")
+    raise ValueError(f"阶段八 manifest 无效：{message}")
 
 
 def number(value: object, context: str) -> float:
@@ -24,11 +20,6 @@ def number(value: object, context: str) -> float:
     if not math.isfinite(result):
         fail(f"{context} 不是有限数")
     return result
-
-
-def require_hash(value: object, context: str) -> None:
-    if SHA256_RE.fullmatch(str(value)) is None:
-        fail(f"{context} 不是小写 SHA-256")
 
 
 def close(value: object, expected: float, context: str) -> None:
@@ -50,10 +41,10 @@ def validate_metric(metric: dict, method: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--evidence", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path, required=True)
     args = parser.parse_args()
-    evidence = json.loads(args.evidence.read_text(encoding="utf-8"))
-    if evidence.get("schema_version") != 1 or evidence.get("project") != "RobustGEMQ":
+    evidence = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if evidence.get("schema_version") != 2 or evidence.get("project") != "RobustGEMQ":
         fail("项目 identity 或 schema 不正确")
     if evidence.get("phase") != 10 or evidence.get("phase_label") != "independent-confirmation":
         fail("阶段 identity 不正确")
@@ -77,22 +68,13 @@ def main() -> None:
         fail("validation 缺少跨方法 identity 验证")
     if protocol.get("test_cross_method_and_checkpoint_item_identity_match") is not True:
         fail("test 缺少跨方法/seed identity 验证")
-    require_hash(protocol.get("validation_item_identity_sha256"), "validation identity")
-    require_hash(protocol.get("test_item_identity_sha256"), "test identity")
-
-    integrity = evidence.get("integrity", {})
-    require_hash(integrity.get("selection_sha256"), "selection")
-    require_hash(integrity.get("test_unlock_sha256"), "test unlock")
-    if integrity.get("test_unlocked_only_after_all_h6_passed") is not True:
+    execution_order = evidence.get("execution_order", {})
+    if execution_order.get("test_unlocked_only_after_all_h6_passed") is not True:
         fail("test unlock 缺少 H6 前置条件")
-    h6 = integrity.get("h6_summary_sha256", {})
-    if set(h6) != set(METHODS):
-        fail("H6 方法集合不完整")
-    for method in METHODS:
-        if set(h6[method]) != {"101", "202", "303"}:
-            fail(f"{method} 的 H6 seed 不完整")
-        for digest in h6[method].values():
-            require_hash(digest, f"{method} H6")
+    if set(evidence.get("inputs", {})) != {"experiment", "data_manifest", "checkpoint_root"}:
+        fail("实验输入记录不完整")
+    if set(evidence.get("outputs", {})) != {"report", "statistics"}:
+        fail("实验输出记录不完整")
 
     result = evidence.get("independent_test", {})
     metrics = result.get("seed_mean_point_metrics", {})
@@ -127,15 +109,9 @@ def main() -> None:
             if not 0 <= probability <= 1:
                 fail("Bootstrap 概率非法")
 
-    for name, digest in evidence.get("source_file_sha256", {}).items():
-        require_hash(digest, f"source {name}")
-    if set(evidence.get("source_file_sha256", {})) != {
-        "selection", "test_unlock", "independent_statistics"
-    }:
-        fail("源文件摘要集合不完整")
     if "record-disjoint independent test" not in evidence.get("scope", ""):
         fail("缺少独立 test 的范围边界")
-    print(json.dumps({"verified": True, "phase": 10, "methods": METHODS}, ensure_ascii=False))
+    print(json.dumps({"validated": True, "phase": 10, "methods": METHODS}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

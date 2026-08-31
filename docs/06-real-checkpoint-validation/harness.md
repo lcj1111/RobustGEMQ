@@ -10,7 +10,7 @@
          → H6 等价性 → 逐样本配对 Bootstrap → G6 决策
 ```
 
-每一步均有哈希或审计文件。LayerRE 验证完成后才删除临时梯度；系数、配置、得分与决策会保留。
+每一步均有 manifest 或审计文件。LayerRE 验证完成后才删除临时梯度；系数、配置、得分与决策会保留。
 
 ## 复现命令
 
@@ -47,7 +47,7 @@ cd /data/models/RobustGEMQ
 - `run_h6_validation.sh`：验证保存检查点的 fake/real PPL、有限值、decode logits 与 `argmax >= 95%`；每个方法写出 `run.log`、JUnit XML 和结构化 `summary.json`。
 - `run_item_bootstrap.sh`：对每个打包方法评估 1,536 个固定样本，并执行配对 Bootstrap。
 
-发布校验会验证逐样本字段、完整的 `(domain, seed, item)` 主键、场景 token SHA-256、方法间样本身份一致性，并从逐样本 NLL 重算聚合指标与 Pareto 状态。Bootstrap 仅描述固定训练场景内的样本波动，不替代独立测试集。
+发布校验会验证逐样本字段、完整的 `(domain, seed, item)` 主键、方法间样本身份一致性，并从逐样本 NLL 重算聚合指标与 Pareto 状态。Bootstrap 仅描述固定训练场景内的样本波动，不替代独立测试集。
 
 ## Gate 规则
 

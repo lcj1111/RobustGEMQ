@@ -51,24 +51,24 @@ Response: {response}
 新增的场景流水线包含：
 
 - `configs/domains/phase2_domains.json`：source、revision、license、allocation 和 held-out 声明；
-- `scripts/phase2/prepare_domains.py`：固定 URL 下载、MBPP split、SHA-256 manifest；
-- `scripts/phase2/materialize_scenario.py`：确定性 record shuffle、token packing 和 token hash；
+- `scripts/phase2/prepare_domains.py`：固定 URL 下载、MBPP split 和数据 manifest；
+- `scripts/phase2/materialize_scenario.py`：确定性 record shuffle 与 token packing；
 - `gemq/utils/domain_data.py`：注册表校验、路径越界保护、不可变 token cache；
 - `scripts/phase2/run_scenario.sh` / `run_matrix.sh`：单场景和 8-GPU 并行统计；
-- `scripts/phase2/validate_scenarios.py`：shape、token hash、16×64×3 系数完整性检查。
+- `scripts/phase2/validate_scenarios.py`：shape、场景一致性与 16×64×3 系数完整性检查。
 
-缓存身份是 `model_id + domain + seed + token_sha256`。`domain×seed` 会分别保存，但正式风险聚合仍以 domain 为一级单元，禁止把 8 个文件解释成 8 个独立语义环境。
+每个缓存由 `model_id + domain + seed` 标识，并在场景 manifest 中记录数据规模。`domain×seed` 会分别保存，但正式风险聚合仍以 domain 为一级单元，禁止把 8 个文件解释成 8 个独立语义环境。
 
 ## 4. Smoke 验收
 
 协议：4 domains × seed 0 × 8 blocks × 256 tokens。
 
-| Domain | Token hash 前缀 | 系数数量 | 最小值 | 最大值 |
-| --- | --- | ---: | ---: | ---: |
-| General | `c8c5d0198347` | 3,072 | 0 | 1.0530e-2 |
-| Math | `074d7530785b` | 3,072 | 0 | 1.2120e-2 |
-| Code | `d3dde2a95565` | 3,072 | 0 | 7.4595e-3 |
-| Instruction | `9db33d93167e` | 3,072 | 8.2559e-8 | 9.6410e-3 |
+| Domain | 系数数量 | 最小值 | 最大值 |
+| --- | ---: | ---: | ---: |
+| General | 3,072 | 0 | 1.0530e-2 |
+| Math | 3,072 | 0 | 1.2120e-2 |
+| Code | 3,072 | 0 | 7.4595e-3 |
+| Instruction | 3,072 | 8.2559e-8 | 9.6410e-3 |
 
 全部场景通过 finite、non-negative、layer/expert/bit coverage 和 token identity 检查。短 smoke 中的零系数来自未被路由到的 expert，因此 smoke 只用于 loader/schema 验证，不用于研究结论。
 
@@ -78,7 +78,7 @@ Response: {response}
 
 - 约 1 GiB `LayerGrads`；
 - 16×64×3 = 3,072 个 LayerRE 系数；
-- 独立 `scenario.json`、token hash、source hash 和运行状态。
+- 独立 `scenario.json`、数据规模和运行状态。
 
 归一化冻结为：先除以 effective tokens，再除以该场景 bit-2 系数的中位数。该标量不影响域内 rank，但避免后续多域目标被不同 domain 的损失尺度直接支配。
 
@@ -166,7 +166,7 @@ H4 pilot 通过，但只能说明 reconstruction risk 与 downstream route shift
 ```bash
 cd /data/models/RobustGEMQ
 
-# 固定公开数据与 source hash
+# 固定公开数据与 split manifest
 .venv/bin/python scripts/phase2/prepare_domains.py \
   --data-root /data/models/datasets/robustgemq-phase2 \
   --c4-root /data/models/datasets/gemq-phase1/c4 \

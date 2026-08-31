@@ -43,13 +43,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip numpy scipy pytest
           python -m pip install -e . --no-deps
-      - name: Validate published evidence boundary
+      - name: Validate published experiment manifests
         run: |
-          python scripts/phase9/verify_public_evidence.py --evidence docs/07-release/evidence.json
-          python scripts/phase10/verify_public_evidence.py --evidence docs/08-independent-confirmation/evidence.json
-          python scripts/prefill/verify_evidence.py --evidence artifacts/prefill/evidence.json
-          python scripts/prefill/verify_chunked_evidence.py --evidence artifacts/prefill/p4/evidence.json
-          python scripts/vllm/verify_evidence.py --evidence artifacts/vllm/evidence.json
+          python scripts/phase9/verify_public_evidence.py --manifest docs/07-release/manifest.json
+          python scripts/phase10/verify_public_evidence.py --manifest docs/08-independent-confirmation/manifest.json
+          python scripts/prefill/verify_evidence.py --manifest artifacts/prefill/manifest.json
+          python scripts/prefill/verify_chunked_evidence.py --manifest artifacts/prefill/p4/manifest.json
+          python scripts/vllm/verify_evidence.py --manifest artifacts/vllm/manifest.json
       - name: Compile Python sources
         run: python -m compileall -q gemq scripts tests
       - name: Run CPU reliability tests

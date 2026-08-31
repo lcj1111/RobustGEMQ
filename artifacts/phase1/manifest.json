@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "stage": "real-quant-baseline",
+  "model": {
+    "id": "allenai/OLMoE-1B-7B-0924",
+    "architecture": "OlmoeForCausalLM",
+    "layers": 16,
+    "experts_per_layer": 64,
+    "experts_per_token": 8,
+    "hidden_size": 2048,
+    "vocabulary_size": 50304,
+    "weight_files": [
+      "model-00001-of-00003.safetensors",
+      "model-00002-of-00003.safetensors",
+      "model-00003-of-00003.safetensors"
+    ],
+    "indexed_tensors": 3219,
+    "weight_bytes": 13838323712
+  },
+  "data": {
+    "calibration": "c4/en/c4-train.00000-of-01024.json",
+    "validation": [
+      "c4/en/c4-validation.00000-of-00008.json.gz",
+      "wikitext2/validation-00000-of-00001.parquet"
+    ],
+    "test": "wikitext2/test-00000-of-00001.parquet"
+  },
+  "statistics": {
+    "path": "cache/allenai/OLMoE-1B-7B-0924/LayerRE_c4-N128-L2048-Seed0_B1,2,3_fast.pkl",
+    "coefficients": 3072,
+    "finite_nonnegative": true
+  },
+  "allocation": {
+    "path": "configs/allenai/OLMoE-1B-7B-0924/GEMQ/C4-Seed0_E2.0_B1,2,3_c2c3.pkl",
+    "assignments": 1024,
+    "bit_counts": {
+      "1": 503,
+      "2": 18,
+      "3": 503
+    },
+    "average_expert_bits": 2.0
+  },
+  "outputs": {
+    "summary": "artifacts/phase1/summary.json",
+    "quantized_checkpoint": "results/real_quant_models/allenai/OLMoE-1B-7B-0924/GEMQ/C4-Seed0-WT2_A4-G16-D4-E2.0_RFT/qmodel.pt"
+  }
+}

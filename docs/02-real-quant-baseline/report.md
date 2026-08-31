@@ -28,7 +28,7 @@ Phase 1 已完成从固定数据、模型统计、全局 bit 分配、真实权�
 
 | 验收项 | 结果 | 关键证据 |
 | --- | --- | --- |
-| 固定模型和数据输入 | 通过 | 模型 shard、配置、tokenizer 和数据文件均记录 SHA-256 |
+| 固定模型和数据输入 | 通过 | manifest 记录模型结构、权重文件、数据文件和划分 |
 | BF16 加载/forward smoke | 通过 | 有限 logits，峰值显存 12.93 GiB |
 | 128×2048 calibration gradients | 通过 | 17,179,875,613-byte `LayerGrads` |
 | 16 层 × 64 专家 × 3 bits reconstruction error | 通过 | 3,072 个系数，均有限且非负 |
@@ -50,7 +50,7 @@ Phase 1 已完成从固定数据、模型统计、全局 bit 分配、真实权�
 /data/models/modelscope/LLM-Research/OLMoE-1B-7B-0924
 ```
 
-模型为 16 层、64 experts/layer、top-8 routing、hidden size 2048。3 个 safetensors shard 的索引总大小为 13,838,323,712 bytes，包含 3,219 个 tensors，未缺 shard。ModelScope 的 `master` 名称不是不可变版本，因此复现身份以 `artifacts/phase1/assets/model-sha256.txt` 中的内容哈希为准。
+模型为 16 层、64 experts/layer、top-8 routing、hidden size 2048。3 个 safetensors shard 的索引总大小为 13,838,323,712 bytes，包含 3,219 个 tensors，未缺 shard。模型结构、权重文件名和数据划分统一记录在 `artifacts/phase1/manifest.json`。
 
 数据位于 `/data/models/datasets/gemq-phase1`，固定为：
 
@@ -130,7 +130,7 @@ qmodel.pt: 2,453,886,827 bytes
 checkpoint total: 2,457,458,973 bytes
 ```
 
-大文件保留在服务器且由 `.gitignore` 排除；SHA-256 记录在 `artifacts/phase1/checksums.txt`。
+大文件保留在服务器且由 `.gitignore` 排除；仓库只记录生成方法、输入输出路径和结构化汇总。
 
 ## 7. 端到端数值验证
 
@@ -183,7 +183,7 @@ window 3: about 115 s incremental
 以下命令均从 `/data/models/RobustGEMQ` 运行：
 
 ```bash
-# 固定输入（幂等下载；正式复现应同时核对 SHA-256）
+# 固定输入（幂等下载；文件与数据划分见阶段 manifest）
 PYTHON_BIN=.venv/bin/python bash scripts/phase1/download_assets.sh
 
 # gradients；4 个物理 GPU 在进程内映射为 cuda:0..3
@@ -213,8 +213,6 @@ CUDA_DEVICE=2 NUM_SAMPLES=3 MAX_NEW_TOKENS=64 \
 CUDA_DEVICE=2 bash scripts/phase1/run_fp_baseline.sh
 CUDA_VISIBLE_DEVICES=2 .venv/bin/python -m pytest -q
 
-# 校验大文件身份
-bash scripts/phase1/checksum_artifacts.sh
 ```
 
 ## 10. 当时遗留的问题与后续结果
