@@ -63,8 +63,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--warmup-rounds",
         type=int,
-        default=2,
-        help="按目标并发度执行的完整预热轮数",
+        default=4,
+        help="按目标并发度覆盖短、长、混合输入形状的完整预热轮数",
+    )
+    parser.add_argument(
+        "--prefix-caching",
+        choices=("disabled", "enabled"),
+        default="disabled",
+        help="记录服务端冻结的 prefix cache 状态；正式 uncached 基准必须为 disabled",
     )
     parser.add_argument("--gpu-index", type=int, default=0)
     parser.add_argument("--memory-sample-interval", type=float, default=0.2)
@@ -233,13 +239,24 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
     connector = aiohttp.TCPConnector(limit=max(args.concurrency, 1))
 
     async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
-        # 每轮均覆盖目标并发 batch 形状；预热不进入统计。
+        # 前两轮分别覆盖同长度短/长输入，后续轮覆盖交错输入。
+        # 这样可以在测量前触发目标并发下的 Triton shape-specific autotune。
         for round_index in range(args.warmup_rounds):
-            offset = round_index * args.concurrency
-            warmup_specs = [
-                workload[(offset + index) % len(workload)]
-                for index in range(args.concurrency)
-            ]
+            if round_index < len(args.prompt_lengths):
+                target_length = args.prompt_lengths[round_index]
+                candidates = [
+                    item for item in workload if len(item.prompt_tokens) == target_length
+                ]
+                warmup_specs = [
+                    candidates[index % len(candidates)]
+                    for index in range(args.concurrency)
+                ]
+            else:
+                offset = (round_index - len(args.prompt_lengths)) * args.concurrency
+                warmup_specs = [
+                    workload[(offset + index) % len(workload)]
+                    for index in range(args.concurrency)
+                ]
             await asyncio.gather(
                 *(
                     request_once(
@@ -322,6 +339,7 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
             "max_tokens": args.max_tokens,
             "warmup_rounds": args.warmup_rounds,
             "warmup_requests": args.warmup_rounds * args.concurrency,
+            "prefix_caching": args.prefix_caching,
             "temperature": 0.0,
             "ignore_eos": True,
             "sha256": workload_sha256,

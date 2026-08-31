@@ -20,5 +20,5 @@ def test_nearest_rank_uses_observed_sample():
 def test_committed_vllm_evidence_is_recomputable():
     result = MODULE.verify(ROOT / "artifacts" / "vllm" / "evidence.json")
     assert result["status"] == "PASS"
-    assert result["benchmark_requests"] == 144
-    assert result["workload_identity_pairs"] == 3
+    assert result["benchmark_requests"] == 216
+    assert result["workload_identity_pairs"] == 6

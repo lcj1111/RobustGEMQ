@@ -13,8 +13,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+SCRIPT_ROOT = Path(__file__).resolve().parent
+if str(SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_ROOT))
 
 from gemq.vllm_plugin.checkpoint_schema import validate_manifest
+from summarize_profiles import build_summary
 
 
 def sha256(path: Path) -> str:
@@ -59,10 +63,12 @@ def verify_benchmark(result: dict) -> None:
         raise ValueError("请求记录缺失、重复或顺序错误")
     if expected_count != 24:
         raise ValueError("正式 benchmark 每档必须包含 24 个请求")
-    if workload["warmup_rounds"] != 2:
-        raise ValueError("正式 benchmark 必须按目标并发度预热两轮")
-    if workload["warmup_requests"] != 2 * workload["concurrency"]:
+    if workload["warmup_rounds"] != 4:
+        raise ValueError("正式 benchmark 必须按目标并发度预热四轮")
+    if workload["warmup_requests"] != 4 * workload["concurrency"]:
         raise ValueError("预热请求数与并发度不一致")
+    if workload.get("prefix_caching") != "disabled":
+        raise ValueError("正式 benchmark 必须关闭 prefix cache")
 
     workload_records = workload["requests"]
     if len(workload_records) != expected_count:
@@ -127,7 +133,7 @@ def verify_benchmark(result: dict) -> None:
 def verify(evidence_path: Path) -> dict:
     repo = evidence_path.resolve().parents[2]
     evidence = load_json(evidence_path)
-    if evidence.get("schema_version") != 1:
+    if evidence.get("schema_version") != 2:
         raise ValueError("不支持的 vLLM evidence schema")
 
     loaded: dict[str, dict] = {}
@@ -137,7 +143,7 @@ def verify(evidence_path: Path) -> dict:
             raise FileNotFoundError(f"缺少证据文件：{entry['path']}")
         if sha256(path) != entry["sha256"]:
             raise ValueError(f"哈希不一致：{entry['path']}")
-        if entry["kind"] != "source":
+        if entry["kind"] in {"benchmark", "correctness", "metadata", "profile"}:
             loaded[entry["name"]] = load_json(path)
 
     environment = loaded["environment"]
@@ -148,6 +154,8 @@ def verify(evidence_path: Path) -> dict:
         raise ValueError("BF16/GEMQ 未固定为 4 GiB KV Cache")
     if protocol["max_num_seqs"] != 16 or not protocol["enforce_eager"]:
         raise ValueError("服务协议与冻结配置不一致")
+    if protocol.get("prefix_caching") is not False:
+        raise ValueError("环境快照未冻结 prefix_caching=false")
 
     manifest = validate_manifest(loaded["checkpoint_manifest"])
     artifact = manifest["artifacts"][0]
@@ -163,9 +171,22 @@ def verify(evidence_path: Path) -> dict:
         raise ValueError("原推理路径与 vLLM 的 greedy token 不一致")
     if not layer["attention"]["pass"] or not layer["moe"]["pass"]:
         raise ValueError("层级独立反量化对照未通过")
+    dispatch = loaded["dispatch_correctness"]
+    if (
+        dispatch.get("status") != "pass"
+        or dispatch.get("dispatch_token_cases") != [1, 17, 128, 513]
+        or len(dispatch.get("chunk_cases", [])) != 4
+    ):
+        raise ValueError("stable dispatch/fused reduce CUDA 正确性未通过")
+
+    profile_summary = loaded["profile_summary"]
+    if profile_summary != build_summary(repo):
+        raise ValueError("profiler summary 无法由原始 Torch/CUPTI 表复算")
+    if profile_summary["protocol"].get("prefix_caching") is not False:
+        raise ValueError("profiler 未冻结 prefix_caching=false")
 
     benchmarks: dict[tuple[str, int], dict] = {}
-    for model in ("bf16", "robustgemq"):
+    for model in ("bf16", "baseline_gemq", "robustgemq"):
         for concurrency in (1, 4, 8):
             name = f"{model}_c{concurrency}"
             result = loaded[name]
@@ -174,26 +195,50 @@ def verify(evidence_path: Path) -> dict:
                 raise ValueError(f"{name} 并发度字段错误")
             benchmarks[(model, concurrency)] = result
 
-    comparisons = {item["concurrency"]: item for item in evidence["comparisons"]}
+    bf16_comparisons = {
+        item["concurrency"]: item
+        for item in evidence["comparisons"]["bf16_vs_optimized"]
+    }
+    dispatch_comparisons = {
+        item["concurrency"]: item
+        for item in evidence["comparisons"]["baseline_vs_optimized"]
+    }
     for concurrency in (1, 4, 8):
         baseline = benchmarks[("bf16", concurrency)]
+        original = benchmarks[("baseline_gemq", concurrency)]
         candidate = benchmarks[("robustgemq", concurrency)]
-        if baseline["workload"]["sha256"] != candidate["workload"]["sha256"]:
-            raise ValueError(f"并发 {concurrency} 的跨方法 workload hash 不一致")
-        if baseline["workload"]["requests"] != candidate["workload"]["requests"]:
-            raise ValueError(f"并发 {concurrency} 的跨方法请求 identity 不一致")
+        for counterpart in (baseline, original):
+            if counterpart["workload"]["sha256"] != candidate["workload"]["sha256"]:
+                raise ValueError(f"并发 {concurrency} 的跨方法 workload hash 不一致")
+            if counterpart["workload"]["requests"] != candidate["workload"]["requests"]:
+                raise ValueError(f"并发 {concurrency} 的跨方法请求 identity 不一致")
         b = baseline["summary"]
+        o = original["summary"]
         q = candidate["summary"]
-        expected = {
+        expected_bf16 = {
             "output_throughput_ratio": q["output_token_throughput_per_second"]
             / b["output_token_throughput_per_second"],
             "ttft_p95_ratio": q["ttft_seconds"]["p95"] / b["ttft_seconds"]["p95"],
             "peak_memory_reduction": 1.0
             - q["gpu_memory_mib"]["peak"] / b["gpu_memory_mib"]["peak"],
         }
-        actual = comparisons[concurrency]
-        for key, value in expected.items():
+        actual = bf16_comparisons[concurrency]
+        for key, value in expected_bf16.items():
             assert_close(actual[key], value, f"concurrency={concurrency} {key}")
+        expected_dispatch = {
+            "output_throughput_improvement": q["output_token_throughput_per_second"]
+            / o["output_token_throughput_per_second"] - 1.0,
+            "ttft_p95_reduction": 1.0
+            - q["ttft_seconds"]["p95"] / o["ttft_seconds"]["p95"],
+            "e2e_p95_reduction": 1.0
+            - q["e2e_seconds"]["p95"] / o["e2e_seconds"]["p95"],
+        }
+        actual = dispatch_comparisons[concurrency]
+        for key, value in expected_dispatch.items():
+            assert_close(actual[key], value, f"concurrency={concurrency} {key}")
+
+    if evidence["comparisons"]["profiler"] != profile_summary["comparisons"]:
+        raise ValueError("evidence profiler comparison 与结构化 summary 不一致")
 
     return {
         "status": "PASS",
@@ -201,7 +246,7 @@ def verify(evidence_path: Path) -> dict:
         "benchmark_requests": sum(
             len(result["requests"]) for result in benchmarks.values()
         ),
-        "workload_identity_pairs": 3,
+        "workload_identity_pairs": 6,
         "checkpoint_sha256": artifact["sha256"],
     }
 

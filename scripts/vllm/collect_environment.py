@@ -92,6 +92,7 @@ def main() -> None:
             "kv_cache_memory_bytes": 4 * 1024**3,
             "enforce_eager": True,
             "gemq_prefill_chunk_tokens": 128,
+            "prefix_caching": False,
         },
     }
     atomic_dump(args.output, payload)

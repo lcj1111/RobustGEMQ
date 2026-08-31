@@ -16,7 +16,8 @@
 | 阶段八：独立测试复核 | 在记录级隔离的 validation/test 上冻结选择并确认阶段六结论 | Phase 10 | 完成 | [复核报告](08-independent-confirmation/report.md) · [公开证据](08-independent-confirmation/evidence.json) |
 | 阶段九：Prefill 内核优化 | 消除逐 expert 同步与碎片化 launch，实现 variable-M mixed-bit grouped/fused kernel | Prefill P0–P3 | 完成 | [优化报告](09-prefill-kernel-optimization/report.md) · [可审计证据](../artifacts/prefill/evidence.json) |
 | 阶段十：受限显存与并发 Prefill | 增加 workspace-bounded chunked 后端，并在开放环并发负载下评估 TTFT、吞吐、显存和尾延迟 | Prefill P4 | 完成 | [并发评测报告](10-concurrent-prefill/report.md) · [可审计证据](../artifacts/prefill/p4/evidence.json) |
-| 阶段十一：vLLM 真实服务接入 | 导出稳定检查点，接入 vLLM Engine，并以真实流式服务验证正确性、TTFT、吞吐和总显存 | vLLM V0–V5 | 完成 | [服务集成报告](11-vllm-serving-integration/report.md) · [可审计证据](../artifacts/vllm/evidence.json) |
+| 阶段十一：vLLM 真实服务接入 | 导出稳定检查点，接入 vLLM Engine，并验证加载、数值和端到端生成 | vLLM V0–V5 | 完成 | [服务集成报告](11-vllm-serving-integration/report.md) |
+| 阶段十二：服务路径融合 | 用 Torch/CUPTI 分解 prefill/decode，合并稳定 dispatch，并在 uncached 并发服务中复测 | vLLM V6 | PARTIAL PASS | [优化报告](12-vllm-dispatch-fusion/report.md) · [可审计证据](../artifacts/vllm/evidence.json) |
 
 ## 为什么没有历史计划中的扩展阶段
 
@@ -24,4 +25,4 @@
 
 ## 阅读顺序
 
-建议先读[发布报告](07-release/report.md)了解研究结论，再读[服务集成报告](11-vllm-serving-integration/report.md)了解工程落地；需要复现实验时，使用阶段六 Harness 和阶段十一保留的命令。
+建议先读[发布报告](07-release/report.md)了解量化研究结论，再读[服务集成报告](11-vllm-serving-integration/report.md)和[服务路径优化报告](12-vllm-dispatch-fusion/report.md)了解工程落地；需要复现实验时，使用阶段六 Harness 与阶段十二冻结的服务协议。

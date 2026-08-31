@@ -19,10 +19,13 @@ from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.utils import set_weight_attrs
 
 from gemq.triton_kernels.mixedbit_moe_prefill import (
-    build_inverse_assignment_order,
-    deterministic_chunk_reduce,
     mixedbit_fused_up_activation,
     mixedbit_variable_m_grouped_gemm,
+)
+from gemq.triton_kernels.vllm_moe_dispatch import (
+    fused_chunk_unpermute_reduce,
+    stable_expert_dispatch,
+    write_chunk_expert_offsets,
 )
 
 
@@ -346,29 +349,30 @@ class GEMQMoEMethod(FusedMoEMethodBase):
             )
             self._debug_printed = True
         top_k = topk_ids.shape[-1]
-        flat_experts = topk_ids.reshape(-1)
-        assignment_order = torch.argsort(flat_experts, stable=True)
-        sorted_experts = flat_experts[assignment_order]
-        sorted_tokens = torch.div(assignment_order, top_k, rounding_mode="floor")
-        inverse_order = build_inverse_assignment_order(assignment_order)
-        output = torch.zeros(
+        sorted_tokens, inverse_order, global_offsets = stable_expert_dispatch(
+            topk_ids, layer.global_num_experts
+        )
+        output_accumulator = torch.zeros(
             (x.shape[0], x.shape[1]), dtype=torch.float32, device=x.device
         )
+        final_output = torch.empty_like(x)
+        chunk_offsets = torch.empty_like(global_offsets)
         assignment_limit = self.chunk_tokens * top_k
-        for start in range(0, assignment_order.numel(), assignment_limit):
-            end = min(start + assignment_limit, assignment_order.numel())
-            counts = torch.bincount(
-                sorted_experts[start:end], minlength=layer.global_num_experts
-            ).to(torch.int32)
-            offsets = torch.cat((counts.new_zeros(1), counts.cumsum(dim=0)))
+        num_assignments = sorted_tokens.numel()
+        for start in range(0, num_assignments, assignment_limit):
+            end = min(start + assignment_limit, num_assignments)
+            write_chunk_expert_offsets(
+                global_offsets, chunk_offsets, start, end
+            )
             expert_input = x.index_select(0, sorted_tokens[start:end])
-            expert_output = self._run_chunk(layer, expert_input, offsets)
-            deterministic_chunk_reduce(
+            expert_output = self._run_chunk(layer, expert_input, chunk_offsets)
+            fused_chunk_unpermute_reduce(
                 expert_output,
                 inverse_order,
                 topk_weights,
-                output,
+                output_accumulator,
                 start,
                 end,
+                final_output=final_output if end == num_assignments else None,
             )
-        return output.to(x.dtype)
+        return final_output

@@ -1,0 +1,618 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "subject": "RobustGEMQ vLLM 服务路径 dispatch/reduce profiler 分解",
+  "protocol": {
+    "engine": "vLLM 0.28.0 real OpenAI-compatible service",
+    "profiler": "torch.profiler with CUDA/CUPTI",
+    "concurrency": 8,
+    "prefix_caching": false,
+    "prefill": {
+      "requests": 8,
+      "prompt_tokens": 512,
+      "output_tokens": 1
+    },
+    "decode": {
+      "requests": 8,
+      "prompt_tokens": 128,
+      "output_tokens": 16
+    },
+    "scope": "fixed-checkpoint descriptive single-run profile"
+  },
+  "cases": {
+    "baseline_prefill": {
+      "workload": {
+        "concurrency": 8,
+        "prompt_length": 512,
+        "max_tokens": 1,
+        "warmup_rounds": 2,
+        "request_identity": [
+          {
+            "request_id": 0,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 1,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 2,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 3,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 4,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 5,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 6,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 7,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          }
+        ]
+      },
+      "request_metrics": {
+        "ttft_p50_ms": 471.58072236925364,
+        "ttft_p95_ms": 472.37537521868944,
+        "ttft_p99_ms": 472.37537521868944,
+        "e2e_p95_ms": 472.39578515291214
+      },
+      "operations": {
+        "vllm::moe_forward": {
+          "self_cpu_ms": 116.038,
+          "cpu_total_ms": 392.207,
+          "self_cuda_ms": 222.311,
+          "cuda_total_ms": 242.23,
+          "calls": 48
+        },
+        "mixedbit_fused_up_activation_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 137.081,
+          "cuda_total_ms": 137.081,
+          "calls": 512
+        },
+        "mixedbit_variable_m_grouped_gemm_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 77.535,
+          "cuda_total_ms": 77.535,
+          "calls": 512
+        },
+        "deterministic_chunk_reduce_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 7.696,
+          "cuda_total_ms": 7.696,
+          "calls": 512
+        },
+        "aten::bincount": {
+          "self_cpu_ms": 6.015,
+          "cpu_total_ms": 177.998,
+          "self_cuda_ms": 4.702,
+          "cuda_total_ms": 6.302,
+          "calls": 512
+        },
+        "aten::sort": {
+          "self_cpu_ms": 1.403,
+          "cpu_total_ms": 4.593,
+          "self_cuda_ms": 1.098,
+          "cuda_total_ms": 1.176,
+          "calls": 48
+        },
+        "aten::cumsum": {
+          "self_cpu_ms": 8.893,
+          "cpu_total_ms": 21.39,
+          "self_cuda_ms": 0.985857,
+          "cuda_total_ms": 1.485,
+          "calls": 512
+        },
+        "aten::cat": {
+          "self_cpu_ms": 6.564,
+          "cpu_total_ms": 16.345,
+          "self_cuda_ms": 0.940513,
+          "cuda_total_ms": 0.940513,
+          "calls": 512
+        },
+        "aten::scatter_": {
+          "self_cpu_ms": 0.521887,
+          "cpu_total_ms": 0.7916300000000001,
+          "self_cuda_ms": 0.188861,
+          "cuda_total_ms": 0.188861,
+          "calls": 48
+        },
+        "aten::div": {
+          "self_cpu_ms": 0.406974,
+          "cpu_total_ms": 0.614866,
+          "self_cuda_ms": 0.084666,
+          "cuda_total_ms": 0.084666,
+          "calls": 48
+        },
+        "aten::arange": {
+          "self_cpu_ms": 0.634264,
+          "cpu_total_ms": 2.091,
+          "self_cuda_ms": 0.04429,
+          "cuda_total_ms": 0.08858,
+          "calls": 128
+        },
+        "aten::index_select": {
+          "self_cpu_ms": 5.4,
+          "cpu_total_ms": 19.154,
+          "self_cuda_ms": 0.0,
+          "cuda_total_ms": 1.304,
+          "calls": 518
+        }
+      }
+    },
+    "baseline_decode": {
+      "workload": {
+        "concurrency": 8,
+        "prompt_length": 128,
+        "max_tokens": 16,
+        "warmup_rounds": 2,
+        "request_identity": [
+          {
+            "request_id": 0,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 1,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 2,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 3,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 4,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 5,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 6,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 7,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          }
+        ]
+      },
+      "request_metrics": {
+        "ttft_p50_ms": 193.10851860791445,
+        "ttft_p95_ms": 193.3914227411151,
+        "ttft_p99_ms": 193.3914227411151,
+        "e2e_p95_ms": 674.2699854075909
+      },
+      "operations": {
+        "vllm::moe_forward": {
+          "self_cpu_ms": 128.901,
+          "cpu_total_ms": 330.221,
+          "self_cuda_ms": 118.812,
+          "cuda_total_ms": 129.293,
+          "calls": 272
+        },
+        "mixedbit_fused_up_activation_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 73.871,
+          "cuda_total_ms": 73.871,
+          "calls": 384
+        },
+        "mixedbit_variable_m_grouped_gemm_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 43.574,
+          "cuda_total_ms": 43.574,
+          "calls": 384
+        },
+        "aten::bincount": {
+          "self_cpu_ms": 4.627,
+          "cpu_total_ms": 68.063,
+          "self_cuda_ms": 1.412,
+          "cuda_total_ms": 2.575,
+          "calls": 384
+        },
+        "deterministic_chunk_reduce_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 1.367,
+          "cuda_total_ms": 1.367,
+          "calls": 384
+        },
+        "aten::sort": {
+          "self_cpu_ms": 5.441,
+          "cpu_total_ms": 22.141,
+          "self_cuda_ms": 1.255,
+          "cuda_total_ms": 2.048,
+          "calls": 272
+        },
+        "aten::cumsum": {
+          "self_cpu_ms": 6.953,
+          "cpu_total_ms": 16.467,
+          "self_cuda_ms": 0.739692,
+          "cuda_total_ms": 1.115,
+          "calls": 384
+        },
+        "aten::cat": {
+          "self_cpu_ms": 5.269,
+          "cpu_total_ms": 12.411,
+          "self_cuda_ms": 0.701944,
+          "cuda_total_ms": 0.701944,
+          "calls": 384
+        },
+        "aten::scatter_": {
+          "self_cpu_ms": 3.092,
+          "cpu_total_ms": 4.561,
+          "self_cuda_ms": 0.41234699999999996,
+          "cuda_total_ms": 0.41234699999999996,
+          "calls": 273
+        },
+        "aten::arange": {
+          "self_cpu_ms": 4.335,
+          "cpu_total_ms": 15.782,
+          "self_cuda_ms": 0.355483,
+          "cuda_total_ms": 0.710966,
+          "calls": 1056
+        },
+        "aten::div": {
+          "self_cpu_ms": 2.25,
+          "cpu_total_ms": 3.45,
+          "self_cuda_ms": 0.340327,
+          "cuda_total_ms": 0.340327,
+          "calls": 272
+        },
+        "aten::index_select": {
+          "self_cpu_ms": 4.287,
+          "cpu_total_ms": 13.443,
+          "self_cuda_ms": 0.103905,
+          "cuda_total_ms": 0.6690280000000001,
+          "calls": 418
+        }
+      }
+    },
+    "optimized_prefill": {
+      "workload": {
+        "concurrency": 8,
+        "prompt_length": 512,
+        "max_tokens": 1,
+        "warmup_rounds": 2,
+        "request_identity": [
+          {
+            "request_id": 0,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 1,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 2,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 3,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 4,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 5,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 6,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          },
+          {
+            "request_id": 7,
+            "prompt_tokens": 512,
+            "prompt_sha256": "0db1b9430e9ab00bdaf7775965811fc697ddcb307c286fe442f6773906d77d1c"
+          }
+        ]
+      },
+      "request_metrics": {
+        "ttft_p50_ms": 299.80821069329977,
+        "ttft_p95_ms": 300.83246529102325,
+        "ttft_p99_ms": 300.83246529102325,
+        "e2e_p95_ms": 300.8510349318385
+      },
+      "operations": {
+        "vllm::moe_forward": {
+          "self_cpu_ms": 99.649,
+          "cpu_total_ms": 133.77,
+          "self_cuda_ms": 221.527,
+          "cuda_total_ms": 223.142,
+          "calls": 48
+        },
+        "mixedbit_fused_up_activation_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 133.321,
+          "cuda_total_ms": 133.321,
+          "calls": 512
+        },
+        "mixedbit_variable_m_grouped_gemm_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 77.206,
+          "cuda_total_ms": 77.206,
+          "calls": 512
+        },
+        "fused_weighted_unpermute_reduce_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 7.729,
+          "cuda_total_ms": 7.729,
+          "calls": 512
+        },
+        "stable_count_offsets_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 1.488,
+          "cuda_total_ms": 1.488,
+          "calls": 48
+        },
+        "stable_scatter_dispatch_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 1.35,
+          "cuda_total_ms": 1.35,
+          "calls": 48
+        },
+        "chunk_offsets_from_global_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 0.43363,
+          "cuda_total_ms": 0.43363,
+          "calls": 512
+        },
+        "aten::index_select": {
+          "self_cpu_ms": 4.969,
+          "cpu_total_ms": 16.021,
+          "self_cuda_ms": 0.0,
+          "cuda_total_ms": 1.272,
+          "calls": 518
+        }
+      }
+    },
+    "optimized_decode": {
+      "workload": {
+        "concurrency": 8,
+        "prompt_length": 128,
+        "max_tokens": 16,
+        "warmup_rounds": 2,
+        "request_identity": [
+          {
+            "request_id": 0,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 1,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 2,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 3,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 4,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 5,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 6,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          },
+          {
+            "request_id": 7,
+            "prompt_tokens": 128,
+            "prompt_sha256": "ff91b2c1bd3611105cca5d4ed38af4688ecd8bf21148780d840f339d4aa6a845"
+          }
+        ]
+      },
+      "request_metrics": {
+        "ttft_p50_ms": 144.75200604647398,
+        "ttft_p95_ms": 145.00693138688803,
+        "ttft_p99_ms": 145.00693138688803,
+        "e2e_p95_ms": 548.549902625382
+      },
+      "operations": {
+        "vllm::moe_forward": {
+          "self_cpu_ms": 125.958,
+          "cpu_total_ms": 184.509,
+          "self_cuda_ms": 118.92,
+          "cuda_total_ms": 120.677,
+          "calls": 272
+        },
+        "mixedbit_fused_up_activation_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 72.727,
+          "cuda_total_ms": 72.727,
+          "calls": 384
+        },
+        "mixedbit_variable_m_grouped_gemm_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 43.076,
+          "cuda_total_ms": 43.076,
+          "calls": 384
+        },
+        "fused_weighted_unpermute_reduce_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 1.375,
+          "cuda_total_ms": 1.375,
+          "calls": 384
+        },
+        "stable_count_offsets_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 0.8024330000000001,
+          "cuda_total_ms": 0.8024330000000001,
+          "calls": 272
+        },
+        "stable_scatter_dispatch_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 0.610202,
+          "cuda_total_ms": 0.610202,
+          "calls": 272
+        },
+        "chunk_offsets_from_global_kernel": {
+          "self_cpu_ms": 0.0,
+          "cpu_total_ms": 0.0,
+          "self_cuda_ms": 0.329801,
+          "cuda_total_ms": 0.329801,
+          "calls": 384
+        },
+        "aten::index_select": {
+          "self_cpu_ms": 5.442,
+          "cpu_total_ms": 15.899,
+          "self_cuda_ms": 0.09657500000000001,
+          "cuda_total_ms": 0.651953,
+          "calls": 418
+        },
+        "aten::scatter_": {
+          "self_cpu_ms": 0.024135000000000004,
+          "cpu_total_ms": 0.033263,
+          "self_cuda_ms": 0.0014399999999999999,
+          "cuda_total_ms": 0.0014399999999999999,
+          "calls": 1
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "prefill": {
+      "moe_cpu_total_reduction": 0.6589301057859752,
+      "moe_cuda_total_reduction": 0.07880113941295463,
+      "ttft_p95_reduction": 0.36314956055499126,
+      "removed_eager_dispatch_ops": [
+        "aten::sort",
+        "aten::bincount",
+        "aten::cumsum",
+        "aten::cat",
+        "aten::div",
+        "aten::arange"
+      ]
+    },
+    "decode": {
+      "moe_cpu_total_reduction": 0.4412560073405386,
+      "moe_cuda_total_reduction": 0.06663933855661175,
+      "ttft_p95_reduction": 0.25018943792040527,
+      "removed_eager_dispatch_ops": [
+        "aten::sort",
+        "aten::bincount",
+        "aten::cumsum",
+        "aten::cat",
+        "aten::div",
+        "aten::arange"
+      ]
+    }
+  },
+  "source_files": [
+    {
+      "kind": "torch_cupti_table",
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill.txt",
+      "sha256": "a0d0c955ca03c599bd6b25bc24f9d0f3dd9ad87ced153680a9e7f157f7e6adfa"
+    },
+    {
+      "kind": "request_records",
+      "path": "artifacts/vllm/profiles/raw/baseline-prefill-requests.json",
+      "sha256": "343aa21d13409939406d90c43c3f9064c32ee449ff9a0ad6f98e165608d3f7eb"
+    },
+    {
+      "kind": "torch_cupti_table",
+      "path": "artifacts/vllm/profiles/raw/baseline-decode.txt",
+      "sha256": "824eed4197f864a36ecc16ed1c4cecdb7632a1abef40919817e2502ab67ecb16"
+    },
+    {
+      "kind": "request_records",
+      "path": "artifacts/vllm/profiles/raw/baseline-decode-requests.json",
+      "sha256": "f8fc8d05ccdb4a1d07e249a4e9ec9536077599cd88731711e308851358b20abf"
+    },
+    {
+      "kind": "torch_cupti_table",
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill.txt",
+      "sha256": "7e7a0a4a4738d86d3d4a79352ca8f38b293c5325b2c922960b339120fc8e548b"
+    },
+    {
+      "kind": "request_records",
+      "path": "artifacts/vllm/profiles/raw/optimized-prefill-requests.json",
+      "sha256": "abde4673e7b7b8e40c748dbd82183239f9e9191c8278c0b60cdf87c20246bbdc"
+    },
+    {
+      "kind": "torch_cupti_table",
+      "path": "artifacts/vllm/profiles/raw/optimized-decode.txt",
+      "sha256": "9d811bd8c4448fbdd21073faa599780548c56706f77eb6c210f35ff808c4fca3"
+    },
+    {
+      "kind": "request_records",
+      "path": "artifacts/vllm/profiles/raw/optimized-decode-requests.json",
+      "sha256": "4c672ae43f5f80af377503506a42f0350e15996452b0e217dd69af175dcbf652"
+    }
+  ],
+  "interpretation_boundary": [
+    "CPU total 可能包含同步或嵌套算子，不能将各行直接相加",
+    "profiler 只用于定位路径占比；正式 TTFT、吞吐与显存以 24 请求服务基准为准",
+    "prefill/decode 均关闭 prefix cache，不外推到其他模型、GPU 或请求分布"
+  ]
+}
