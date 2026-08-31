@@ -1,5 +1,8 @@
 # 阶段二：OLMoE 真实量化基线
 
+> [!NOTE]
+> 本文记录阶段二当时的基线和已知 prefill 性能缺口。该缺口后来由阶段九至阶段十二继续处理；当前推理结论应以[阶段十二报告](../12-vllm-dispatch-fusion/report.md)为准。
+
 执行日期：2026-08-13
 
 目标机器：`gpu-111`
@@ -214,20 +217,20 @@ CUDA_VISIBLE_DEVICES=2 .venv/bin/python -m pytest -q
 bash scripts/phase1/checksum_artifacts.sh
 ```
 
-## 10. Phase 2 建议与验收指标
+## 10. 当时遗留的问题与后续结果
 
-优先级一是 Robust Allocation，而不是继续扩大模型规模：
+阶段二结束时留下两项待验证工作。第一项是鲁棒 bit 分配：
 
 1. 对 calibration samples 做 bootstrap，估计每个 expert/bit reconstruction cost 的均值、方差与高分位数。
 2. 将 ILP 目标从单点均值改为 `mean + λ·uncertainty`，或加入跨 C4/WikiText domain 的 worst-case/CVaR 约束。
 3. 对比 GEMQ、uniform-2bit、usage-only、RobustGEMQ，在相同真实 packing 下报告 WikiText-2、C4、跨域数据与 seed 方差。
 4. 目标不是只改善单一 PPL，而是在同等 2.0-bit budget 下显著降低 worst-domain degradation，并证明多 seed allocation 更稳定。
 
-优先级二是 Prefill Kernel：
+第二项是 Prefill kernel：
 
 1. 将 token-expert routing 预排序并形成 grouped expert batches。
 2. 合并 gate/up projection，减少每 expert 的 kernel launch；评估 persistent/grouped GEMM 或 block-sparse dispatch。
 3. 分离首次 JIT、warm prefill 和 decode 三类指标，避免用 decode 吞吐掩盖 prefill 问题。
 4. 最低验收应让 warm 2048-token prefill 从分钟级降至秒级，同时保持现有 fake/real 数值阈值和 100% argmax agreement。
 
-Phase 1 已提供上述两条路线所需的固定输入、baseline checkpoint、数值 oracle、性能反例和自动化脚本，可以直接进入实现与消融阶段。
+后续结果已经闭环：鲁棒 bit 分配未在真实检查点和独立 test 上超过同预算基线，因此停止第二模型扩展；Prefill 路径则完成 grouped/fused kernel、受限显存分块和真实 vLLM 服务优化。量化结论见[阶段八报告](../08-independent-confirmation/report.md)，推理结论见[阶段十二报告](../12-vllm-dispatch-fusion/report.md)。

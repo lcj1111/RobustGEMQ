@@ -15,4 +15,4 @@
 python scripts/prefill/verify_evidence.py --evidence artifacts/prefill/evidence.json
 ```
 
-完整实验协议、结果和边界见 `docs/09-prefill-kernel-optimization/report.md`。检查点权重未提交到 Git；其生成与身份约束沿用 Phase 10 的独立测试证据。
+完整实验协议、结果和边界见 `docs/09-prefill-kernel-optimization/report.md`。检查点权重未提交到 Git；其生成与身份约束沿用阶段八（历史执行编号 Phase 10）的独立测试证据。

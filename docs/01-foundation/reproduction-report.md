@@ -1,6 +1,9 @@
 # 阶段一：复现与运行时基线报告
 
-首次运行：2026-08-12；关闭运行：2026-08-13；目标服务器：`gpu-111`；仓库路径：`/data/models/RobustGEMQ`；基线上游版本：`5eb2240cb46d9811bc9f79026100b46f62a7b642`
+首次运行：2026-08-12；收尾复核：2026-08-13；实验节点：`gpu-111`；当时的仓库路径：`/data/models/RobustGEMQ`；基线上游版本：`5eb2240cb46d9811bc9f79026100b46f62a7b642`
+
+> [!NOTE]
+> 本文记录项目建立时的合成 CUDA 基线，不代表完整模型或当前 vLLM 服务结果。真实量化结论见[阶段八报告](../08-independent-confirmation/report.md)，服务结论见[阶段十二报告](../12-vllm-dispatch-fusion/report.md)。
 
 ## 结果
 

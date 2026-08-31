@@ -47,6 +47,6 @@ no-RFT GPTQ 筛选恰好保留了三个真实打包候选：`Concat`、`Scenario
 
 ## 可复现性与范围
 
-[Harness](harness.md) 记录了阶段六 runner。来源数据/token manifest、allocation 配置、GPTQ/RFT 参数、打包前得分、打包检查点验证和 G6 决策相互分离，因此可在不改变方法选择的情况下复现或审查结果。
+[验证手册](harness.md)记录了阶段六执行入口。来源数据/token manifest、allocation 配置、GPTQ/RFT 参数、打包前得分、打包检查点验证和 G6 决策相互分离，因此可在不改变方法选择的情况下复现或审查结果。
 
-允许的后续工作是 Harness 打包和透明的负结果报告。禁止的后续工作是事后尝试 H5、第二模型质量扫参，或声称 Scenario-Normalized-Mean 在统计上支配两个基线。
+允许的后续工作是完善验证框架和透明的负结果报告。禁止的后续工作是事后尝试 H5、第二模型质量扫参，或声称 Scenario-Normalized-Mean 在统计上支配两个基线。

@@ -1,7 +1,0 @@
-status=aborted_after_3_of_8_windows
-reason=patched_olmoe_prefill_performance_unacceptable
-exit_code=143
-first_window_seconds=852.72
-second_window_incremental_seconds_approx=203
-third_window_incremental_seconds_approx=115
-numerical_failure_observed=false

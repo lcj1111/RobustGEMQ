@@ -198,9 +198,9 @@ python scripts/vllm/build_evidence.py
 python scripts/vllm/verify_evidence.py --evidence artifacts/vllm/evidence.json
 ```
 
-## 9. 下一步
+## 9. 后续研究边界
 
-profiler 已把下一处瓶颈收敛到 mixed-bit GEMM 本体。优化后 prefill 的 up-activation 与 down grouped GEMM 合计占 MoE CUDA 时间约 94%；继续消除零散 Python 操作的边际收益有限。后续优先级应为：
+profiler 已把下一处瓶颈收敛到 mixed-bit GEMM 本体。优化后 prefill 的 up-activation 与 down grouped GEMM 合计占 MoE CUDA 时间约 94%；继续消除零散 Python 操作的边际收益有限。当前阶段在此收口。若未来单独启动后续研究，优先级应为：
 
 1. 针对当前 1/2/3/4-bit expert 分布调优 grouped GEMM 的 tile、split-K 与小 M 路径；
 2. 建立 autotune cache/离线配置，避免新 shape 在服务窗口内搜索；

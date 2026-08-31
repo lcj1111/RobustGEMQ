@@ -67,3 +67,17 @@ artifacts/phase2/**/route-*.pt
 
 # Phase 4 route tensors are reproducible but roughly 720 MiB; validated JSON summaries are committed.
 artifacts/phase4/**/route-*.pt
+
+# 可由阶段脚本重新生成的中间产物；仓库只保留聚合结果和正式证据。
+artifacts/phase1/**/status.txt
+artifacts/phase1/**/full-2048-abort.txt
+artifacts/phase2/smoke/
+artifacts/phase2/pilot/*/seed-*/
+artifacts/phase2/pilot/configs/
+artifacts/phase2/pilot/fake-eval/
+artifacts/phase2/pilot/perturb-configs/
+artifacts/phase2/pilot/perturb-configs.json
+artifacts/phase2/pilot/route-eval/
+artifacts/phase3/fake-quality/
+artifacts/phase4/proxy-configs/
+artifacts/phase4/proxy-configs.json

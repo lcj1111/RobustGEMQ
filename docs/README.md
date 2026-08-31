@@ -1,28 +1,39 @@
 # RobustGEMQ 文档导航
 
-文档按项目能力链路组织。脚本、缓存和 `artifacts/` 保留原始 `phase0/1/2/3/4/6/9` 名称，保证已完成实验仍可按原命令追溯；文档使用连续阶段，便于阅读。
+文档按“量化可靠性 → 推理内核 → 真实服务”组织。仓库中的 `phase0/1/2/3/4/6/9/10` 是实验执行编号；下表使用连续的阅读编号。两者并不一一相等，历史编号仅用于保持脚本和证据可追溯。
 
-## 项目主线
+## 建议阅读路线
 
-| 正式阶段 | 目标 | 执行阶段映射 | 最终状态 | 文档 |
+- **快速了解项目**：先读根目录 [README](../README.md)，再读[独立测试复核](08-independent-confirmation/report.md)与[vLLM 服务路径优化](12-vllm-dispatch-fusion/report.md)。
+- **关注量化研究**：依次阅读阶段三至阶段八，重点看候选方法如何被筛选、证伪和独立复核。
+- **关注推理优化**：依次阅读阶段九至阶段十二，区分单 kernel、受控并发和真实 vLLM 服务三类结论。
+- **准备复现**：使用[真实检查点复现手册](06-real-checkpoint-validation/harness.md)和阶段十一、十二的服务命令；每个正式结果都应通过对应 evidence 校验器。
+
+## 能力链路
+
+| 阅读阶段 | 目标 | 执行编号 | 状态 | 入口 |
 | --- | --- | --- | --- | --- |
-| 阶段一：基础复现 | 固定上游版本、依赖与 CUDA 数值基线 | Phase 0 | 完成 | [上游基线](01-foundation/upstream-baseline.md) · [复现报告](01-foundation/reproduction-report.md) |
-| 阶段二：真实量化基线 | 打通 OLMoE 统计、量化、实际打包与数值验证 | Phase 1 | 完成 | [报告](02-real-quant-baseline/report.md) |
-| 阶段三：跨域敏感度 | 验证校准域差异是否值得进入 allocation 目标 | Phase 2 | 完成 | [报告](03-domain-sensitivity/report.md) |
-| 阶段四：鲁棒分配审计 | 验证求解器，筛选待确认的 allocation 假设 | Phase 3 | 收缩候选 | [报告](04-allocation-audit/report.md) |
-| 阶段五：路由诊断 | 检验 Router proxy 是否具有独立解释力 | Phase 4 | 反证；`lambda_route=0` | [报告](05-router-diagnostics/report.md) |
-| 阶段六：真实检查点确认 | 在真实 GPTQ/RFT/HQQ 路径上完成冻结比较与 Gate 决策 | Phase 6 | G6=STOP | [结果报告](06-real-checkpoint-validation/report.md) · [复现 Harness](06-real-checkpoint-validation/harness.md) |
-| 阶段七：发布交付 | 发布轻量证据、离线校验与 CI 契约 | Phase 9 | 完成 | [发布报告](07-release/report.md) · [公开证据](07-release/evidence.json) |
-| 阶段八：独立测试复核 | 在记录级隔离的 validation/test 上冻结选择并确认阶段六结论 | Phase 10 | 完成 | [复核报告](08-independent-confirmation/report.md) · [公开证据](08-independent-confirmation/evidence.json) |
-| 阶段九：Prefill 内核优化 | 消除逐 expert 同步与碎片化 launch，实现 variable-M mixed-bit grouped/fused kernel | Prefill P0–P3 | 完成 | [优化报告](09-prefill-kernel-optimization/report.md) · [可审计证据](../artifacts/prefill/evidence.json) |
-| 阶段十：受限显存与并发 Prefill | 增加 workspace-bounded chunked 后端，并在开放环并发负载下评估 TTFT、吞吐、显存和尾延迟 | Prefill P4 | 完成 | [并发评测报告](10-concurrent-prefill/report.md) · [可审计证据](../artifacts/prefill/p4/evidence.json) |
-| 阶段十一：vLLM 真实服务接入 | 导出稳定检查点，接入 vLLM Engine，并验证加载、数值和端到端生成 | vLLM V0–V5 | 完成 | [服务集成报告](11-vllm-serving-integration/report.md) |
-| 阶段十二：服务路径融合 | 用 Torch/CUPTI 分解 prefill/decode，合并稳定 dispatch，并在 uncached 并发服务中复测 | vLLM V6 | PARTIAL PASS | [优化报告](12-vllm-dispatch-fusion/report.md) · [可审计证据](../artifacts/vllm/evidence.json) |
+| 一：基础复现 | 固定上游版本、依赖和 CUDA 数值基线 | Phase 0 | 完成 | [上游基线](01-foundation/upstream-baseline.md) · [复现报告](01-foundation/reproduction-report.md) |
+| 二：真实量化基线 | 打通 OLMoE 统计、分配、真实打包和数值验证 | Phase 1 | 完成 | [报告](02-real-quant-baseline/report.md) |
+| 三：跨域敏感度 | 检验校准域差异是否值得进入 bit 分配目标 | Phase 2 | 完成 | [报告](03-domain-sensitivity/report.md) |
+| 四：鲁棒分配审计 | 验证求解器并筛选候选分配方法 | Phase 3 | 候选收缩 | [报告](04-allocation-audit/report.md) |
+| 五：路由诊断 | 检验 Router proxy 是否具有独立解释力 | Phase 4 | 反证；`lambda_route=0` | [报告](05-router-diagnostics/report.md) |
+| 六：真实检查点确认 | 在 GPTQ、Router 微调和 HQQ 路径上完成冻结比较 | Phase 6 | `G6=STOP` | [结果](06-real-checkpoint-validation/report.md) · [复现手册](06-real-checkpoint-validation/harness.md) |
+| 七：量化证据发布 | 发布轻量证据、离线校验和 CI 契约 | Phase 9 | 完成 | [报告](07-release/report.md) · [证据](07-release/evidence.json) |
+| 八：独立测试复核 | 在记录级隔离的 validation/test 上复核阶段六结论 | Phase 10 | 完成 | [报告](08-independent-confirmation/report.md) · [证据](08-independent-confirmation/evidence.json) |
+| 九：Prefill 内核优化 | 实现 variable-M mixed-bit grouped/fused kernel | Prefill P0–P3 | 完成 | [报告](09-prefill-kernel-optimization/report.md) · [证据](../artifacts/prefill/evidence.json) |
+| 十：受限显存与并发 | 实现 chunked 后端并评测 workspace、TTFT 和吞吐 | Prefill P4 | 完成 | [报告](10-concurrent-prefill/report.md) · [证据](../artifacts/prefill/p4/evidence.json) |
+| 十一：vLLM 引擎接入 | 导出检查点并验证加载、数值和端到端生成 | vLLM V0–V5 | 完成 | [报告](11-vllm-serving-integration/report.md) |
+| 十二：服务路径融合 | 分解 prefill/decode，融合稳定 dispatch，并执行 uncached 服务复测 | vLLM V6 | PARTIAL PASS | [报告](12-vllm-dispatch-fusion/report.md) · [证据](../artifacts/vllm/evidence.json) |
 
-## 为什么没有历史计划中的扩展阶段
+## 状态解释
 
-历史执行计划中的 Phase 5、Phase 7 和 Phase 8 都是条件分支，而不是遗漏任务：结构性 H5 未在主实验前执行，因而不能在结果出现后用于挽救结论；Phase 7 的第二模型扩展被 `G6=STOP` 阻止；历史 Phase 8 依赖未通过的结构 Gate。它们没有进入正式项目主线，避免把未发生的工作包装为成果。这里的正式“阶段八”对应后来执行的 Phase 10：它只做记录级独立复核，不恢复被 Gate 阻止的质量扫参。
+- **完成**：该阶段预先定义的输出和验证已经交付。
+- **候选收缩/反证/STOP**：实验按协议完成，但研究假设未通过；这是有效结果，不表示任务遗漏。
+- **PARTIAL PASS**：正确性、显存和延迟门槛通过，但 c8 吞吐提升 21.2%，未达到预设的 25%。
 
-## 阅读顺序
+历史计划中的 Phase 5、Phase 7 和 Phase 8 是条件分支。结构性 H5 没有在主实验前执行，不能在观察结果后用于挽救结论；第二模型扩展被 `G6=STOP` 阻止；原 Phase 8 依赖未通过的结构 Gate。后来执行的 Phase 10 只做记录级独立复核，不恢复被 Gate 阻止的质量扫参。
 
-建议先读[发布报告](07-release/report.md)了解量化研究结论，再读[服务集成报告](11-vllm-serving-integration/report.md)和[服务路径优化报告](12-vllm-dispatch-fusion/report.md)了解工程落地；需要复现实验时，使用阶段六 Harness 与阶段十二冻结的服务协议。
+## 产物保留策略
+
+仓库保留聚合结论、正式请求样本、必要 profiler 原始表和能够通过校验器复算的 evidence。逐场景 GPU 快照、单次状态文件、可由脚本重新生成的候选配置与中间评测目录不再提交；它们不参与当前公开结论，也不应成为阅读入口。
