@@ -71,4 +71,4 @@ python -m pytest -q tests/test_robust_solver.py tests/test_route_proxy.py \
 
 ## 项目定位
 
-最有力且诚实的定位是**面向 MoE 量化实验的可靠性基础设施**：它将校准、allocation、打包与推理验证组织为可审计的发布流水线，并利用预先承诺的 Gate 区分真正的提升与负结果。这是一项具有具体模型量化工作负载的 Infra 贡献，而非只追逐 benchmark 分数的优化主张。
+**面向 MoE 量化实验的可靠性基础设施**：它将校准、allocation、打包与推理验证组织为可审计的发布流水线，并利用预先承诺的 Gate 区分真正的提升与负结果。这是一项具有具体模型量化工作负载的 Infra 贡献，而非只追逐 benchmark 分数的优化主张。
